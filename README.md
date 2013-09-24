@@ -22,7 +22,7 @@ Suppose we have a `students` array:
         {name: "GGG", score: 76}
     ];
 
-The student with the highest score (coffee|js):
+The student with the highest score (coffee | js):
 
     students.withMax((m) -> m.score)  |  students.withMax(function(m){return m.score;})
 
