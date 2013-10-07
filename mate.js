@@ -6,7 +6,7 @@ https://github.com/zhanzhenzhen/mate
 Mate may be freely distributed under the MIT license.
 */
 
-var ArrayLazyWrapper, ObjectWithEvents, assert, compose, fail, repeat,
+var ArrayLazyWrapper, ObjectWithEvents, assert, compose, fail, repeat, spread,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 ArrayLazyWrapper = (function() {
@@ -61,6 +61,14 @@ ArrayLazyWrapper = (function() {
     return this._pushChain(Array.prototype.funReverse, arguments);
   };
 
+  ArrayLazyWrapper.prototype.except = function() {
+    return this._pushChain(Array.prototype.except, arguments);
+  };
+
+  ArrayLazyWrapper.prototype.flatten = function() {
+    return this._pushChain(Array.prototype.flatten, arguments);
+  };
+
   ArrayLazyWrapper.prototype.random = function() {
     return this._pushChain(Array.prototype.random, arguments);
   };
@@ -81,6 +89,10 @@ ArrayLazyWrapper = (function() {
     return this._unwrapAndDo(Array.prototype.at, arguments);
   };
 
+  ArrayLazyWrapper.prototype.atOrNull = function() {
+    return this._unwrapAndDo(Array.prototype.atOrNull, arguments);
+  };
+
   ArrayLazyWrapper.prototype.contains = function() {
     return this._unwrapAndDo(Array.prototype.contains, arguments);
   };
@@ -89,12 +101,24 @@ ArrayLazyWrapper = (function() {
     return this._unwrapAndDo(Array.prototype.first, arguments);
   };
 
+  ArrayLazyWrapper.prototype.firstOrNull = function() {
+    return this._unwrapAndDo(Array.prototype.firstOrNull, arguments);
+  };
+
   ArrayLazyWrapper.prototype.last = function() {
     return this._unwrapAndDo(Array.prototype.last, arguments);
   };
 
+  ArrayLazyWrapper.prototype.lastOrNull = function() {
+    return this._unwrapAndDo(Array.prototype.lastOrNull, arguments);
+  };
+
   ArrayLazyWrapper.prototype.single = function() {
     return this._unwrapAndDo(Array.prototype.single, arguments);
+  };
+
+  ArrayLazyWrapper.prototype.singleOrNull = function() {
+    return this._unwrapAndDo(Array.prototype.singleOrNull, arguments);
   };
 
   ArrayLazyWrapper.prototype.withMax = function() {
@@ -189,6 +213,14 @@ Array.prototype.at = function(index) {
   return this[index];
 };
 
+Array.prototype.atOrNull = function(index) {
+  try {
+    return this.at(index);
+  } catch (_error) {
+    return null;
+  }
+};
+
 Array.prototype.contains = function(value) {
   return __indexOf.call(this, value) >= 0;
 };
@@ -199,10 +231,26 @@ Array.prototype.first = function(predicate) {
   return queryResult.at(0);
 };
 
+Array.prototype.firstOrNull = function(predicate) {
+  try {
+    return this.first(predicate);
+  } catch (_error) {
+    return null;
+  }
+};
+
 Array.prototype.last = function(predicate) {
   var queryResult;
   queryResult = predicate != null ? this.filter(predicate) : this;
   return queryResult.at(queryResult.length - 1);
+};
+
+Array.prototype.lastOrNull = function(predicate) {
+  try {
+    return this.last(predicate);
+  } catch (_error) {
+    return null;
+  }
 };
 
 Array.prototype.single = function(predicate) {
@@ -210,6 +258,14 @@ Array.prototype.single = function(predicate) {
   queryResult = predicate != null ? this.filter(predicate) : this;
   assert(queryResult.length === 1);
   return queryResult.at(0);
+};
+
+Array.prototype.singleOrNull = function(predicate) {
+  try {
+    return this.single(predicate);
+  } catch (_error) {
+    return null;
+  }
 };
 
 Array.prototype.withMax = function(selector) {
@@ -289,6 +345,47 @@ Array.prototype.funReverse = function() {
   return this.copy().reverse();
 };
 
+Array.prototype.except = function(array) {
+  return this.filter(function(m) {
+    return __indexOf.call(array, m) < 0;
+  });
+};
+
+Array.prototype.flatten = function(level) {
+  var canContinue, m, n, r, _i, _j, _len, _len1;
+  if (level <= 0) {
+    return fail();
+  } else {
+    r = [];
+    canContinue = false;
+    for (_i = 0, _len = this.length; _i < _len; _i++) {
+      m = this[_i];
+      if (Array.isArray(m)) {
+        canContinue = true;
+        for (_j = 0, _len1 = m.length; _j < _len1; _j++) {
+          n = m[_j];
+          r.push(n);
+        }
+      } else {
+        r.push(m);
+      }
+    }
+    if (canContinue) {
+      if (level != null) {
+        if (level === 1) {
+          return r;
+        } else {
+          return r.flatten(level - 1);
+        }
+      } else {
+        return r.flatten();
+      }
+    } else {
+      return r;
+    }
+  }
+};
+
 Array.prototype.randomOne = function() {
   return this[Math.randomInt(this.length)];
 };
@@ -301,7 +398,7 @@ Array.prototype.takeRandomOne = function() {
   var index, r;
   index = Math.randomInt(this.length);
   r = this[index];
-  this.splice(index, 1);
+  this.removeAt(index);
   return r;
 };
 
@@ -314,6 +411,49 @@ Array.prototype.takeRandom = function(count) {
   return repeat(count, function() {
     return _this.takeRandomOne();
   });
+};
+
+Array.prototype.removeAt = function(index) {
+  this.splice(index, 1);
+  return this;
+};
+
+Array.prototype.remove = function(element) {
+  var index;
+  index = this.indexOf(element);
+  assert(index > -1);
+  return this.removeAt(index);
+};
+
+Array.prototype.removeAll = function(element) {
+  var index;
+  while (true) {
+    index = this.indexOf(element);
+    if (index === -1) {
+      break;
+    }
+    this.removeAt(index);
+  }
+  return this;
+};
+
+Array.prototype.removeMatch = function(predicate) {
+  var index;
+  index = this.findIndex(predicate);
+  assert(index > -1);
+  return this.removeAt(index);
+};
+
+Array.prototype.removeAllMatch = function(predicate) {
+  var index;
+  while (true) {
+    index = this.findIndex(predicate);
+    if (index === -1) {
+      break;
+    }
+    this.removeAt(index);
+  }
+  return this;
 };
 
 if (String.prototype.startsWith === void 0) {
@@ -346,6 +486,31 @@ if (Array.from === void 0) {
   };
 }
 
+if (Array.prototype.find === void 0) {
+  Array.prototype.find = function(predicate) {
+    var found;
+    assert(typeof predicate === "function");
+    found = this.filter(predicate);
+    if (!found.isEmpty()) {
+      return found.at(0);
+    } else {
+      return void 0;
+    }
+  };
+}
+
+if (Array.prototype.findIndex === void 0) {
+  Array.prototype.findIndex = function(predicate) {
+    var element;
+    element = this.find(predicate);
+    if (element === void 0) {
+      return -1;
+    } else {
+      return this.indexOf(element);
+    }
+  };
+}
+
 compose = function(functions) {
   if (arguments.length > 1) {
     functions = Array.from(arguments);
@@ -372,20 +537,21 @@ assert = function(condition, message) {
 };
 
 repeat = function(times, iterator) {
-  var i, _i, _j, _results, _results1;
-  if (typeof iterator === "function") {
-    _results = [];
-    for (i = _i = 0; 0 <= times ? _i < times : _i > times; i = 0 <= times ? ++_i : --_i) {
-      _results.push(iterator());
-    }
-    return _results;
-  } else {
-    _results1 = [];
-    for (i = _j = 0; 0 <= times ? _j < times : _j > times; i = 0 <= times ? ++_j : --_j) {
-      _results1.push(iterator);
-    }
-    return _results1;
+  var i, _i, _results;
+  _results = [];
+  for (i = _i = 0; 0 <= times ? _i < times : _i > times; i = 0 <= times ? ++_i : --_i) {
+    _results.push(iterator());
   }
+  return _results;
+};
+
+spread = function(value, count) {
+  var i, _i, _results;
+  _results = [];
+  for (i = _i = 0; 0 <= count ? _i < count : _i > count; i = 0 <= count ? ++_i : --_i) {
+    _results.push(value);
+  }
+  return _results;
 };
 
 Object.getter = function(obj, prop, fun) {
@@ -415,6 +581,10 @@ Object.clone = function(x) {
 
 JSON.clone = function(x) {
   return JSON.parse(JSON.stringify(x));
+};
+
+Number.parseFloatExt = function(s) {
+  return parseFloat(s) * (s.endsWith("%") ? 0.01 : 1);
 };
 
 Math.radiansToDegrees = function(radians) {
@@ -462,30 +632,30 @@ String.prototype.matches = function(regex) {
   return result;
 };
 
+String.prototype.capitalize = function() {
+  return this.charAt(0).toUpperCase() + this.substr(1);
+};
+
 ObjectWithEvents = (function() {
   function ObjectWithEvents() {
     this._eventList = {};
   }
 
-  ObjectWithEvents.prototype.addEventListener = function(eventName, handler) {
+  ObjectWithEvents.prototype.on = function(eventName, listener) {
     var _base;
     if ((_base = this._eventList)[eventName] == null) {
       _base[eventName] = [];
     }
-    if (this._eventList[eventName].indexOf(handler) === -1) {
-      return this._eventList[eventName].push(handler);
+    if (__indexOf.call(this._eventList[eventName], listener) < 0) {
+      return this._eventList[eventName].push(listener);
     }
   };
 
-  ObjectWithEvents.prototype.removeEventListener = function(eventName, handler) {
-    var index;
-    index = indexOf(handler);
-    if (index !== -1) {
-      return this._eventList[eventName].splice(index, 1);
-    }
+  ObjectWithEvents.prototype.off = function(eventName, listener) {
+    return this._eventList[eventName].removeAll(listener);
   };
 
-  ObjectWithEvents.prototype.triggerEvent = function(eventName, arg) {
+  ObjectWithEvents.prototype.trigger = function(eventName, arg) {
     var m, _base, _i, _len, _ref, _results;
     if ((_base = this._eventList)[eventName] == null) {
       _base[eventName] = [];
@@ -499,6 +669,10 @@ ObjectWithEvents = (function() {
     return _results;
   };
 
+  ObjectWithEvents.prototype.listeners = function(eventName) {
+    return this._eventList[eventName];
+  };
+
   return ObjectWithEvents;
 
 })();
@@ -508,5 +682,6 @@ if ((typeof exports !== "undefined" && exports !== null) && ((typeof module !== 
   global.fail = fail;
   global.assert = assert;
   global.repeat = repeat;
+  global.spread = spread;
   global.ObjectWithEvents = ObjectWithEvents;
 }

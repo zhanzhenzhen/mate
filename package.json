@@ -1,6 +1,6 @@
 {
     "name": "mate",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "A library that extends native JavaScript / CoffeeScript.",
     "keywords": ["library", "app", "javascript", "coffeescript", "js"],
     "author": "Zhenzhen Zhan <zhanzhenzhen@hotmail.com>",
