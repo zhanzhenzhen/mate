@@ -9,10 +9,9 @@ fail = (errorMessage) -> throw new Error(errorMessage)
 assert = (condition, message) -> if not condition then fail(message)
 # Why `iterator` is the last argument: If not, parentheses must be added in practical use.
 repeat = (times, iterator) ->
-    if typeof iterator == "function"
-        iterator() for i in [0...times]
-    else
-        iterator for i in [0...times]
+    iterator() for i in [0...times]
+spread = (value, count) ->
+    value for i in [0...count]
 Object.getter = (obj, prop, fun) -> Object.defineProperty(obj, prop, {get: fun, configurable: true})
 Object.setter = (obj, prop, fun) -> Object.defineProperty(obj, prop, {set: fun, configurable: true})
 Object.clone = (x) ->
@@ -21,6 +20,7 @@ Object.clone = (x) ->
         y[key] = x[key]
     y
 JSON.clone = (x) -> JSON.parse(JSON.stringify(x))
+Number.parseFloatExt = (s) -> parseFloat(s) * (if s.endsWith("%") then 0.01 else 1)
 Math.radiansToDegrees = (radians) ->
     d = radians / Math.PI * 180
     rd = Math.round(d)
@@ -49,15 +49,17 @@ String::matches = (regex) ->
         else
             break
     result
+String::capitalize = ->
+    # use `charAt[0]` instead of `[0]` because `[0]` will return undefined if string is empty.
+    @charAt(0).toUpperCase() + @substr(1)
 class ObjectWithEvents
     constructor: ->
         @_eventList = {} # Using object to simulate a "dictionary" here is simpler than using array.
-    addEventListener: (eventName, handler) ->
+    on: (eventName, listener) ->
         @_eventList[eventName] ?= []
-        @_eventList[eventName].push(handler) if @_eventList[eventName].indexOf(handler) == -1
-    removeEventListener: (eventName, handler) ->
-        index = indexOf(handler)
-        @_eventList[eventName].splice(index, 1) if index != -1
-    triggerEvent: (eventName, arg) ->
+        @_eventList[eventName].push(listener) if listener not in @_eventList[eventName]
+    off: (eventName, listener) -> @_eventList[eventName].removeAll(listener)
+    trigger: (eventName, arg) ->
         @_eventList[eventName] ?= []
         m(arg) for m in @_eventList[eventName]
+    listeners: (eventName) -> @_eventList[eventName]
