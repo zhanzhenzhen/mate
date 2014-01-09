@@ -9,17 +9,6 @@ Mate may be freely distributed under the MIT license.
 var ArrayLazyWrapper, ObjectWithEvents, Point, assert, cmath, compose, fail, repeat, spread,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-if ((typeof exports !== "undefined" && exports !== null) && ((typeof module !== "undefined" && module !== null ? module.exports : void 0) != null)) {
-  global.compose = compose;
-  global.fail = fail;
-  global.assert = assert;
-  global.repeat = repeat;
-  global.spread = spread;
-  global.cmath = cmath;
-  global.Point = Point;
-  global.ObjectWithEvents = ObjectWithEvents;
-}
-
 ArrayLazyWrapper = (function() {
   function ArrayLazyWrapper(value, chainToCopy, itemToPush) {
     var _this = this;
@@ -1059,3 +1048,14 @@ cmath = {
     return cmath.multiply(cmath.subtract(cmath.log(cmath.subtract(1, cmath.multiply(p, new Point(0, 1)))), cmath.log(cmath.add(1, cmath.multiply(p, new Point(0, 1))))), new Point(0, 0.5));
   }
 };
+
+if ((typeof exports !== "undefined" && exports !== null) && ((typeof module !== "undefined" && module !== null ? module.exports : void 0) != null)) {
+  global.compose = compose;
+  global.fail = fail;
+  global.assert = assert;
+  global.repeat = repeat;
+  global.spread = spread;
+  global.cmath = cmath;
+  global.Point = Point;
+  global.ObjectWithEvents = ObjectWithEvents;
+}
