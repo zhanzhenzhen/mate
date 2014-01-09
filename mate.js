@@ -6,8 +6,19 @@ https://github.com/zhanzhenzhen/mate
 Mate may be freely distributed under the MIT license.
 */
 
-var ArrayLazyWrapper, ObjectWithEvents, assert, compose, fail, repeat, spread,
+var ArrayLazyWrapper, ObjectWithEvents, Point, assert, cmath, compose, fail, repeat, spread,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+if ((typeof exports !== "undefined" && exports !== null) && ((typeof module !== "undefined" && module !== null ? module.exports : void 0) != null)) {
+  global.compose = compose;
+  global.fail = fail;
+  global.assert = assert;
+  global.repeat = repeat;
+  global.spread = spread;
+  global.cmath = cmath;
+  global.Point = Point;
+  global.ObjectWithEvents = ObjectWithEvents;
+}
 
 ArrayLazyWrapper = (function() {
   function ArrayLazyWrapper(value, chainToCopy, itemToPush) {
@@ -511,6 +522,24 @@ if (Array.prototype.findIndex === void 0) {
   };
 }
 
+if (Math.sign === void 0) {
+  Math.sign = function(x) {
+    if (typeof x === "number") {
+      if (x === 0) {
+        return 0;
+      } else if (x > 0) {
+        return 1;
+      } else if (x < 0) {
+        return -1;
+      } else {
+        return NaN;
+      }
+    } else {
+      return NaN;
+    }
+  };
+}
+
 compose = function(functions) {
   if (arguments.length > 1) {
     functions = Array.from(arguments);
@@ -587,36 +616,6 @@ Number.parseFloatExt = function(s) {
   return parseFloat(s) * (s.endsWith("%") ? 0.01 : 1);
 };
 
-Math.radiansToDegrees = function(radians) {
-  var d, rd;
-  d = radians / Math.PI * 180;
-  rd = Math.round(d);
-  if (Math.abs(d - rd) < 0.0001) {
-    return rd;
-  } else {
-    return d;
-  }
-};
-
-Math.degreesToRadians = function(degrees) {
-  return degrees / 180 * Math.PI;
-};
-
-Math.randomNumber = function(m, n) {
-  if (m < n) {
-    return m + Math.random() * (n - m);
-  } else {
-    return fail();
-  }
-};
-
-Math.randomInt = function(m, n) {
-  var max, min;
-  min = n === void 0 ? 0 : m;
-  max = n === void 0 ? m : n;
-  return Math.floor(Math.randomNumber(min, max));
-};
-
 String.prototype.matches = function(regex) {
   var adjustedRegex, match, result;
   adjustedRegex = new RegExp(regex.source, "g");
@@ -647,26 +646,27 @@ ObjectWithEvents = (function() {
       _base[eventName] = [];
     }
     if (__indexOf.call(this._eventList[eventName], listener) < 0) {
-      return this._eventList[eventName].push(listener);
+      this._eventList[eventName].push(listener);
     }
+    return this;
   };
 
   ObjectWithEvents.prototype.off = function(eventName, listener) {
-    return this._eventList[eventName].removeAll(listener);
+    this._eventList[eventName].removeAll(listener);
+    return this;
   };
 
   ObjectWithEvents.prototype.trigger = function(eventName, arg) {
-    var m, _base, _i, _len, _ref, _results;
+    var m, _base, _i, _len, _ref;
     if ((_base = this._eventList)[eventName] == null) {
       _base[eventName] = [];
     }
     _ref = this._eventList[eventName];
-    _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       m = _ref[_i];
-      _results.push(m(arg));
+      m(arg);
     }
-    return _results;
+    return void 0;
   };
 
   ObjectWithEvents.prototype.listeners = function(eventName) {
@@ -677,11 +677,385 @@ ObjectWithEvents = (function() {
 
 })();
 
-if ((typeof exports !== "undefined" && exports !== null) && ((typeof module !== "undefined" && module !== null ? module.exports : void 0) != null)) {
-  global.compose = compose;
-  global.fail = fail;
-  global.assert = assert;
-  global.repeat = repeat;
-  global.spread = spread;
-  global.ObjectWithEvents = ObjectWithEvents;
-}
+Math.nearlyEquals = function(a, b) {
+  var threshold, _ref;
+  threshold = 1 + 1 / 65536;
+  return (1 / threshold < (_ref = a / b) && _ref < threshold);
+};
+
+Math.nearlyGreaterThan = function(a, b) {
+  return a > b || Math.nearlyEquals(a, b);
+};
+
+Math.nearlyLessThan = function(a, b) {
+  return a < b || Math.nearlyEquals(a, b);
+};
+
+Math.radiansToDegrees = function(radians) {
+  return radians / Math.PI * 180;
+};
+
+Math.degreesToRadians = function(degrees) {
+  return degrees / 180 * Math.PI;
+};
+
+Math.principalRadians = function(radians) {
+  var t;
+  t = radians % (2 * Math.PI);
+  if (t <= -Math.PI) {
+    return t + 2 * Math.PI;
+  } else if (t > Math.PI) {
+    return t - 2 * Math.PI;
+  } else {
+    return t;
+  }
+};
+
+Math.principalDegrees = function(degrees) {
+  var t;
+  t = degrees % 360;
+  if (t <= -180) {
+    return t + 360;
+  } else if (t > 180) {
+    return t - 360;
+  } else {
+    return t;
+  }
+};
+
+Math.randomNumber = function(m, n) {
+  if (m < n) {
+    return m + Math.random() * (n - m);
+  } else {
+    return fail();
+  }
+};
+
+Math.randomInt = function(m, n) {
+  var max, min;
+  min = n === void 0 ? 0 : m;
+  max = n === void 0 ? m : n;
+  return Math.floor(Math.randomNumber(min, max));
+};
+
+Number.prototype.nearlyEquals = function(x) {
+  return Math.nearlyEquals(this, x);
+};
+
+Number.prototype.nearlyGreaterThan = function(x) {
+  return Math.nearlyGreaterThan(this, x);
+};
+
+Number.prototype.nearlyLessThan = function(x) {
+  return Math.nearlyLessThan(this, x);
+};
+
+Point = (function() {
+  function Point(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  Point.from = function(value) {
+    if (typeof value === "number") {
+      return new Point(value, 0);
+    } else if (value instanceof Point) {
+      return value.clone();
+    } else if (typeof value === "string") {
+      return Point.fromString(value);
+    } else if (Array.isArray(value)) {
+      return Point.fromArray(value);
+    } else {
+      return fail();
+    }
+  };
+
+  Point.fromArray = function(array) {
+    return new Point(array[0], array[1]);
+  };
+
+  Point.fromString = function(s) {
+    var adjustedString, complexMatch, imaginary, normalMatch, real, _ref, _ref1;
+    adjustedString = s.replace(/[\x20()]/g, "");
+    normalMatch = adjustedString.match(/^([^,]*),(.*)$/);
+    if (normalMatch != null) {
+      return new Point(Number.parseFloatExt(normalMatch[1]), Number.parseFloatExt(normalMatch[2]));
+    } else {
+      complexMatch = adjustedString.match(/^([+-]?[0-9]*\.?[0-9]*(?:[Ee][+-]?[0-9]+)?(?![i0-9Ee.]))?(?:([+-]?[0-9]*\.?[0-9]*(?:[Ee][+-]?[0-9]+)?)i)?$/);
+      if (complexMatch != null) {
+        real = (_ref = complexMatch[1]) != null ? _ref : "0";
+        imaginary = (_ref1 = complexMatch[2]) != null ? _ref1 : "0";
+        if (real === "") {
+          real = "1";
+        }
+        if (imaginary === "") {
+          imaginary = "1";
+        }
+        if (real === "+") {
+          real = "1";
+        }
+        if (imaginary === "+") {
+          imaginary = "1";
+        }
+        if (real === "-") {
+          real = "-1";
+        }
+        if (imaginary === "-") {
+          imaginary = "-1";
+        }
+        return new Point(parseFloat(real), parseFloat(imaginary));
+      } else {
+        return fail();
+      }
+    }
+  };
+
+  Point.fromPolar = function(r, angle) {
+    return new Point(r * Math.cos(angle), r * Math.sin(angle));
+  };
+
+  Point.fromPolarInDegrees = function(r, angle) {
+    switch (Math.principalDegrees(angle)) {
+      case 0:
+        return new Point(r, 0);
+      case 90:
+        return new Point(0, r);
+      case -90:
+        return new Point(0, -r);
+      case 180:
+        return new Point(-r, 0);
+      default:
+        return Point.fromPolar(r, Math.degreesToRadians(angle));
+    }
+  };
+
+  Point.prototype.real = function() {
+    return this.x;
+  };
+
+  Point.prototype.imaginary = function() {
+    return this.y;
+  };
+
+  Point.prototype.toString = function() {
+    return "(" + this.x + "," + this.y + ")";
+  };
+
+  Point.prototype.toComplexString = function() {
+    var sign;
+    sign = this.y >= 0 ? "+" : "-";
+    return "" + this.x + sign + (Math.abs(this.y)) + "i";
+  };
+
+  Point.prototype.clone = function() {
+    return new Point(this.x, this.y);
+  };
+
+  Point.prototype.equals = function(p) {
+    return cmath.equals(this, p);
+  };
+
+  Point.prototype.nearlyEquals = function(p) {
+    return cmath.nearlyEquals(this, p);
+  };
+
+  Point.prototype.opposite = function() {
+    return cmath.opposite(this);
+  };
+
+  Point.prototype.reciprocal = function() {
+    return cmath.reciprocal(this);
+  };
+
+  Point.prototype.conjugate = function() {
+    return cmath.conjugate(this);
+  };
+
+  Point.prototype.abs = function() {
+    return cmath.abs(this);
+  };
+
+  Point.prototype.add = function(p) {
+    return cmath.add(this, p);
+  };
+
+  Point.prototype.subtract = function(p) {
+    return cmath.subtract(this, p);
+  };
+
+  Point.prototype.multiply = function(p) {
+    return cmath.multiply(this, p);
+  };
+
+  Point.prototype.divide = function(p) {
+    return cmath.divide(this, p);
+  };
+
+  Point.prototype.distance = function(p) {
+    return cmath.distance(this, p);
+  };
+
+  Point.prototype.dotProduct = function(p) {
+    p = Point.from(p);
+    return this.x * p.x + this.y * p.y;
+  };
+
+  Point.prototype.crossProduct = function(p) {
+    p = Point.from(p);
+    return this.x * p.y - this.y * p.x;
+  };
+
+  Point.prototype.isOppositeTo = function(p) {
+    return this.opposite().equals(p);
+  };
+
+  Point.prototype.phase = function() {
+    return cmath.phase(this);
+  };
+
+  Point.prototype.phaseTo = function(p) {
+    p = Point.from(p);
+    return Math.principalRadians(p.phase() - this.phase());
+  };
+
+  Point.prototype.phaseInDegrees = function() {
+    return cmath.phaseInDegrees(this);
+  };
+
+  Point.prototype.phaseInDegreesTo = function(p) {
+    p = Point.from(p);
+    return Math.principalDegrees(p.phaseInDegrees() - this.phaseInDegrees());
+  };
+
+  Point.prototype.scale = function(size) {
+    size = Point.from(size);
+    return new Point(this.x * size.x, this.y * size.y);
+  };
+
+  Point.prototype.rotate = function(angle) {
+    return this.multiply(Point.fromPolar(1, angle));
+  };
+
+  Point.prototype.rotateDegrees = function(angle) {
+    return this.multiply(Point.fromPolarInDegrees(1, angle));
+  };
+
+  return Point;
+
+})();
+
+cmath = {
+  equals: function(a, b) {
+    a = Point.from(a);
+    b = Point.from(b);
+    return a.x === b.x && a.y === b.y;
+  },
+  nearlyEquals: function(a, b) {
+    a = Point.from(a);
+    b = Point.from(b);
+    return a.x.nearlyEquals(b.x) && a.y.nearlyEquals(b.y);
+  },
+  opposite: function(p) {
+    p = Point.from(p);
+    return new Point(-p.x, -p.y);
+  },
+  reciprocal: function(p) {
+    var n;
+    p = Point.from(p);
+    n = p.x * p.x + p.y * p.y;
+    return new Point(p.x / n, -p.y / n);
+  },
+  conjugate: function(p) {
+    p = Point.from(p);
+    return new Point(p.x, -p.y);
+  },
+  abs: function(p) {
+    p = Point.from(p);
+    if (p.x === 0) {
+      return Math.abs(p.y);
+    } else if (p.y === 0) {
+      return Math.abs(p.x);
+    } else {
+      return Math.sqrt(p.x * p.x + p.y * p.y);
+    }
+  },
+  phase: function(p) {
+    p = Point.from(p);
+    return Math.atan2(p.y, p.x);
+  },
+  phaseInDegrees: function(p) {
+    var d;
+    p = Point.from(p);
+    if (p.x === 0 && p.y === 0) {
+      return 0;
+    } else if (p.x === 0 && p.y > 0) {
+      return 90;
+    } else if (p.x === 0 && p.y < 0) {
+      return -90;
+    } else if (p.x > 0 && p.y === 0) {
+      return 0;
+    } else if (p.x < 0 && p.y === 0) {
+      return 180;
+    } else {
+      d = Math.radiansToDegrees(cmath.phase(p));
+      if (d <= -180) {
+        return 180;
+      } else {
+        return d;
+      }
+    }
+  },
+  add: function(a, b) {
+    a = Point.from(a);
+    b = Point.from(b);
+    return new Point(a.x + b.x, a.y + b.y);
+  },
+  subtract: function(a, b) {
+    return cmath.add(a, cmath.opposite(b));
+  },
+  multiply: function(a, b) {
+    a = Point.from(a);
+    b = Point.from(b);
+    return new Point(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
+  },
+  divide: function(a, b) {
+    return cmath.multiply(a, cmath.reciprocal(b));
+  },
+  distance: function(a, b) {
+    return cmath.abs(cmath.subtract(a, b));
+  },
+  exp: function(p) {
+    p = Point.from(p);
+    return Point.fromPolar(Math.exp(p.x), p.y);
+  },
+  log: function(p) {
+    return new Point(Math.log(cmath.abs(p)), cmath.phase(p));
+  },
+  pow: function(a, b) {
+    return cmath.exp(cmath.multiply(cmath.log(a), b));
+  },
+  sqrt: function(p) {
+    var r;
+    p = Point.from(p);
+    r = cmath.abs(p);
+    return new Point(Math.sqrt((r + p.x) / 2), Math.sign(p.y) * Math.sqrt((r - p.x) / 2));
+  },
+  cos: function(p) {
+    return cmath.divide(cmath.add(cmath.exp(cmath.multiply(p, new Point(0, 1))), cmath.exp(cmath.multiply(cmath.opposite(p), new Point(0, 1)))), 2);
+  },
+  sin: function(p) {
+    return cmath.divide(cmath.subtract(cmath.exp(cmath.multiply(p, new Point(0, 1))), cmath.exp(cmath.multiply(cmath.opposite(p), new Point(0, 1)))), new Point(0, 2));
+  },
+  tan: function(p) {
+    return cmath.divide(cmath.sin(p), cmath.cos(p));
+  },
+  acos: function(p) {
+    return cmath.opposite(cmath.multiply(cmath.log(cmath.add(p, cmath.multiply(cmath.sqrt(cmath.add(cmath.opposite(cmath.multiply(p, p)), 1)), new Point(0, 1)))), new Point(0, 1)));
+  },
+  asin: function(p) {
+    return cmath.opposite(cmath.multiply(cmath.log(cmath.add(cmath.multiply(p, new Point(0, 1)), cmath.sqrt(cmath.add(cmath.opposite(cmath.multiply(p, p)), 1)))), new Point(0, 1)));
+  },
+  atan: function(p) {
+    return cmath.multiply(cmath.subtract(cmath.log(cmath.subtract(1, cmath.multiply(p, new Point(0, 1)))), cmath.log(cmath.add(1, cmath.multiply(p, new Point(0, 1))))), new Point(0, 0.5));
+  }
+};

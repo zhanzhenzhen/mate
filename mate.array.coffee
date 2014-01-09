@@ -9,7 +9,7 @@ class ArrayLazyWrapper
         for m in @_chain
             n = m.fun.apply(n, m.args)
         n
-    # simulate `Array`'s methods [--
+    # simulate `Array`'s methods [
     map: -> @_pushChain(Array::map, arguments)
     filter: -> @_pushChain(Array::filter, arguments)
     concat: -> @_pushChain(Array::concat, arguments)
@@ -39,7 +39,7 @@ class ArrayLazyWrapper
     sum: -> @_unwrapAndDo(Array::sum, arguments)
     average: -> @_unwrapAndDo(Array::average, arguments)
     randomOne: -> @_unwrapAndDo(Array::randomOne, arguments)
-    # --]
+    # ]
     _pushChain: (fun, args) ->
         # Must create a new wrapper to avoid side effects
         new ArrayLazyWrapper(@_value, @_chain, {fun: fun, args: args})

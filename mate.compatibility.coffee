@@ -26,3 +26,17 @@ if Array::findIndex == undefined
     Array::findIndex = (predicate) ->
         element = @find(predicate)
         if element == undefined then -1 else @indexOf(element)
+# This is in ECMAScript 6. Only Firefox natively supports this.
+if Math.sign == undefined
+    Math.sign = (x) ->
+        if typeof x == "number"
+            if x == 0
+                0
+            else if x > 0
+                1
+            else if x < 0
+                -1
+            else
+                NaN
+        else
+            NaN
