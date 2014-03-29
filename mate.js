@@ -201,10 +201,30 @@ Array.prototype.lazy = function() {
 };
 
 Array.prototype.portion = function(startIndex, length, endIndex) {
+  if (Number.isFraction(startIndex) || Number.isFraction(length) || Number.isFraction(endIndex)) {
+    if (startIndex === 0) {
+      startIndex = 0 + Number.EPSILON;
+    }
+    if (startIndex === 1) {
+      startIndex = 1 - Number.EPSILON;
+    }
+    if (length === 0) {
+      length = 0 + Number.EPSILON;
+    }
+    if (length === 1) {
+      length = 1 - Number.EPSILON;
+    }
+    if (endIndex === 0) {
+      endIndex = 0 + Number.EPSILON;
+    }
+    if (endIndex === 1) {
+      endIndex = 1 - Number.EPSILON;
+    }
+  }
   startIndex = this._numberToIndex(startIndex);
   length = this._numberToLength(length);
   endIndex = this._numberToIndex(endIndex);
-  return this.slice(startIndex, length != null ? startIndex + length : endIndex);
+  return this.slice(startIndex, length != null ? startIndex + length : endIndex + 1);
 };
 
 Array.prototype.at = function(index) {
@@ -307,6 +327,16 @@ Array.prototype.sum = function(selector) {
 
 Array.prototype.average = function(selector) {
   return this.sum(selector) / this.length;
+};
+
+Array.prototype.median = function(selector) {
+  var a, b, m, n, sorted;
+  sorted = this.funSort(selector);
+  a = sorted.at(0.5 - Number.EPSILON);
+  b = sorted.at(0.5 + Number.EPSILON);
+  m = Array._elementOrUseSelector(a, selector);
+  n = Array._elementOrUseSelector(b, selector);
+  return (m + n) / 2;
 };
 
 Array.prototype._sort = function(keySelector, isDescending) {
@@ -456,6 +486,16 @@ Array.prototype.removeAllMatch = function(predicate) {
   return this;
 };
 
+if (Number.EPSILON === void 0) {
+  Number.EPSILON = 2.2204460492503130808472633361816e-16;
+}
+
+if (Number.isInteger === void 0) {
+  Number.isInteger = function(x) {
+    return typeof x === "number" && isFinite(x) && x > -9007199254740992 && x < 9007199254740992 && Math.floor(x) === x;
+  };
+}
+
 if (String.prototype.startsWith === void 0) {
   String.prototype.startsWith = function(s) {
     return this.indexOf(s) === 0;
@@ -599,6 +639,10 @@ Object.clone = function(x) {
 
 JSON.clone = function(x) {
   return JSON.parse(JSON.stringify(x));
+};
+
+Number.isFraction = function(x) {
+  return typeof x === "number" && isFinite(x) && Math.floor(x) !== x;
 };
 
 Number.parseFloatExt = function(s) {

@@ -1,4 +1,12 @@
 # This is in ECMAScript 6. Only Firefox natively supports this.
+if Number.EPSILON == undefined
+    Number.EPSILON = 2.2204460492503130808472633361816e-16
+# This is in ECMAScript 6. Only Firefox natively supports this.
+if Number.isInteger == undefined
+    Number.isInteger = (x) ->
+        typeof x == "number" and isFinite(x) and x > -9007199254740992 and
+                x < 9007199254740992 and Math.floor(x) == x
+# This is in ECMAScript 6. Only Firefox natively supports this.
 if String::startsWith == undefined
     String::startsWith = (s) -> @indexOf(s) == 0
 # This is in ECMAScript 6. Only Firefox natively supports this.

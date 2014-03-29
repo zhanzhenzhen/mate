@@ -20,6 +20,7 @@ Object.clone = (x) ->
         y[key] = x[key]
     y
 JSON.clone = (x) -> JSON.parse(JSON.stringify(x))
+Number.isFraction = (x) -> typeof x == "number" and isFinite(x) and Math.floor(x) != x
 Number.parseFloatExt = (s) -> parseFloat(s) * (if s.endsWith("%") then 0.01 else 1)
 # Better than the built-in regular expression method when global mode
 # and submatches are both required.

@@ -56,10 +56,17 @@ Array::copy = -> @[..]
 Array::isEmpty = -> @length == 0
 Array::lazy = -> new ArrayLazyWrapper(@)
 Array::portion = (startIndex, length, endIndex) ->
+    if Number.isFraction(startIndex) or Number.isFraction(length) or Number.isFraction(endIndex)
+        if startIndex == 0 then startIndex = 0 + Number.EPSILON
+        if startIndex == 1 then startIndex = 1 - Number.EPSILON
+        if length == 0 then length = 0 + Number.EPSILON
+        if length == 1 then length = 1 - Number.EPSILON
+        if endIndex == 0 then endIndex = 0 + Number.EPSILON
+        if endIndex == 1 then endIndex = 1 - Number.EPSILON
     startIndex = @_numberToIndex(startIndex)
     length = @_numberToLength(length)
     endIndex = @_numberToIndex(endIndex)
-    @slice(startIndex, if length? then startIndex + length else endIndex)
+    @slice(startIndex, if length? then startIndex + length else endIndex + 1)
 Array::at = (index) ->
     index = @_numberToIndex(index)
     assert(0 <= index < @length)
@@ -91,9 +98,16 @@ Array::max = (selector) -> Array._elementOrUseSelector(@withMax(selector), selec
 Array::min = (selector) -> Array._elementOrUseSelector(@withMin(selector), selector)
 Array::sum = (selector) -> @reduce((a, b, index) =>
     (if index == 1 then Array._elementOrUseSelector(a, selector) else a) +
-    Array._elementOrUseSelector(b, selector)
+            Array._elementOrUseSelector(b, selector)
 )
 Array::average = (selector) -> @sum(selector) / @length
+Array::median = (selector) ->
+    sorted = @funSort(selector)
+    a = sorted.at(0.5 - Number.EPSILON)
+    b = sorted.at(0.5 + Number.EPSILON)
+    m = Array._elementOrUseSelector(a, selector)
+    n = Array._elementOrUseSelector(b, selector)
+    (m + n) / 2
 Array::_sort = (keySelector, isDescending) ->
     @copy().sort((a, b) =>
         a1 = Array._elementOrUseSelector(a, keySelector)
