@@ -339,6 +339,13 @@ Array.prototype.median = function(selector) {
   return (m + n) / 2;
 };
 
+Array.prototype.product = function(selector) {
+  var _this = this;
+  return this.reduce(function(a, b, index) {
+    return (index === 1 ? Array._elementOrUseSelector(a, selector) : a) * Array._elementOrUseSelector(b, selector);
+  });
+};
+
 Array.prototype._sort = function(keySelector, isDescending) {
   var _this = this;
   return this.copy().sort(function(a, b) {

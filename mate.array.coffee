@@ -108,6 +108,10 @@ Array::median = (selector) ->
     m = Array._elementOrUseSelector(a, selector)
     n = Array._elementOrUseSelector(b, selector)
     (m + n) / 2
+Array::product = (selector) -> @reduce((a, b, index) =>
+    (if index == 1 then Array._elementOrUseSelector(a, selector) else a) *
+            Array._elementOrUseSelector(b, selector)
+)
 Array::_sort = (keySelector, isDescending) ->
     @copy().sort((a, b) =>
         a1 = Array._elementOrUseSelector(a, keySelector)
