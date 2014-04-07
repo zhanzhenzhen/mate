@@ -320,9 +320,13 @@ Array.prototype.min = function(selector) {
 
 Array.prototype.sum = function(selector) {
   var _this = this;
-  return this.reduce(function(a, b, index) {
-    return (index === 1 ? Array._elementOrUseSelector(a, selector) : a) + Array._elementOrUseSelector(b, selector);
-  });
+  if (this.length === 1) {
+    return Array._elementOrUseSelector(this.first(), selector);
+  } else {
+    return this.reduce(function(a, b, index) {
+      return (index === 1 ? Array._elementOrUseSelector(a, selector) : a) + Array._elementOrUseSelector(b, selector);
+    });
+  }
 };
 
 Array.prototype.average = function(selector) {
@@ -341,9 +345,13 @@ Array.prototype.median = function(selector) {
 
 Array.prototype.product = function(selector) {
   var _this = this;
-  return this.reduce(function(a, b, index) {
-    return (index === 1 ? Array._elementOrUseSelector(a, selector) : a) * Array._elementOrUseSelector(b, selector);
-  });
+  if (this.length === 1) {
+    return Array._elementOrUseSelector(this.first(), selector);
+  } else {
+    return this.reduce(function(a, b, index) {
+      return (index === 1 ? Array._elementOrUseSelector(a, selector) : a) * Array._elementOrUseSelector(b, selector);
+    });
+  }
 };
 
 Array.prototype._sort = function(keySelector, isDescending) {

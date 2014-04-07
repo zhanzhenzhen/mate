@@ -88,18 +88,25 @@ Array::single = (predicate) ->
     assert(queryResult.length == 1)
     queryResult.at(0)
 Array::singleOrNull = (predicate) -> try @single(predicate) catch then null
+# If array length is 1, then `reduce` will return the single element. That's exactly what
+# `withMax` and `withMin` are for, so we don't need to copy what we did in `sum` method. [
 Array::withMax = (selector) -> @reduce((a, b, index) =>
     if Array._elementOrUseSelector(a, selector) > Array._elementOrUseSelector(b, selector) then a else b
 )
 Array::withMin = (selector) -> @reduce((a, b, index) =>
     if Array._elementOrUseSelector(a, selector) < Array._elementOrUseSelector(b, selector) then a else b
 )
+# ]
 Array::max = (selector) -> Array._elementOrUseSelector(@withMax(selector), selector)
 Array::min = (selector) -> Array._elementOrUseSelector(@withMin(selector), selector)
-Array::sum = (selector) -> @reduce((a, b, index) =>
-    (if index == 1 then Array._elementOrUseSelector(a, selector) else a) +
-            Array._elementOrUseSelector(b, selector)
-)
+Array::sum = (selector) ->
+    if @length == 1
+        Array._elementOrUseSelector(@first(), selector)
+    else
+        @reduce((a, b, index) =>
+            (if index == 1 then Array._elementOrUseSelector(a, selector) else a) +
+                    Array._elementOrUseSelector(b, selector)
+        )
 Array::average = (selector) -> @sum(selector) / @length
 Array::median = (selector) ->
     sorted = @funSort(selector)
@@ -108,10 +115,14 @@ Array::median = (selector) ->
     m = Array._elementOrUseSelector(a, selector)
     n = Array._elementOrUseSelector(b, selector)
     (m + n) / 2
-Array::product = (selector) -> @reduce((a, b, index) =>
-    (if index == 1 then Array._elementOrUseSelector(a, selector) else a) *
-            Array._elementOrUseSelector(b, selector)
-)
+Array::product = (selector) ->
+    if @length == 1
+        Array._elementOrUseSelector(@first(), selector)
+    else
+        @reduce((a, b, index) =>
+            (if index == 1 then Array._elementOrUseSelector(a, selector) else a) *
+                    Array._elementOrUseSelector(b, selector)
+        )
 Array::_sort = (keySelector, isDescending) ->
     @copy().sort((a, b) =>
         a1 = Array._elementOrUseSelector(a, keySelector)
