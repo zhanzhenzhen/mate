@@ -1,3 +1,6 @@
+# In some `Array` methods, I enable the fraction format index and length for convenience.
+# Except that, all `Array` methods arguments are very "strict" without any multi-use purpose.
+
 class ArrayLazyWrapper
     constructor: (value, chainToCopy, itemToPush) ->
         @_value = value
@@ -18,6 +21,7 @@ class ArrayLazyWrapper
     funSortDescending: -> @_pushChain(Array::funSortDescending, arguments)
     funReverse: -> @_pushChain(Array::funReverse, arguments)
     except: -> @_pushChain(Array::except, arguments)
+    group: -> @_pushChain(Array::group, arguments)
     flatten: -> @_pushChain(Array::flatten, arguments)
     random: -> @_pushChain(Array::random, arguments)
     some: -> @_unwrapAndDo(Array::some, arguments)
@@ -38,6 +42,8 @@ class ArrayLazyWrapper
     min: -> @_unwrapAndDo(Array::min, arguments)
     sum: -> @_unwrapAndDo(Array::sum, arguments)
     average: -> @_unwrapAndDo(Array::average, arguments)
+    median: -> @_unwrapAndDo(Array::median, arguments)
+    product: -> @_unwrapAndDo(Array::product, arguments)
     randomOne: -> @_unwrapAndDo(Array::randomOne, arguments)
     # ]
     _pushChain: (fun, args) ->
@@ -123,6 +129,29 @@ Array::product = (selector) ->
             (if index == 1 then Array._elementOrUseSelector(a, selector) else a) *
                     Array._elementOrUseSelector(b, selector)
         )
+# These methods use sorting. For `keySelector`, note that the keys must be either
+# numbers, booleans, or strings (can't be mixed of these). [
+Array::group = (keySelector, resultSelector) ->
+    if @.isEmpty() then return []
+    sorted = @funSort(keySelector)
+    groups = []
+    comparedKey = Array._elementOrUseSelector(sorted.first(), keySelector)
+    elements = []
+    for m in sorted
+        key = Array._elementOrUseSelector(m, keySelector)
+        if key != comparedKey
+            groups.push(
+                key: comparedKey
+                result: Array._elementOrUseSelector(elements, resultSelector)
+            )
+            comparedKey = key
+            elements = []
+        elements.push(m)
+    groups.push(
+        key: comparedKey
+        result: Array._elementOrUseSelector(elements, resultSelector)
+    )
+    groups
 Array::_sort = (keySelector, isDescending) ->
     @copy().sort((a, b) =>
         a1 = Array._elementOrUseSelector(a, keySelector)
@@ -133,6 +162,7 @@ Array::_sort = (keySelector, isDescending) ->
     )
 Array::funSort = (keySelector) -> @_sort(keySelector, false)
 Array::funSortDescending = (keySelector) -> @_sort(keySelector, true)
+# ]
 Array::funReverse = -> @copy().reverse()
 Array::except = (array) -> @filter((m) -> m not in array)
 Array::flatten = (level) ->

@@ -65,6 +65,10 @@ ArrayLazyWrapper = (function() {
     return this._pushChain(Array.prototype.except, arguments);
   };
 
+  ArrayLazyWrapper.prototype.group = function() {
+    return this._pushChain(Array.prototype.group, arguments);
+  };
+
   ArrayLazyWrapper.prototype.flatten = function() {
     return this._pushChain(Array.prototype.flatten, arguments);
   };
@@ -143,6 +147,14 @@ ArrayLazyWrapper = (function() {
 
   ArrayLazyWrapper.prototype.average = function() {
     return this._unwrapAndDo(Array.prototype.average, arguments);
+  };
+
+  ArrayLazyWrapper.prototype.median = function() {
+    return this._unwrapAndDo(Array.prototype.median, arguments);
+  };
+
+  ArrayLazyWrapper.prototype.product = function() {
+    return this._unwrapAndDo(Array.prototype.product, arguments);
   };
 
   ArrayLazyWrapper.prototype.randomOne = function() {
@@ -352,6 +364,35 @@ Array.prototype.product = function(selector) {
       return (index === 1 ? Array._elementOrUseSelector(a, selector) : a) * Array._elementOrUseSelector(b, selector);
     });
   }
+};
+
+Array.prototype.group = function(keySelector, resultSelector) {
+  var comparedKey, elements, groups, key, m, sorted, _i, _len;
+  if (this.isEmpty()) {
+    return [];
+  }
+  sorted = this.funSort(keySelector);
+  groups = [];
+  comparedKey = Array._elementOrUseSelector(sorted.first(), keySelector);
+  elements = [];
+  for (_i = 0, _len = sorted.length; _i < _len; _i++) {
+    m = sorted[_i];
+    key = Array._elementOrUseSelector(m, keySelector);
+    if (key !== comparedKey) {
+      groups.push({
+        key: comparedKey,
+        result: Array._elementOrUseSelector(elements, resultSelector)
+      });
+      comparedKey = key;
+      elements = [];
+    }
+    elements.push(m);
+  }
+  groups.push({
+    key: comparedKey,
+    result: Array._elementOrUseSelector(elements, resultSelector)
+  });
+  return groups;
 };
 
 Array.prototype._sort = function(keySelector, isDescending) {
