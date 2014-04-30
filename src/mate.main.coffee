@@ -1,3 +1,4 @@
+$mate = {}
 compose = (functions) ->
     if arguments.length > 1 then functions = Array.from(arguments)
     ->
@@ -12,6 +13,42 @@ repeat = (times, iterator) ->
     iterator() for i in [0...times]
 spread = (value, count) ->
     value for i in [0...count]
+setAdvancedInterval = (callback, interval, startTime = new Date(),
+        triggersAtStart = true, timesOrEndTime, endCallback, isEndCallbackImmediate = true) ->
+    if interval < 100 then interval = 100
+    isEnded = false
+    count = 0
+    nextTime = new Date(startTime - (-interval * if triggersAtStart then 0 else 1))
+    if timesOrEndTime? and (
+        (typeof timesOrEndTime == "number" and timesOrEndTime < 1) or
+        (typeof timesOrEndTime == "object" and timesOrEndTime < nextTime)
+    )
+        endCallback?()
+        null
+    else
+        r = setInterval(->
+            if new Date() >= nextTime
+                if isEnded
+                    clearAdvancedInterval(r)
+                    endCallback?()
+                else
+                    count++
+                    idealTime = nextTime
+                    nowTime = new Date()
+                    nextTime = new Date(nextTime - (-interval))
+                    if callback(idealTime, nowTime, count - 1) == false or (
+                        timesOrEndTime? and (
+                            (typeof timesOrEndTime == "number" and count == timesOrEndTime) or
+                            (typeof timesOrEndTime == "object" and nextTime > timesOrEndTime)
+                        )
+                    )
+                        isEnded = true
+                        if isEndCallbackImmediate
+                            clearAdvancedInterval(r)
+                            endCallback?()
+        , 30)
+        r
+clearAdvancedInterval = (x) -> clearInterval(x)
 Object.getter = (obj, prop, fun) -> Object.defineProperty(obj, prop, {get: fun, configurable: true})
 Object.setter = (obj, prop, fun) -> Object.defineProperty(obj, prop, {set: fun, configurable: true})
 Object.clone = (x) ->
@@ -39,6 +76,7 @@ String::matches = (regex) ->
 String::capitalize = ->
     # Use `charAt[0]` instead of `[0]` because `[0]` will return undefined if string is empty.
     @charAt(0).toUpperCase() + @substr(1)
+console.logt = -> console.log.apply(null, [new Date().toISOString()].concat(Array.from(arguments)))
 class ObjectWithEvents
     constructor: ->
         @_eventList = {} # Using object to simulate a "dictionary" here is simpler than using array.
