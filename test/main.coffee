@@ -1,12 +1,6 @@
-require("../mate.min")
+# TODO: Lots of work needed! The `test` feature has just been added.
+
+require("../mate")
 $mate.test.add([
-    -> [2, 3, 4].sum() == 9
-    -> [5, 6, 7].sum() == 17
-])
-$mate.test.add("simple test 2", (ctx) ->
-    setTimeout(->
-        ctx.state = Math.random() < 0.5
-    , 2500)
-)
-$mate.test.run()
-console.log($mate.nodePackageInfo.version)
+    -> new Date("2014-02-03T18:19:25.987").equals(new Date("2014-02-03T18:19:25.987"))
+]).run()

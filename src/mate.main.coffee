@@ -76,6 +76,14 @@ String::matches = (regex) ->
 String::capitalize = ->
     # Use `charAt[0]` instead of `[0]` because `[0]` will return undefined if string is empty.
     @charAt(0).toUpperCase() + @substr(1)
+Date::add = (x) -> # `x` must be a number
+    new Date(@ - (-x))
+Date::subtract = (x) -> # `x` can be a number or `Date` instance
+    if typeof x == "number"
+        new Date(@ - x)
+    else
+        @ - x
+Date::equals = (x) -> x <= @ <= x
 console.logt = -> console.log.apply(null, [new Date().toISOString()].concat(Array.from(arguments)))
 class ObjectWithEvents
     constructor: ->

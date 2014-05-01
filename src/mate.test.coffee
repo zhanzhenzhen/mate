@@ -11,57 +11,87 @@ $mate.test =
         delay ?= 0
         timeout ?= 86400000
         @_list[name] =
-            body: testFunctions.map((m) => {fun: m, state: null})
+            # Note:
+            # `state` and `result` are similar but slightly different. Users should
+            # not change `result`. Once `result` is set to true or false automatically by mate,
+            # it should not be rolled back to undefined. This mechanism is to prevent the
+            # "success" and "failure" numbers from being decreased (if one changes the `state` back).
+            # Also Note:
+            # `result`'s initial value is undefined but `state`'s initial value is null.
+            # Why? Because `state` can be tweaked by user. If it's initially undefined,
+            # then it is to be "created", not "changed" or "tweaked",
+            # which slightly looks like a bad style in designing the interface.
+            contexts: testFunctions.map((m) =>
+                name: name
+                fun: m
+                state: null
+            )
             delay: delay
             timeout: timeout
+        @
     run: ->
+        startTime = new Date()
         Object.keys(@_list).forEach((name) =>
             item = @_list[name]
-            item.body.forEach((m) =>
+            item.contexts.forEach((context) =>
                 setTimeout(=>
-                    match = m.fun.toString().match(/function *\(([^)]*)\)/)
+                    match = context.fun.toString().match(/function *\(([^)]*)\)/)
                     isAsync = match? and match[1].trim().length > 0
                     domain = require("domain").create()
-                    domain.on("error", =>
-                        m.state = false
+                    domain.on("error", (error) =>
+                        context.state = false
+                        context.errorMessage = error.stack
                     )
                     domain.run(=>
                         if isAsync
-                            m.fun(m)
+                            context.fun(context)
                         else
-                            if m.fun() != false
-                                m.state = true
+                            if context.fun() != false
+                                context.state = true
                             else
-                                m.state = false
+                                context.state = false
                     )
                 , item.delay)
             )
         )
-        timer = setAdvancedInterval(=>
-            totalCount = 0
-            result = []
+        console.log()
+        # TODO: Scanning for timeout is now also in this function. It's inaccurate because interval
+        # is 1 sec. We may need to create another timer with shorter interval for that.
+        timer = setAdvancedInterval((time) =>
+            all = []
             Object.keys(@_list).forEach((name) =>
                 item = @_list[name]
-                item.body.forEach((m) =>
-                    totalCount++
-                    if m.state? then result.push(
-                        type: m.state
-                        name: name
-                        message: m.fun.toString()
-                    )
+                item.contexts.forEach((m) =>
+                    if not m.result?
+                        if time.subtract(startTime) > @timeout or
+                                time.subtract(startTime.add(item.delay)) > item.timeout
+                            m.result = false
+                        else if m.state?
+                            m.result = m.state
+                    all.push(m)
                 )
             )
-            success = result.filter((m) -> m.type == true)
-            failure = result.filter((m) -> m.type == false)
+            success = all.filter((m) => m.result == true)
+            failure = all.filter((m) => m.result == false)
+            pending = all.filter((m) => m.result != true and m.result != false)
             console.logt("Success: #{success.length}, Failure: #{failure.length}, " +
-                    "Unfinished: #{totalCount - success.length - failure.length}")
-            if success.length + failure.length >= totalCount
+                    "Pending: #{pending.length}")
+            if pending.length == 0
                 clearAdvancedInterval(timer)
-                console.log("Completed.")
-                failure.forEach((m) ->
+                failure.forEach((m) =>
                     console.log("\nFailure \"#{m.name}\":")
-                    console.log(m.message)
+                    console.log(m.fun.toString())
+                    console.log(m.errorMessage) if m.errorMessage?
                 )
+                console.log("\n" + (
+                    if failure.length == 0
+                        "Completed. All succeeded."
+                    else
+                        "Completed. #{failure.length} failures."
+                ) + "\n")
+                process.exit()
         , 1000)
+        @
+    timeout: 86400000
     _list: {}
     _defaultNameCounter: 0

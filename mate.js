@@ -778,6 +778,22 @@ String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.substr(1);
 };
 
+Date.prototype.add = function(x) {
+  return new Date(this - (-x));
+};
+
+Date.prototype.subtract = function(x) {
+  if (typeof x === "number") {
+    return new Date(this - x);
+  } else {
+    return this - x;
+  }
+};
+
+Date.prototype.equals = function(x) {
+  return (x <= this && this <= x);
+};
+
 console.logt = function() {
   return console.log.apply(null, [new Date().toISOString()].concat(Array.from(arguments)));
 };
@@ -1226,9 +1242,10 @@ $mate.test = {
     if (timeout == null) {
       timeout = 86400000;
     }
-    return this._list[name] = {
-      body: testFunctions.map(function(m) {
+    this._list[name] = {
+      contexts: testFunctions.map(function(m) {
         return {
+          name: name,
           fun: m,
           state: null
         };
@@ -1236,71 +1253,83 @@ $mate.test = {
       delay: delay,
       timeout: timeout
     };
+    return this;
   },
   run: function() {
-    var timer,
+    var startTime, timer,
       _this = this;
+    startTime = new Date();
     Object.keys(this._list).forEach(function(name) {
       var item;
       item = _this._list[name];
-      return item.body.forEach(function(m) {
+      return item.contexts.forEach(function(context) {
         return setTimeout(function() {
           var domain, isAsync, match;
-          match = m.fun.toString().match(/function *\(([^)]*)\)/);
+          match = context.fun.toString().match(/function *\(([^)]*)\)/);
           isAsync = (match != null) && match[1].trim().length > 0;
           domain = require("domain").create();
-          domain.on("error", function() {
-            return m.state = false;
+          domain.on("error", function(error) {
+            context.state = false;
+            return context.errorMessage = error.stack;
           });
           return domain.run(function() {
             if (isAsync) {
-              return m.fun(m);
+              return context.fun(context);
             } else {
-              if (m.fun() !== false) {
-                return m.state = true;
+              if (context.fun() !== false) {
+                return context.state = true;
               } else {
-                return m.state = false;
+                return context.state = false;
               }
             }
           });
         }, item.delay);
       });
     });
-    return timer = setAdvancedInterval(function() {
-      var failure, result, success, totalCount;
-      totalCount = 0;
-      result = [];
+    console.log();
+    timer = setAdvancedInterval(function(time) {
+      var all, failure, pending, success;
+      all = [];
       Object.keys(_this._list).forEach(function(name) {
         var item;
         item = _this._list[name];
-        return item.body.forEach(function(m) {
-          totalCount++;
-          if (m.state != null) {
-            return result.push({
-              type: m.state,
-              name: name,
-              message: m.fun.toString()
-            });
+        return item.contexts.forEach(function(m) {
+          if (m.result == null) {
+            if (time.subtract(startTime) > _this.timeout || time.subtract(startTime.add(item.delay)) > item.timeout) {
+              m.result = false;
+            } else if (m.state != null) {
+              m.result = m.state;
+            }
+          }
+          return all.push(m);
+        });
+      });
+      success = all.filter(function(m) {
+        return m.result === true;
+      });
+      failure = all.filter(function(m) {
+        return m.result === false;
+      });
+      pending = all.filter(function(m) {
+        return m.result !== true && m.result !== false;
+      });
+      console.logt(("Success: " + success.length + ", Failure: " + failure.length + ", ") + ("Pending: " + pending.length));
+      if (pending.length === 0) {
+        clearAdvancedInterval(timer);
+        failure.forEach(function(m) {
+          console.log("\nFailure \"" + m.name + "\":");
+          console.log(m.fun.toString());
+          if (m.errorMessage != null) {
+            return console.log(m.errorMessage);
           }
         });
-      });
-      success = result.filter(function(m) {
-        return m.type === true;
-      });
-      failure = result.filter(function(m) {
-        return m.type === false;
-      });
-      console.logt(("Success: " + success.length + ", Failure: " + failure.length + ", ") + ("Unfinished: " + (totalCount - success.length - failure.length)));
-      if (success.length + failure.length >= totalCount) {
-        clearAdvancedInterval(timer);
-        console.log("Completed.");
-        return failure.forEach(function(m) {
-          console.log("\nFailure \"" + m.name + "\":");
-          return console.log(m.message);
-        });
+        console.log("\n" + (failure.length === 0 ? "Completed. All succeeded." : "Completed. " + failure.length + " failures.") + "\n");
+        return process.exit();
       }
     }, 1000);
+    return this;
   },
+  timeout: 86400000,
   _list: {},
   _defaultNameCounter: 0
 };
