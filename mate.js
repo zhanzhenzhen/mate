@@ -6,8 +6,14 @@ https://github.com/zhanzhenzhen/mate
 Mate may be freely distributed under the MIT license.
 */
 
-var $mate, ArrayLazyWrapper, ObjectWithEvents, Point, assert, clearAdvancedInterval, cmath, compose, fail, repeat, setAdvancedInterval, spread,
-  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+var $mate, ArrayLazyWrapper, EventField, ObjectWithEvents, Point, assert, cmath, compose, fail, repeat, spread,
+  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+$mate = {};
+
+$mate.environmentType = (typeof exports !== "undefined" && exports !== null) && ((typeof module !== "undefined" && module !== null ? module.exports : void 0) != null) ? "node" : typeof window !== "undefined" && window !== null ? "browser" : void 0;
 
 ArrayLazyWrapper = (function() {
   function ArrayLazyWrapper(value, chainToCopy, itemToPush) {
@@ -542,6 +548,10 @@ Array.prototype.removeAllMatch = function(predicate) {
   return this;
 };
 
+if ($mate.environmentType === "browser" && window.global === void 0) {
+  window.global = window;
+}
+
 if (Number.EPSILON === void 0) {
   Number.EPSILON = 2.2204460492503130808472633361816e-16;
 }
@@ -625,7 +635,15 @@ if (Math.sign === void 0) {
   };
 }
 
-$mate = {};
+if (global.setImmediate === void 0) {
+  global.setImmediate = function(callback, args) {
+    return setTimeout(callback, 0, args);
+  };
+}
+
+if (global.clearImmediate === void 0) {
+  global.clearImmediate = clearTimeout;
+}
 
 compose = function(functions) {
   if (arguments.length > 1) {
@@ -668,58 +686,6 @@ spread = function(value, count) {
     _results.push(value);
   }
   return _results;
-};
-
-setAdvancedInterval = function(callback, interval, startTime, triggersAtStart, timesOrEndTime, endCallback, isEndCallbackImmediate) {
-  var count, isEnded, nextTime, r;
-  if (startTime == null) {
-    startTime = new Date();
-  }
-  if (triggersAtStart == null) {
-    triggersAtStart = true;
-  }
-  if (isEndCallbackImmediate == null) {
-    isEndCallbackImmediate = true;
-  }
-  if (interval < 100) {
-    interval = 100;
-  }
-  isEnded = false;
-  count = 0;
-  nextTime = new Date(startTime - (-interval * (triggersAtStart ? 0 : 1)));
-  if ((timesOrEndTime != null) && ((typeof timesOrEndTime === "number" && timesOrEndTime < 1) || (typeof timesOrEndTime === "object" && timesOrEndTime < nextTime))) {
-    if (typeof endCallback === "function") {
-      endCallback();
-    }
-    return null;
-  } else {
-    r = setInterval(function() {
-      var idealTime, nowTime;
-      if (new Date() >= nextTime) {
-        if (isEnded) {
-          clearAdvancedInterval(r);
-          return typeof endCallback === "function" ? endCallback() : void 0;
-        } else {
-          count++;
-          idealTime = nextTime;
-          nowTime = new Date();
-          nextTime = new Date(nextTime - (-interval));
-          if (callback(idealTime, nowTime, count - 1) === false || ((timesOrEndTime != null) && ((typeof timesOrEndTime === "number" && count === timesOrEndTime) || (typeof timesOrEndTime === "object" && nextTime > timesOrEndTime)))) {
-            isEnded = true;
-            if (isEndCallbackImmediate) {
-              clearAdvancedInterval(r);
-              return typeof endCallback === "function" ? endCallback() : void 0;
-            }
-          }
-        }
-      }
-    }, 30);
-    return r;
-  }
-};
-
-clearAdvancedInterval = function(x) {
-  return clearInterval(x);
 };
 
 Object.getter = function(obj, prop, fun) {
@@ -797,6 +763,40 @@ Date.prototype.equals = function(x) {
 console.logt = function() {
   return console.log.apply(null, [new Date().toISOString()].concat(Array.from(arguments)));
 };
+
+EventField = (function() {
+  function EventField() {
+    this._listeners = [];
+  }
+
+  EventField.prototype.bind = function(listener) {
+    if (__indexOf.call(this._listeners, listener) < 0) {
+      this._listeners.push(listener);
+    }
+    return this;
+  };
+
+  EventField.prototype.unbind = function(listener) {
+    this._listeners.removeAll(listener);
+    return this;
+  };
+
+  EventField.prototype.fire = function(arg) {
+    var m, _i, _len, _ref;
+    _ref = this._listeners;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      m = _ref[_i];
+      if (arg != null ? arg.blocksListeners : void 0) {
+        break;
+      }
+      m(arg);
+    }
+    return void 0;
+  };
+
+  return EventField;
+
+})();
 
 ObjectWithEvents = (function() {
   function ObjectWithEvents() {
@@ -1223,6 +1223,10 @@ cmath = {
   }
 };
 
+if (!(typeof $mate === "object" && $mate !== null)) {
+  $mate = {};
+}
+
 $mate.test = {
   add: function(name, testFunctions, delay, timeout) {
     var _this = this;
@@ -1244,11 +1248,33 @@ $mate.test = {
     }
     this._list[name] = {
       contexts: testFunctions.map(function(m) {
-        return {
+        /*
+            [1,2,3,4,5].map(function factorial (n) {
+                return !(n > 1) ? 1 : factorial(n-1)*n;
+            });
+        */
+
+        var context;
+        context = {
           name: name,
           fun: m,
-          state: null
+          setState: 
+                        function f(x) {
+                            if (f.context._state !== true && f.context._state !== false) {
+                                if (x !== true && x !== false) {
+                                    x = true;
+                                }
+                                f.context._state = x;
+                            }
+                        }
+                    ,
+          getState: function() {
+            return this._state;
+          },
+          _state: null
         };
+        context.setState.context = context;
+        return context;
       }),
       delay: delay,
       timeout: timeout
@@ -1256,7 +1282,7 @@ $mate.test = {
     return this;
   },
   run: function() {
-    var startTime, timer,
+    var startTime, timer, timerJob,
       _this = this;
     startTime = new Date();
     Object.keys(this._list).forEach(function(name) {
@@ -1264,58 +1290,66 @@ $mate.test = {
       item = _this._list[name];
       return item.contexts.forEach(function(context) {
         return setTimeout(function() {
-          var domain, isAsync, match;
+          var domain, isAsync, match, runFunction;
           match = context.fun.toString().match(/function *\(([^)]*)\)/);
           isAsync = (match != null) && match[1].trim().length > 0;
-          domain = require("domain").create();
-          domain.on("error", function(error) {
-            context.state = false;
-            return context.errorMessage = error.stack;
-          });
-          return domain.run(function() {
+          runFunction = function() {
             if (isAsync) {
-              return context.fun(context);
+              return context.fun(context.setState);
             } else {
               if (context.fun() !== false) {
-                return context.state = true;
+                return context.setState(true);
               } else {
-                return context.state = false;
+                return context.setState(false);
               }
             }
-          });
+          };
+          if ((typeof exports !== "undefined" && exports !== null) && ((typeof module !== "undefined" && module !== null ? module.exports : void 0) != null)) {
+            domain = require("domain").create();
+            domain.on("error", function(error) {
+              context.setState(false);
+              return context.errorMessage = error.stack;
+            });
+            return domain.run(runFunction);
+          } else {
+            try {
+              return runFunction();
+            } catch (_error) {
+              return context.setState(false);
+            }
+          }
         }, item.delay);
       });
     });
     console.log();
-    timer = setAdvancedInterval(function(time) {
-      var all, failure, pending, success;
+    timerJob = function() {
+      var all, failure, pending, success, time;
+      time = new Date();
       all = [];
       Object.keys(_this._list).forEach(function(name) {
         var item;
         item = _this._list[name];
         return item.contexts.forEach(function(m) {
-          if (m.result == null) {
-            if (time.subtract(startTime) > _this.timeout || time.subtract(startTime.add(item.delay)) > item.timeout) {
-              m.result = false;
-            } else if (m.state != null) {
-              m.result = m.state;
+          if (m.getState() == null) {
+            if (time.getTime() - startTime.getTime() > _this.timeout || time.getTime() - (startTime.getTime() + item.delay) > item.timeout) {
+              m.setState(false);
             }
           }
           return all.push(m);
         });
       });
       success = all.filter(function(m) {
-        return m.result === true;
+        return m.getState() === true;
       });
       failure = all.filter(function(m) {
-        return m.result === false;
+        return m.getState() === false;
       });
       pending = all.filter(function(m) {
-        return m.result !== true && m.result !== false;
+        return m.getState() !== true && m.getState() !== false;
       });
-      console.logt(("Success: " + success.length + ", Failure: " + failure.length + ", ") + ("Pending: " + pending.length));
+      console.log(("" + (new Date().toISOString()) + " Success: " + success.length + ", ") + ("Failure: " + failure.length + ", Pending: " + pending.length));
       if (pending.length === 0) {
-        clearAdvancedInterval(timer);
+        clearInterval(timer);
         failure.forEach(function(m) {
           console.log("\nFailure \"" + m.name + "\":");
           console.log(m.fun.toString());
@@ -1324,9 +1358,13 @@ $mate.test = {
           }
         });
         console.log("\n" + (failure.length === 0 ? "Completed. All succeeded." : "Completed. " + failure.length + " failures.") + "\n");
-        return process.exit();
+        if (typeof process !== "undefined" && process !== null) {
+          return process.exit();
+        }
       }
-    }, 1000);
+    };
+    timer = setInterval(timerJob, 1000);
+    setTimeout(timerJob, 0);
     return this;
   },
   timeout: 86400000,
@@ -1334,17 +1372,119 @@ $mate.test = {
   _defaultNameCounter: 0
 };
 
-if ((typeof exports !== "undefined" && exports !== null) && ((typeof module !== "undefined" && module !== null ? module.exports : void 0) != null)) {
+Date.Timer = (function() {
+  Timer._endOfTime = new Date("9999-12-30T00:00:00Z");
+
+  function Timer(targetTime) {
+    this.targetTime = targetTime != null ? targetTime : Date.Timer._endOfTime;
+    this._elapsedCount = 0;
+    this._internalTimer = null;
+    this._running = false;
+    this.allowsEqual = true;
+    this.precision = 30;
+    this.onElapse = new EventField();
+  }
+
+  Timer.prototype.run = function() {
+    var _this = this;
+    if (this._running) {
+      return;
+    }
+    this._elapsedCount = 0;
+    this._internalTimer = setInterval(function() {
+      var lastTargetTime, nowTime;
+      nowTime = new Date();
+      if ((_this.allowsEqual ? nowTime >= _this.targetTime : nowTime > _this.targetTime)) {
+        _this._elapsedCount++;
+        lastTargetTime = _this.targetTime;
+        _this.targetTime = Date.Timer._endOfTime;
+        return _this.onElapse.fire({
+          idealTime: lastTargetTime,
+          nowTime: nowTime,
+          index: _this._elapsedCount - 1
+        });
+      }
+    }, this.precision);
+    this._running = true;
+    return this;
+  };
+
+  Timer.prototype.stop = function() {
+    if (!this._running) {
+      return;
+    }
+    clearInterval(this._internalTimer);
+    this._running = false;
+    return this;
+  };
+
+  Timer.prototype.getRunning = function() {
+    return this._running;
+  };
+
+  Timer.prototype.resetCounter = function() {
+    return this._elapsedCount = 0;
+  };
+
+  Timer.prototype.getElapsedCount = function() {
+    return this._elapsedCount;
+  };
+
+  return Timer;
+
+})();
+
+Date.IntervalTimer = (function(_super) {
+  __extends(IntervalTimer, _super);
+
+  function IntervalTimer(interval, startTime, timesOrEndTime) {
+    var _this = this;
+    this.interval = interval != null ? interval : 1000;
+    this.startTime = startTime != null ? startTime : new Date();
+    this.timesOrEndTime = timesOrEndTime;
+    IntervalTimer.__super__.constructor.call(this);
+    this._started = false;
+    this.includesStart = true;
+    this.includesEnd = false;
+    this.onStart = new EventField();
+    this.onElapse.bind(function(event) {
+      _this.targetTime = event.idealTime.add(_this.interval);
+      if (!_this._started) {
+        _this._started = true;
+        if (!_this.includesStart) {
+          _this.resetCounter();
+          event.blocksListeners = true;
+        }
+        _this.onStart.fire();
+      }
+      if ((_this.timesOrEndTime != null) && ((typeof _this.timesOrEndTime === "number" && _this.getElapsedCount() === _this.timesOrEndTime) || (typeof _this.timesOrEndTime === "object" && (_this.includesEnd ? _this.targetTime > _this.timesOrEndTime : _this.targetTime >= _this.timesOrEndTime)))) {
+        return _this.stop();
+      }
+    });
+  }
+
+  IntervalTimer.prototype.run = function() {
+    if (this.getRunning()) {
+      return;
+    }
+    this.targetTime = this.startTime;
+    return IntervalTimer.__super__.run.call(this);
+  };
+
+  return IntervalTimer;
+
+})(Date.Timer);
+
+if ($mate.environmentType === "node") {
   global.$mate = $mate;
   global.compose = compose;
   global.fail = fail;
   global.assert = assert;
   global.repeat = repeat;
   global.spread = spread;
-  global.setAdvancedInterval = setAdvancedInterval;
-  global.clearAdvancedInterval = clearAdvancedInterval;
   global.cmath = cmath;
   global.Point = Point;
+  global.EventField = EventField;
   global.ObjectWithEvents = ObjectWithEvents;
 }
 $mate.nodePackageInfo =

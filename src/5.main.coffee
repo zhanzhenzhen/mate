@@ -1,4 +1,3 @@
-$mate = {}
 compose = (functions) ->
     if arguments.length > 1 then functions = Array.from(arguments)
     ->
@@ -13,42 +12,6 @@ repeat = (times, iterator) ->
     iterator() for i in [0...times]
 spread = (value, count) ->
     value for i in [0...count]
-setAdvancedInterval = (callback, interval, startTime = new Date(),
-        triggersAtStart = true, timesOrEndTime, endCallback, isEndCallbackImmediate = true) ->
-    if interval < 100 then interval = 100
-    isEnded = false
-    count = 0
-    nextTime = new Date(startTime - (-interval * if triggersAtStart then 0 else 1))
-    if timesOrEndTime? and (
-        (typeof timesOrEndTime == "number" and timesOrEndTime < 1) or
-        (typeof timesOrEndTime == "object" and timesOrEndTime < nextTime)
-    )
-        endCallback?()
-        null
-    else
-        r = setInterval(->
-            if new Date() >= nextTime
-                if isEnded
-                    clearAdvancedInterval(r)
-                    endCallback?()
-                else
-                    count++
-                    idealTime = nextTime
-                    nowTime = new Date()
-                    nextTime = new Date(nextTime - (-interval))
-                    if callback(idealTime, nowTime, count - 1) == false or (
-                        timesOrEndTime? and (
-                            (typeof timesOrEndTime == "number" and count == timesOrEndTime) or
-                            (typeof timesOrEndTime == "object" and nextTime > timesOrEndTime)
-                        )
-                    )
-                        isEnded = true
-                        if isEndCallbackImmediate
-                            clearAdvancedInterval(r)
-                            endCallback?()
-        , 30)
-        r
-clearAdvancedInterval = (x) -> clearInterval(x)
 Object.getter = (obj, prop, fun) -> Object.defineProperty(obj, prop, {get: fun, configurable: true})
 Object.setter = (obj, prop, fun) -> Object.defineProperty(obj, prop, {set: fun, configurable: true})
 Object.clone = (x) ->
@@ -85,6 +48,29 @@ Date::subtract = (x) -> # `x` can be a number or `Date` instance
         @ - x
 Date::equals = (x) -> x <= @ <= x
 console.logt = -> console.log.apply(null, [new Date().toISOString()].concat(Array.from(arguments)))
+# I think `EventField` can do all that `ObjectWithEvents` can do, plus support for static events.
+# And it can avoid using strings so `EventField` is better. But maybe others like `ObjectWithEvents`
+# so I keep both.
+# Why `EventField::fire` and `ObjectWithEvents::trigger`? Because although "fire" is simpler,
+# it's a more frequently used word, so in `ObjectWithEvent` we should keep "fire" from occupying
+# this naming space.
+# [
+class EventField
+    constructor: ->
+        @_listeners = []
+    bind: (listener) ->
+        @_listeners.push(listener) if listener not in @_listeners
+        @
+    unbind: (listener) ->
+        @_listeners.removeAll(listener)
+        @
+    fire: (arg) ->
+        for m in @_listeners
+            if arg?.blocksListeners then break
+            m(arg)
+        undefined
+# Node.js uses `emit` but we use `trigger`. I guess why node.js uses that strange name is maybe
+# only to avoid the name `EventTriggerer`.
 class ObjectWithEvents
     constructor: ->
         @_eventList = {} # Using object to simulate a "dictionary" here is simpler than using array.
@@ -95,10 +81,9 @@ class ObjectWithEvents
     off: (eventName, listener) ->
         @_eventList[eventName].removeAll(listener)
         @
-    # Node.js uses `emit` but we use `trigger`. I guess why node.js uses that strange name is maybe
-    # only to avoid `EventTriggerer`.
     trigger: (eventName, arg) ->
         @_eventList[eventName] ?= []
         m(arg) for m in @_eventList[eventName]
         undefined
     listeners: (eventName) -> @_eventList[eventName]
+# ]

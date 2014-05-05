@@ -1,3 +1,8 @@
+# This file provides compatibility among various browsers and server-side platforms such as node.
+# It also brings some ECMAScript 6 features (considered as "future compatibility").
+
+if $mate.environmentType == "browser" and window.global == undefined
+    window.global = window
 # This is in ECMAScript 6. Only Firefox natively supports this.
 if Number.EPSILON == undefined
     Number.EPSILON = 2.2204460492503130808472633361816e-16
@@ -48,3 +53,9 @@ if Math.sign == undefined
                 NaN
         else
             NaN
+# Only IE natively supports this.
+if global.setImmediate == undefined
+    global.setImmediate = (callback, args) -> setTimeout(callback, 0, args)
+# Only IE natively supports this.
+if global.clearImmediate == undefined
+    global.clearImmediate = clearTimeout
