@@ -17,11 +17,13 @@ Tutorial
 Compile
 ====
 
-I already compiled everything to 2 files: "mate.js" and "mate.min.js", so you don't need to compile on your own. But if you want to do it for learning purposes, follow these steps (suppose you're on Linux / Mac OS):
+(This section is only for author of this repo, so other developers can just ignore it. Also note: This compilation method is only for Linux / Mac OS.)
 
-First, make sure "coffee-script" and "uglify-js" packages have been installed globally.
+Before commiting a release version of this project, code files must be compiled by following these steps:
 
-Then, open the terminal, go to the project directory, and type:
+First, make sure "coffee-script" v1.6.3 and "uglify-js" v2.4.13 node packages have been installed GLOBALLY.
+
+Then, in Terminal, go to the repo's directory, and type:
 
 ```bash
 coffee -bp -j mate.js -c src/*.coffee | cat - src/package-start.txt package.json src/package-end.txt > mate.js && uglifyjs mate.js -o mate.min.js -m --screw-ie8 --comments && coffee -b -j test/compiled.js -c test/*.coffee && coffee -b -j test-test/compiled.js -c test-test/*.coffee

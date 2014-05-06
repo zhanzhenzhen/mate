@@ -1490,7 +1490,7 @@ if ($mate.environmentType === "node") {
 $mate.nodePackageInfo =
 {
     "name": "mate",
-    "version": "0.5.0",
+    "version": "0.5.2",
     "description": "A library that extends native JavaScript / CoffeeScript.",
     "keywords": ["library", "app", "javascript", "coffeescript", "js"],
     "author": "Zhenzhen Zhan <zhanzhenzhen@hotmail.com>",
