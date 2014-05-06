@@ -51,24 +51,30 @@ console.logt = -> console.log.apply(null, [new Date().toISOString()].concat(Arra
 # I think `EventField` can do all that `ObjectWithEvents` can do, plus support for static events.
 # And it can avoid using strings so `EventField` is better. But maybe others like `ObjectWithEvents`
 # so I keep both.
-# Why `EventField::fire` and `ObjectWithEvents::trigger`? Because although "fire" is simpler,
+# Why `EventField().fire` and `ObjectWithEvents::trigger`? Because although "fire" is simpler,
 # it's a more frequently used word, so in `ObjectWithEvent` we should keep "fire" from occupying
 # this naming space.
 # [
-class EventField
-    constructor: ->
-        @_listeners = []
-    bind: (listener) ->
-        @_listeners.push(listener) if listener not in @_listeners
+# This function is weird and hard to understand, but we must use this mechanism
+# (function+object hybrid) to support cascading.
+EventField = ->
+    f = (method, arg) ->
+        assert(typeof method == "string")
+        f[method](arg)
         @
-    unbind: (listener) ->
-        @_listeners.removeAll(listener)
-        @
-    fire: (arg) ->
-        for m in @_listeners
+    f._listeners = []
+    f.bind = (listener) ->
+        f._listeners.push(listener) if listener not in f._listeners
+        f
+    f.unbind = (listener) ->
+        f._listeners.removeAll(listener)
+        f
+    f.fire = (arg) ->
+        for m in f._listeners
             if arg?.blocksListeners then break
             m(arg)
         undefined
+    f
 # Node.js uses `emit` but we use `trigger`. I guess why node.js uses that strange name is maybe
 # only to avoid the name `EventTriggerer`.
 class ObjectWithEvents

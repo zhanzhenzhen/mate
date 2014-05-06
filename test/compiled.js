@@ -10,7 +10,7 @@ $mate.test.add([
     var Obj, obj;
     Obj = (function() {
       function Obj() {
-        this.onClick = new EventField();
+        this.onClick = EventField();
       }
 
       Obj.prototype.makeClick = function() {

@@ -11,7 +11,7 @@ class Date.Timer
         @_running = false
         @allowsEqual = true
         @precision = 30
-        @onElapse = new EventField()
+        @onElapse = EventField()
     run: ->
         if @_running then return
         @_elapsedCount = 0
@@ -43,7 +43,7 @@ class Date.IntervalTimer extends Date.Timer
         @_started = false
         @includesStart = true
         @includesEnd = false
-        @onStart = new EventField()
+        @onStart = EventField()
         @onElapse.bind((event) =>
             @targetTime = event.idealTime.add(@interval)
             if not @_started

@@ -5,6 +5,7 @@ Mate is your JavaScript/CoffeeScript mate that brings these key features:
 - Advanced Timers
 - "Functional" Functions
 - Complex Math
+- Unit Test
 - ECMAScript 6th Features
 
 Mate performs consistently in all modern browsers and node.js.

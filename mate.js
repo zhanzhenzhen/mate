@@ -764,26 +764,27 @@ console.logt = function() {
   return console.log.apply(null, [new Date().toISOString()].concat(Array.from(arguments)));
 };
 
-EventField = (function() {
-  function EventField() {
-    this._listeners = [];
-  }
-
-  EventField.prototype.bind = function(listener) {
-    if (__indexOf.call(this._listeners, listener) < 0) {
-      this._listeners.push(listener);
+EventField = function() {
+  var f;
+  f = function(method, arg) {
+    assert(typeof method === "string");
+    f[method](arg);
+    return this;
+  };
+  f._listeners = [];
+  f.bind = function(listener) {
+    if (__indexOf.call(f._listeners, listener) < 0) {
+      f._listeners.push(listener);
     }
-    return this;
+    return f;
   };
-
-  EventField.prototype.unbind = function(listener) {
-    this._listeners.removeAll(listener);
-    return this;
+  f.unbind = function(listener) {
+    f._listeners.removeAll(listener);
+    return f;
   };
-
-  EventField.prototype.fire = function(arg) {
+  f.fire = function(arg) {
     var m, _i, _len, _ref;
-    _ref = this._listeners;
+    _ref = f._listeners;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       m = _ref[_i];
       if (arg != null ? arg.blocksListeners : void 0) {
@@ -793,10 +794,8 @@ EventField = (function() {
     }
     return void 0;
   };
-
-  return EventField;
-
-})();
+  return f;
+};
 
 ObjectWithEvents = (function() {
   function ObjectWithEvents() {
@@ -1382,7 +1381,7 @@ Date.Timer = (function() {
     this._running = false;
     this.allowsEqual = true;
     this.precision = 30;
-    this.onElapse = new EventField();
+    this.onElapse = EventField();
   }
 
   Timer.prototype.run = function() {
@@ -1446,7 +1445,7 @@ Date.IntervalTimer = (function(_super) {
     this._started = false;
     this.includesStart = true;
     this.includesEnd = false;
-    this.onStart = new EventField();
+    this.onStart = EventField();
     this.onElapse.bind(function(event) {
       _this.targetTime = event.idealTime.add(_this.interval);
       if (!_this._started) {
@@ -1490,7 +1489,7 @@ if ($mate.environmentType === "node") {
 $mate.nodePackageInfo =
 {
     "name": "mate",
-    "version": "0.5.2",
+    "version": "0.5.3",
     "description": "A library that extends native JavaScript / CoffeeScript.",
     "keywords": ["library", "app", "javascript", "coffeescript", "js"],
     "author": "Zhenzhen Zhan <zhanzhenzhen@hotmail.com>",
