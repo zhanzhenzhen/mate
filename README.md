@@ -18,7 +18,7 @@ Tutorial
 Compile
 ====
 
-(This section is only for author of this repo, so other developers can just ignore it. Also note: This compilation method is only for Linux / Mac OS.)
+(This section is only for the author of this repo, so other developers can just ignore it. Also note: This compilation method is for Linux / Mac OS.)
 
 Before commiting a release version of this project, code files must be compiled by following these steps:
 

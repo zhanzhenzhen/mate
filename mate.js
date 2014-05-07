@@ -1376,12 +1376,12 @@ Date.Timer = (function() {
 
   function Timer(targetTime) {
     this.targetTime = targetTime != null ? targetTime : Date.Timer._endOfTime;
-    this._elapsedCount = 0;
+    this._counterValue = 0;
     this._internalTimer = null;
     this._running = false;
     this.allowsEqual = true;
     this.precision = 30;
-    this.onElapse = EventField();
+    this.onArrive = EventField();
   }
 
   Timer.prototype.run = function() {
@@ -1389,18 +1389,18 @@ Date.Timer = (function() {
     if (this._running) {
       return;
     }
-    this._elapsedCount = 0;
+    this._counterValue = 0;
     this._internalTimer = setInterval(function() {
       var lastTargetTime, nowTime;
       nowTime = new Date();
       if ((_this.allowsEqual ? nowTime >= _this.targetTime : nowTime > _this.targetTime)) {
-        _this._elapsedCount++;
+        _this._counterValue++;
         lastTargetTime = _this.targetTime;
         _this.targetTime = Date.Timer._endOfTime;
-        return _this.onElapse.fire({
+        return _this.onArrive.fire({
           idealTime: lastTargetTime,
           nowTime: nowTime,
-          index: _this._elapsedCount - 1
+          index: _this._counterValue - 1
         });
       }
     }, this.precision);
@@ -1422,11 +1422,11 @@ Date.Timer = (function() {
   };
 
   Timer.prototype.resetCounter = function() {
-    return this._elapsedCount = 0;
+    return this._counterValue = 0;
   };
 
-  Timer.prototype.getElapsedCount = function() {
-    return this._elapsedCount;
+  Timer.prototype.getCounterValue = function() {
+    return this._counterValue;
   };
 
   return Timer;
@@ -1436,17 +1436,17 @@ Date.Timer = (function() {
 Date.IntervalTimer = (function(_super) {
   __extends(IntervalTimer, _super);
 
-  function IntervalTimer(interval, startTime, timesOrEndTime) {
+  function IntervalTimer(interval, startTime, endTime) {
     var _this = this;
     this.interval = interval != null ? interval : 1000;
     this.startTime = startTime != null ? startTime : new Date();
-    this.timesOrEndTime = timesOrEndTime;
+    this.endTime = endTime;
     IntervalTimer.__super__.constructor.call(this);
     this._started = false;
     this.includesStart = true;
     this.includesEnd = false;
     this.onStart = EventField();
-    this.onElapse.bind(function(event) {
+    this.onArrive.bind(function(event) {
       _this.targetTime = event.idealTime.add(_this.interval);
       if (!_this._started) {
         _this._started = true;
@@ -1456,7 +1456,7 @@ Date.IntervalTimer = (function(_super) {
         }
         _this.onStart.fire();
       }
-      if ((_this.timesOrEndTime != null) && ((typeof _this.timesOrEndTime === "number" && _this.getElapsedCount() === _this.timesOrEndTime) || (typeof _this.timesOrEndTime === "object" && (_this.includesEnd ? _this.targetTime > _this.timesOrEndTime : _this.targetTime >= _this.timesOrEndTime)))) {
+      if ((_this.endTime != null) && (_this.includesEnd ? _this.targetTime > _this.endTime : _this.targetTime >= _this.endTime)) {
         return _this.stop();
       }
     });
@@ -1489,7 +1489,7 @@ if ($mate.environmentType === "node") {
 $mate.nodePackageInfo =
 {
     "name": "mate",
-    "version": "0.5.3",
+    "version": "0.5.4",
     "description": "A library that extends native JavaScript / CoffeeScript.",
     "keywords": ["library", "app", "javascript", "coffeescript", "js"],
     "author": "Zhenzhen Zhan <zhanzhenzhen@hotmail.com>",

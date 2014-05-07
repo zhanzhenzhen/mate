@@ -6,25 +6,25 @@
 class Date.Timer
     @_endOfTime: new Date("9999-12-30T00:00:00Z")
     constructor: (@targetTime = Date.Timer._endOfTime) ->
-        @_elapsedCount = 0
+        @_counterValue = 0
         @_internalTimer = null
         @_running = false
         @allowsEqual = true
         @precision = 30
-        @onElapse = EventField()
+        @onArrive = EventField()
     run: ->
         if @_running then return
-        @_elapsedCount = 0
+        @_counterValue = 0
         @_internalTimer = setInterval(=>
             nowTime = new Date()
             if (if @allowsEqual then nowTime >= @targetTime else nowTime > @targetTime)
-                @_elapsedCount++
+                @_counterValue++
                 lastTargetTime = @targetTime
                 @targetTime = Date.Timer._endOfTime
-                @onElapse.fire(
+                @onArrive.fire(
                     idealTime: lastTargetTime
                     nowTime: nowTime
-                    index: @_elapsedCount - 1
+                    index: @_counterValue - 1
                 )
         , @precision)
         @_running = true
@@ -35,16 +35,16 @@ class Date.Timer
         @_running = false
         @
     getRunning: -> @_running
-    resetCounter: -> @_elapsedCount = 0
-    getElapsedCount: -> @_elapsedCount
+    resetCounter: -> @_counterValue = 0
+    getCounterValue: -> @_counterValue
 class Date.IntervalTimer extends Date.Timer
-    constructor: (@interval = 1000, @startTime = new Date(), @timesOrEndTime) ->
+    constructor: (@interval = 1000, @startTime = new Date(), @endTime) ->
         super()
         @_started = false
         @includesStart = true
         @includesEnd = false
         @onStart = EventField()
-        @onElapse.bind((event) =>
+        @onArrive.bind((event) =>
             @targetTime = event.idealTime.add(@interval)
             if not @_started
                 @_started = true
@@ -52,14 +52,11 @@ class Date.IntervalTimer extends Date.Timer
                     @resetCounter()
                     event.blocksListeners = true
                 @onStart.fire()
-            if @timesOrEndTime? and (
-                (typeof @timesOrEndTime == "number" and @getElapsedCount() == @timesOrEndTime) or
-                (typeof @timesOrEndTime == "object" and (
-                    if @includesEnd
-                        @targetTime > @timesOrEndTime
-                    else
-                        @targetTime >= @timesOrEndTime
-                ))
+            if @endTime? and (
+                if @includesEnd
+                    @targetTime > @endTime
+                else
+                    @targetTime >= @endTime
             )
                 @stop()
         )
