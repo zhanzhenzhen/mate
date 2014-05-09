@@ -7,11 +7,14 @@ compose = (functions) ->
         args[0]
 fail = (errorMessage) -> throw new Error(errorMessage)
 assert = (condition, message) -> if not condition then fail(message)
-# Why `iterator` is the last argument: If not, parentheses must be added in practical use.
-repeat = (times, iterator) ->
+# Can `spread` and `repeat` be combined into one function? No, because:
+# If we combine them into one, then it cannot spread a function. [
+repeat = (iterator, times) ->
+    if typeof iterator == "number" then [times, iterator] = [iterator, times]
     iterator() for i in [0...times]
 spread = (value, count) ->
     value for i in [0...count]
+# ]
 Object.getter = (obj, prop, fun) -> Object.defineProperty(obj, prop, {get: fun, configurable: true})
 Object.setter = (obj, prop, fun) -> Object.defineProperty(obj, prop, {set: fun, configurable: true})
 Object.clone = (x) ->
@@ -20,8 +23,6 @@ Object.clone = (x) ->
         y[key] = x[key]
     y
 JSON.clone = (x) -> JSON.parse(JSON.stringify(x))
-Number.isFraction = (x) -> typeof x == "number" and isFinite(x) and Math.floor(x) != x
-Number.parseFloatExt = (s) -> parseFloat(s) * (if s.endsWith("%") then 0.01 else 1)
 # Better than the built-in regular expression method when global mode
 # and submatches are both required.
 # It always uses global mode and returns an array of arrays if any matches are found.
@@ -56,9 +57,12 @@ console.logt = -> console.log.apply(null, [new Date().toISOString()].concat(Arra
 # this naming space.
 # [
 # This function is weird and hard to understand, but we must use this mechanism
-# (function+object hybrid) to support cascading.
+# (function+object hybrid) to support cascade (chaining).
 EventField = ->
     f = (method, arg) ->
+        if typeof method == "function"
+            arg = method
+            method = "bind"
         assert(typeof method == "string")
         f[method](arg)
         @

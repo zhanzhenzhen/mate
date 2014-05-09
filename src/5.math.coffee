@@ -33,6 +33,8 @@ Math.randomInt = (m, n) ->
     min = if n == undefined then 0 else m
     max = if n == undefined then m else n
     Math.floor(Math.randomNumber(min, max))
+Number.isFraction = (x) -> typeof x == "number" and isFinite(x) and Math.floor(x) != x
+Number.parseFloatExt = (s) -> parseFloat(s) * (if s.endsWith("%") then 0.01 else 1)
 Number::nearlyEquals = (x) -> Math.nearlyEquals(@, x)
 Number::nearlyGreaterThan = (x) -> Math.nearlyGreaterThan(@, x)
 Number::nearlyLessThan = (x) -> Math.nearlyLessThan(@, x)

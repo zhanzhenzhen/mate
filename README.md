@@ -22,7 +22,7 @@ Compile
 
 Before commiting a release version of this project, code files must be compiled by following these steps:
 
-First, make sure "coffee-script" v1.6.3 and "uglify-js" v2.4.13 node packages have been installed GLOBALLY.
+First, make sure "coffee-script" v1.7.1 and "uglify-js" v2.4.13 node packages have been installed GLOBALLY.
 
 Then, in Terminal, go to the repo's directory, and type:
 
