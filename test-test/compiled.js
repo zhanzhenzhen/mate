@@ -33,8 +33,11 @@ function () {
 
 Completed. 4 failures.
  */
+var assert;
+
 if ((typeof exports !== "undefined" && exports !== null) && ((typeof module !== "undefined" && module !== null ? module.exports : void 0) != null)) {
   require("../mate");
+  assert = require("assert");
 }
 
 $mate.test.add("simple test 1", [

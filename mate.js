@@ -1260,7 +1260,7 @@ $mate.test = {
     }
     this._list[name] = {
       contexts: testFunctions.map((function(_this) {
-        return function(m) {
+        return function(m, index) {
 
           /*
               [1,2,3,4,5].map(function factorial (n) {
@@ -1270,6 +1270,7 @@ $mate.test = {
           var context;
           context = {
             name: name,
+            index: index,
             fun: m,
             setState: 
                         function f(x) {
@@ -1322,7 +1323,7 @@ $mate.test = {
               domain = require("domain").create();
               domain.on("error", function(error) {
                 context.setState(false);
-                return context.errorMessage = error.stack;
+                return context.errorMessage = "Error Name: " + error.name + "\nError Message: " + error.message + "\nError Stack: " + error.stack;
               });
               return domain.run(runFunction);
             } else {
@@ -1367,8 +1368,10 @@ $mate.test = {
         if (pending.length === 0) {
           clearInterval(timer);
           failure.forEach(function(m) {
-            console.log("\nFailure \"" + m.name + "\":");
-            console.log(m.fun.toString());
+            console.log("\n********** Failure **********");
+            console.log("Name: " + m.name);
+            console.log("Index: " + m.index);
+            console.log("Function: " + (m.fun.toString()));
             if (m.errorMessage != null) {
               return console.log(m.errorMessage);
             }

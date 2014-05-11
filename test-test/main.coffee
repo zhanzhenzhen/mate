@@ -33,7 +33,9 @@ Completed. 4 failures.
 
 ###
 
-require("../mate") if exports? and module?.exports?
+if exports? and module?.exports?
+    require("../mate")
+    assert = require("assert")
 $mate.test.add("simple test 1", [
     -> 1 + 2 + 3 == 6
     -> 1 + 2 + 3 == 7

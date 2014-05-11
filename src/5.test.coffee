@@ -18,7 +18,7 @@ $mate.test =
         delay ?= 0
         timeout ?= 86400000
         @_list[name] =
-            contexts: testFunctions.map((m) =>
+            contexts: testFunctions.map((m, index) =>
                 # Why use embedded JavaScript? Because we want to use a JavaScript feature
                 # "named function expression" which CoffeeScript does not support, like this:
                 ###
@@ -32,6 +32,7 @@ $mate.test =
                 # as mentioned in the above link.
                 context =
                     name: name
+                    index: index
                     fun: m
                     setState: `
                         function f(x) {
@@ -71,7 +72,11 @@ $mate.test =
                         domain = require("domain").create()
                         domain.on("error", (error) =>
                             context.setState(false)
-                            context.errorMessage = error.stack
+                            context.errorMessage = """
+                                Error Name: #{error.name}
+                                Error Message: #{error.message}
+                                Error Stack: #{error.stack}
+                            """
                         )
                         domain.run(runFunction)
                     else
@@ -106,8 +111,10 @@ $mate.test =
             if pending.length == 0
                 clearInterval(timer)
                 failure.forEach((m) =>
-                    console.log("\nFailure \"#{m.name}\":")
-                    console.log(m.fun.toString())
+                    console.log("\n********** Failure **********")
+                    console.log("Name: #{m.name}")
+                    console.log("Index: #{m.index}")
+                    console.log("Function: #{m.fun.toString()}")
                     console.log(m.errorMessage) if m.errorMessage?
                 )
                 console.log("\n" + (
