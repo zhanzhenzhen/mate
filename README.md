@@ -20,7 +20,7 @@ Compile
 
 (This section is only for the author of this repo, so other developers can just ignore it. Also note: This compilation method is for Linux / Mac OS.)
 
-Before commiting a release version of this project, code files must be compiled by following these steps:
+Before publishing it to npmjs.org, we must compile code files by following these steps:
 
 First, make sure "coffee-script" v1.7.1 and "uglify-js" v2.4.13 node packages have been installed GLOBALLY.
 
