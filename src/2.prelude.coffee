@@ -1,3 +1,4 @@
+featureLoaders = []
 $mate = {}
 $mate.environmentType =
     if exports? and module?.exports?
@@ -6,3 +7,6 @@ $mate.environmentType =
         "browser"
     else
         undefined
+$mate.enableAllFeatures = ->
+    global.$mate = $mate
+    featureLoaders.forEach((m) -> m())
