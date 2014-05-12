@@ -27,5 +27,5 @@ First, make sure "coffee-script" v1.7.1 and "uglify-js" v2.4.13 node packages ha
 Then, in Terminal, go to the repo's directory, and type:
 
 ```bash
-coffee -bp -j mate.js -c src/*.coffee | cat - src/package-start.txt package.json src/package-end.txt > mate.js && uglifyjs mate.js -o mate.min.js -m --screw-ie8 --comments && coffee -b -j test/compiled.js -c test/*.coffee && coffee -b -j test-test/compiled.js -c test-test/*.coffee
+awk 'FNR==1{print ""}1' src/*.coffee src/package-start.txt package.json src/package-end.txt | coffee -cs > mate.js && uglifyjs mate.js -o mate.min.js -m --screw-ie8 --comments && awk 'FNR==1{print ""}1' test/*.coffee | coffee -cs > test/compiled.js && awk 'FNR==1{print ""}1' test-test/*.coffee | coffee -cs > test-test/compiled.js
 ```
