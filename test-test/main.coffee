@@ -34,22 +34,27 @@ Completed. 4 failures.
 ###
 
 if exports? and module?.exports?
-    require("../mate")
-    assert = require("assert")
-$mate.test.add("simple test 1", [
-    -> 1 + 2 + 3 == 6
-    -> 1 + 2 + 3 == 7
-    -> "hello".substr(1, 1) == "e"
-    -> assert(true)
-    -> assert(false)
-    ->
-    -> undefined
-    -> null
-    -> throw new Error()
-]).add("simple test 2", (state) ->
+    $mate = require("../mate")
+    Test = $mate.testing.Test
+new Test().add("String.prototype test", (c) ->
+    str = "hello world"
+    c.equal(str.substr(4, 1), "o", "substr method")
+    c.equal(str.split(" "), ["hello", "world"])
+).add((c) ->
+    c.equal(Math.round(5.3), 5)
+).add((c) ->
+    c.equal(1 + 2 + 3, 7)
+).add(
+    new Test("nested test").add("test 1 in nested test", (c) ->
+        c.equal(false, false)
+    ).add("test 2 in nested test", (c) ->
+        c.equal(false, true)
+    )
+).addAsync("simple test 2", (c) ->
     setTimeout(->
-        state(true)
+        c.equal(true, true)
+        c.end()
     , 2500)
-).add(->
-    true == false
-, 1000).run()
+).add((c) ->
+    c.equal(true, false)
+).run()

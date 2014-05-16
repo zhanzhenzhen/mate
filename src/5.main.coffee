@@ -50,16 +50,16 @@ featureLoaders.push(->
             @ - x
     Date::equals = (x) -> x <= @ <= x
     console.logt = -> console.log.apply(null, [new Date().toISOString()].concat(Array.from(arguments)))
-    # I think `EventField` can do all that `ObjectWithEvents` can do, plus support for static events.
-    # And it can avoid using strings so `EventField` is better. But maybe others like `ObjectWithEvents`
+    # I think `eventField` can do all that `ObjectWithEvents` can do, plus support for static events.
+    # And it can avoid using strings so `eventField` is better. But maybe others like `ObjectWithEvents`
     # so I keep both.
-    # Why `EventField().fire` and `ObjectWithEvents::trigger`? Because although "fire" is simpler,
+    # Why `eventField().fire` and `ObjectWithEvents::trigger`? Because although "fire" is simpler,
     # it's a more frequently used word, so in `ObjectWithEvent` we should keep "fire" from occupying
     # this naming space.
     # [
     # This function is weird and hard to understand, but we must use this mechanism
     # (function+object hybrid) to support cascade (chaining).
-    global.EventField = ->
+    global.eventField = ->
         f = (method, arg) ->
             if typeof method == "function"
                 arg = method

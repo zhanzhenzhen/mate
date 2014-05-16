@@ -12,7 +12,7 @@ featureLoaders.push(->
             @_running = false
             @allowsEqual = true
             @precision = 30
-            @onArrive = EventField()
+            @onArrive = eventField()
         run: ->
             if @_running then return
             @_counterValue = 0
@@ -44,7 +44,7 @@ featureLoaders.push(->
             @_started = false
             @includesStart = true
             @includesEnd = false
-            @onStart = EventField()
+            @onStart = eventField()
             @onArrive.bind((event) =>
                 @targetTime = event.idealTime.add(@interval)
                 if not @_started
