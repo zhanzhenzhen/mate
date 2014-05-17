@@ -9,7 +9,7 @@ class $mate.testing.Test
     constructor: (@description = "") ->
         @_children = []
         @_fun = null
-        @_async = false
+        @async = false
         @parent = null
         @unitResults = []
         @result = null
@@ -18,21 +18,21 @@ class $mate.testing.Test
         @
     get: ->
         @_fun
-    add: (description, fun) ->
+    add: (description, fun, async) ->
         if typeof description == "object"
             newChild = description
-            description = ""
         else
             if typeof description != "string"
+                async = fun ? false
                 fun = description
                 description = ""
             newChild = new $mate.testing.Test(description).set(fun)
+            newChild.async = async
         newChild.parent = @
         @_children.push(newChild)
         @
     addAsync: (description, fun) ->
-        @add(description, fun)
-        @_async = true
+        @add(description, fun, true)
         @
     getChildren: ->
         # use a shallow copy to encapsule `_children` to prevent direct operation on the array
@@ -50,7 +50,7 @@ class $mate.testing.Test
             setTimeout(=>
                 doTest = =>
                     @_fun(@)
-                    if not @_async then @end(type: true)
+                    if not @async then @end(type: true)
                 if exports? and module?.exports?
                     domain = require("domain").create()
                     domain.on("error", (error) =>
@@ -129,13 +129,13 @@ class $mate.testing.Test
     equal: (actual, expected, description = "") ->
         determine = (actual, expected) =>
             if Array.isArray(actual) and Array.isArray(expected)
-                if expected.every((m, index) -> determine(actual[index], m))
+                if expected.every((m, index) => determine(actual[index], m))
                     true
                 else
                     false
             else if typeof actual == "object" and actual != null and
                     typeof expected == "object" and expected != null
-                if Object.keys(expected).every((m) -> determine(actual[m], expected[m]))
+                if Object.keys(expected).every((m) => determine(actual[m], expected[m]))
                     true
                 else
                     false
