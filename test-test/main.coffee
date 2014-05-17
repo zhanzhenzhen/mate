@@ -56,5 +56,5 @@ new Test().add("String.prototype test", (t) ->
         t.end()
     , 2500)
 ).add((t) ->
-    t.equal(true, false, "not truthy unit")
+    t.unit("(1===2)=false")
 ).run()

@@ -124,6 +124,44 @@ class $mate.testing.Test
     end: (result) ->
         @result = result ? {type: true}
         @
+    unit: (body, description = "") ->
+        parsed = null
+        do =>
+            quote = null
+            parenthesis = 0
+            bracket = 0
+            brace = 0
+            for i in [0...body.length]
+                if body[i] == "\"" and quote == null
+                    quote = "double"
+                else if body[i] == "'" and quote == null
+                    quote = "single"
+                else if (body[i] == "\"" and quote == "double") or (body[i] == "'" and quote == "single")
+                    quote = null
+                else if body[i] == "("
+                    parenthesis++
+                else if body[i] == "["
+                    bracket++
+                else if body[i] == "{"
+                    brace++
+                else if body[i] == ")"
+                    parenthesis--
+                else if body[i] == "]"
+                    bracket--
+                else if body[i] == "}"
+                    brace--
+                else if quote == null and parenthesis == bracket == brace == 0
+                    if body[i] == "="
+                        parsed =
+                            type: "equal"
+                            str1: body.substr(0, i).trim()
+                            str2: body.substr(i + 1).trim()
+                        return
+        # An `eval` string must be enclosed by parentheses, otherwise
+        # an object literal (i.e. wrapped in braces) can't be evaluated.
+        do =>
+            if parsed.type == "equal"
+                @equal(eval("(#{parsed.str1})"), eval("(#{parsed.str2})"), body)
     equal: (actual, expected, description = "") ->
         determine = (actual, expected) =>
             if Array.isArray(actual) and Array.isArray(expected)
