@@ -52,9 +52,9 @@ new Test().add("String.prototype test", (t) ->
     )
 ).addAsync("simple test 2", (t) ->
     setTimeout(->
-        t.equal(true, true)
+        t.equal(true, true, "truthy unit")
         t.end()
     , 2500)
 ).add((t) ->
-    t.equal(true, false)
+    t.equal(true, false, "not truthy unit")
 ).run()

@@ -45,8 +45,8 @@ class $mate.testing.Test
             test = test.parent
         r
     run: (showsMessage = true) ->
-        startTime = new Date()
         if @_fun?
+            # We use `setTimeout(..., 0)` only to make all tests "unordered", at least theoretically.
             setTimeout(=>
                 doTest = =>
                     @_fun(@)
@@ -84,7 +84,6 @@ class $mate.testing.Test
             # TODO: Scanning for timeout is now also in this function. It's inaccurate because interval
             # is 1 sec. We may need to create another timer with shorter interval for that.
             timerJob = =>
-                time = new Date()
                 okTests = allTests.filter((m) => m.result? and m.result.type == true)
                 exceptionTests = allTests.filter((m) => m.result? and m.result.type == false)
                 pendingTests = allTests.filter((m) => not m.result?)
@@ -109,7 +108,6 @@ class $mate.testing.Test
                             console.log("Test: #{longDescription}")
                             console.log("Unit: #{n.description}")
                             console.log("Index: #{index}")
-                            console.log(n.description)
                         )
                     )
                     console.log("\n" + (
