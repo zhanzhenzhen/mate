@@ -36,25 +36,25 @@ Completed. 4 failures.
 if exports? and module?.exports?
     $mate = require("../mate")
     Test = $mate.testing.Test
-new Test().add("String.prototype test", (c) ->
+new Test().add("String.prototype test", (t) ->
     str = "hello world"
-    c.equal(str.substr(4, 1), "o", "substr method")
-    c.equal(str.split(" "), ["hello", "world"])
-).add((c) ->
-    c.equal(Math.round(5.3), 5)
-).add((c) ->
-    c.equal(1 + 2 + 3, 7)
+    t.equal(str.substr(4, 1), "o", "substr method")
+    t.equal(str.split(" "), ["hello", "world"])
+).add((t) ->
+    t.equal(Math.round(5.3), 5)
+).add((t) ->
+    t.equal(1 + 2 + 3, 7)
 ).add(
-    new Test("nested test").add("test 1 in nested test", (c) ->
-        c.equal(false, false)
-    ).add("test 2 in nested test", (c) ->
-        c.equal(false, true)
+    new Test("nested test").add("test 1 in nested test", (t) ->
+        t.equal(false, false)
+    ).add("test 2 in nested test", (t) ->
+        t.equal(false, true)
     )
-).addAsync("simple test 2", (c) ->
+).addAsync("simple test 2", (t) ->
     setTimeout(->
-        c.equal(true, true)
-        c.end()
+        t.equal(true, true)
+        t.end()
     , 2500)
-).add((c) ->
-    c.equal(true, false)
+).add((t) ->
+    t.equal(true, false)
 ).run()
