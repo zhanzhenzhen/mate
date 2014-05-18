@@ -40,6 +40,8 @@ new Test().add("String.prototype test", (t) ->
     str = "hello world"
     t.equal(str.substr(4, 1), "o", "substr method")
     t.equal(str.split(" "), ["hello", "world"])
+    t.unit(' str.substr(4,1)="o" ')
+    t.unit(' str.split(" ")=["hello","world"] ')
 ).add((t) ->
     t.equal(Math.round(5.3), 5)
 ).add((t) ->
@@ -56,5 +58,5 @@ new Test().add("String.prototype test", (t) ->
         t.end()
     , 2500)
 ).add((t) ->
-    t.unit("(1===2)=false")
+    t.unit("(1===2)=true")
 ).run()

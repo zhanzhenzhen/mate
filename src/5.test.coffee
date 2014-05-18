@@ -108,6 +108,8 @@ class $mate.testing.Test
                             console.log("Test: #{longDescription}")
                             console.log("Unit: #{n.description}")
                             console.log("Index: #{index}")
+                            console.log("Expected: #{n.expected}")
+                            console.log("Actual: #{n.actual}")
                         )
                     )
                     console.log("\n" + (
@@ -183,8 +185,11 @@ class $mate.testing.Test
                     actual == expected
             else
                 actual == expected
-        @unitResults.push(
+        newResult =
             type: determine(actual, expected)
             description: description
-        )
+        if newResult.type == false
+            newResult.actual = JSON.stringify(actual)
+            newResult.expected = JSON.stringify(expected)
+        @unitResults.push(newResult)
         @
