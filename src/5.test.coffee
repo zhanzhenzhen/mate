@@ -32,14 +32,15 @@ class $mate.testing.Test
         testArgName = "testArg_834942610148628375"
         do =>
             s = s.replace(/\([^\)]*\)/, "(#{testArgName})") # not global, only replace first "(...)"
-
         do =>
+            positions = []
             quote = null
             slashQuoteReady = true
             wordStarted = false
             i = 0
             while i < s.length
                 c = s[i]
+                oldSlashQuoteReady = slashQuoteReady
                 if quote == null
                     if "a" <= c <= "z" or "A" <= c <= "Z" or "0" <= c <= "9" or
                             c == "_" or c == "$" or c == ")" or c == "]"
@@ -47,6 +48,7 @@ class $mate.testing.Test
                     else if c == " " or c == "\t" or c == "\n" or c == "\r"
                     else
                         slashQuoteReady = true
+                oldWordStarted = wordStarted
                 if quote == null
                     if "a" <= c <= "z" or "A" <= c <= "Z" or "0" <= c <= "9" or
                             c == "_" or c == "$" or c == "."
@@ -60,7 +62,7 @@ class $mate.testing.Test
                 else if c == "'" and quote == null
                     quote = "single"
                     i++
-                else if c == "/" and quote == null and slashQuoteReady
+                else if c == "/" and quote == null and oldSlashQuoteReady
                     quote = "slash"
                     i++
                 else if (c == "\"" and quote == "double") or
@@ -70,49 +72,17 @@ class $mate.testing.Test
                     i++
                 else if c == "\\" and quote != null
                     i += 2
-                else if quote == null and not wordStarted
-                    if s.substr(i, 3) == "end"
-                    if c == "="
-                        parsed =
-                            type: "equal"
-                            str1: unitStr.substr(0, i).trim()
-                            str2: unitStr.substr(i + 1).trim()
-                        return
-
-
-        do =>
-            needsSearch = true
-            while needsSearch
-                needsSearch = false
-                console.log("jkdfgfdgsd")
-                s = s.replace(///
-                    ^
-                    (
-                        (?:
-                            (?: [^"'/] | [a-zA-Z0-9_$\])]\s*/ )+?
-                            (?:
-                                " (?: [^"\\] | \\. )* " |
-                                ' (?: [^'\\] | \\. )* ' |
-                                [^a-zA-Z0-9_$\])]\s* / (?:
-                                    [^/\\] | \\.
-                                )* /
-                            )?
-                        )*?
-                        (?:
-                            [^"'/.]\s+ |
-                            [^"'/.a-zA-Z0-9_$]\s* |
-                            [a-zA-Z0-9_$\])]\s*/\s*
-                        )
-                    )
-                    (end | equal | unit)
-                    ([^a-zA-Z0-9_$])
-                ///, (match, p1, p2, p3) =>
-                    needsSearch = true
-                    p1 + testArgName + "." + p2 + p3
-                )
-                console.log(s)
-            console.log("jkdf")
-        console.log(s)
+                else if quote == null and not oldWordStarted and "a" <= c <= "z"
+                    t = s.substr(i, 10)
+                    if t.indexOf("end") == 0 or t.indexOf("equal") == 0 or t.indexOf("unit") == 0
+                        positions.push(i)
+                    i++
+                else
+                    i++
+            positions.forEach((m, index) =>
+                pos = m + (testArgName.length + 1) * index
+                s = s.substr(0, pos) + testArgName + "." + s.substr(pos)
+            )
         do =>
             s = s.replace(///
                 #{testArgName}\.unit\s*\(\s*
