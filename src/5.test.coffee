@@ -5,18 +5,6 @@
 if not (typeof $mate == "object" and $mate != null)
     $mate = {}
 $mate.testing = {}
-# This project has a `String::matches` method very similar to this one,
-# but we must rewrite it here due to isolation.
-$mate.testing.matches = (str, regex) ->
-    adjustedRegex = new RegExp(regex.source, "g")
-    result = []
-    loop
-        match = adjustedRegex.exec(str)
-        if match?
-            result.push(match)
-        else
-            break
-    result
 class $mate.testing.Test
     constructor: (@description = "") ->
         @_children = []
@@ -29,10 +17,19 @@ class $mate.testing.Test
     set: (fun) ->
         @_fun = fun
         funStr = fun.toString()
+        # This is only to ensure the argument name will be not used by user.
+        # We must interprete the "pretty" function to an "ugly" function as an intermediate
+        # layer using this mechanism. The missing argument representing the test object
+        # in the "pretty" function will be added, as well as the missing dot notation in
+        # unit declarations.
+        # The key point is that the "pretty" function is legal. It fully complies with
+        # JavaScript (or CoffeeScript) grammars.
         testArgName = "testArg_834942610148628375"
+        # Recover argument.
         do =>
             # not global, only replace first "(...)"
             funStr = funStr.replace(/\([^\)]*\)/, "(#{testArgName})")
+        # Recover dot notation.
         # I used to use regex for this parser, but nearly all JS engine cannot execute it well.
         # Some report errors. Node even hangs up with CPU usage 100%. Very weird.
         # Maybe it's because this regex is very complicated, and nested. So I gave it up.
@@ -94,14 +91,22 @@ class $mate.testing.Test
                 pos = m + (testArgName.length + 1) * index
                 funStr = funStr.substr(0, pos) + testArgName + "." + funStr.substr(pos)
             )
+        # Recover the actual methods from the symbolic `unit` method.
         do =>
             funStr = funStr.replace(///
-                #{testArgName}\.unit\s*\(\s*
+                #{testArgName}\.unit \s* \( \s*
                 (
                     " (?: [^"\\] | \\. )* " |
                     ' (?: [^'\\] | \\. )* '
                 )
-            ///g, (match, p1) =>
+                (?:
+                    \s* , \s*
+                    (
+                        " (?: [^"\\] | \\. )* " |
+                        ' (?: [^'\\] | \\. )* '
+                    )
+                )? \s* \)
+            ///g, (match, p1, p2) =>
                 unitStr = eval(p1) # If use `JSON.parse` instead, single quotes string cannot be parsed.
                 parsed = null
                 newStr = null
@@ -140,10 +145,11 @@ class $mate.testing.Test
                                 return
                 do =>
                     if parsed.type == "equal"
-                        newStr = "#{testArgName}.equal(#{parsed.str1}, #{parsed.str2}"
+                        newStr = "#{testArgName}.equal(#{parsed.str1}, #{parsed.str2}, #{p2 ? p1})"
                 newStr
             )
-        console.log(funStr)
+        # `eval` here exactly meets our requirement. It also works in ES5 "strict mode",
+        # because it does not introduce new variables into the surrounding scope.
         # If an `eval` string has leading or trailing braces, then it must be enclosed
         # by parentheses, otherwise it can't be parsed or evaluated.
         @_interpretedFunction = eval("(#{funStr})")
@@ -231,17 +237,16 @@ class $mate.testing.Test
                     )
                     failureCount = 0
                     allTests.forEach((m) =>
-                        m.unitResults.filter((m) => m.type == false).forEach((n, index) =>
+                        m.unitResults.filter((m) => m.type == false).forEach((n) =>
                             failureCount++
                             ancestors = m.getAncestors()
                             ancestors.reverse()
                             longDescription = ancestors.concat([m]).map((m) => m.description).join(" --> ")
                             console.log("\n********** Failed Unit **********")
-                            console.log("Test: #{longDescription}")
-                            console.log("Unit: #{n.description}")
-                            console.log("Index: #{index}")
+                            console.log("    Test: #{longDescription}")
+                            console.log("    Unit: #{n.description}")
                             console.log("Expected: #{n.expected}")
-                            console.log("Actual: #{n.actual}")
+                            console.log("  Actual: #{n.actual}")
                         )
                     )
                     console.log("\n" + (

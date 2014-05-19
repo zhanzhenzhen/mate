@@ -36,21 +36,28 @@ Completed. 4 failures.
 if exports? and module?.exports?
     $mate = require("../mate")
     Test = $mate.testing.Test
-new Test().add("String.prototype test", ->
+new Test("root").add("String.prototype test", ->
     str = "hello world"
     equal(str.substr(4, 1), "o", "substr method")
     equal(str.split(" "), ["hello", "world"])
     unit(' str.substr(4,1)="o" ')
     unit(' str.split(" ")=["hello","world"] ')
-).add((t) ->
-    equal(Math.round(5.3), 5)
-).add((t) ->
-    equal(1 + 2 + 3, 7)
+    unit(' str.split(" ")=["hello","world"] ')
+).add(->
+    unit('Math.round(5.3)=5')
+).add(->
+    unit('1+2+3=7')
+).add(->
+    obj = {}
+    obj.unit = ->
+        Math.random()
+    obj.unit()
+    unit('  obj.unit>1=true')
 ).add(
     new Test("nested test").add("test 1 in nested test", ->
-        equal(false, false)
+        unit('false=false')
     ).add("test 2 in nested test", ->
-        equal(false, true)
+        unit("false=true", "simple boolean test")
     )
 ).addAsync("simple test 2", ->
     setTimeout(->
@@ -58,5 +65,5 @@ new Test().add("String.prototype test", ->
         end()
     , 2500)
 ).add(->
-    unit("(1===2)=true")
+    unit("(\"1\"===2)=true")
 ).run()
