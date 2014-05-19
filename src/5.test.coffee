@@ -37,6 +37,7 @@ class $mate.testing.Test
             quote = null
             slashQuoteReady = true
             wordStarted = false
+            dotAffected = false
             i = 0
             while i < s.length
                 c = s[i]
@@ -53,9 +54,15 @@ class $mate.testing.Test
                     if "a" <= c <= "z" or "A" <= c <= "Z" or "0" <= c <= "9" or
                             c == "_" or c == "$" or c == "."
                         wordStarted = true
-                    else if c == " " or c == "\t" or c == "\n" or c == "\r"
                     else
                         wordStarted = false
+                oldDotAffected = dotAffected
+                if quote == null
+                    if c == "."
+                        dotAffected = true
+                    else if c == " " or c == "\t" or c == "\n" or c == "\r"
+                    else
+                        dotAffected = false
                 if c == "\"" and quote == null
                     quote = "double"
                     i++
@@ -72,7 +79,7 @@ class $mate.testing.Test
                     i++
                 else if c == "\\" and quote != null
                     i += 2
-                else if quote == null and not oldWordStarted and "a" <= c <= "z"
+                else if quote == null and not oldWordStarted and not oldDotAffected and "a" <= c <= "z"
                     t = s.substr(i, 10)
                     if t.indexOf("end") == 0 or t.indexOf("equal") == 0 or t.indexOf("unit") == 0
                         positions.push(i)
