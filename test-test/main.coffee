@@ -36,27 +36,27 @@ Completed. 4 failures.
 if exports? and module?.exports?
     $mate = require("../mate")
     Test = $mate.testing.Test
-new Test().add("String.prototype test", (t) ->
+new Test().add("String.prototype test", ->
     str = "hello world"
-    t.equal(str.substr(4, 1), "o", "substr method")
-    t.equal(str.split(" "), ["hello", "world"])
-    t.unit(' str.substr(4,1)="o" ')
-    t.unit(' str.split(" ")=["hello","world"] ')
+    equal(str.substr(4, 1), "o", "substr method")
+    equal(str.split(" "), ["hello", "world"])
+    unit(' str.substr(4,1)="o" ')
+    unit(' str.split(" ")=["hello","world"] ')
 ).add((t) ->
-    t.equal(Math.round(5.3), 5)
+    equal(Math.round(5.3), 5)
 ).add((t) ->
-    t.equal(1 + 2 + 3, 7)
+    equal(1 + 2 + 3, 7)
 ).add(
-    new Test("nested test").add("test 1 in nested test", (t) ->
-        t.equal(false, false)
-    ).add("test 2 in nested test", (t) ->
-        t.equal(false, true)
+    new Test("nested test").add("test 1 in nested test", ->
+        equal(false, false)
+    ).add("test 2 in nested test", ->
+        equal(false, true)
     )
-).addAsync("simple test 2", (t) ->
+).addAsync("simple test 2", ->
     setTimeout(->
-        t.equal(true, true, "truthy unit")
-        t.end()
+        equal(true, true, "truthy unit")
+        end()
     , 2500)
-).add((t) ->
-    t.unit("(1===2)=true")
+).add(->
+    unit("(1===2)=true")
 ).run()

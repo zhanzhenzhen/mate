@@ -5,16 +5,167 @@
 if not (typeof $mate == "object" and $mate != null)
     $mate = {}
 $mate.testing = {}
+# This project has a `String::matches` method very similar to this one,
+# but we must rewrite it here due to isolation.
+$mate.testing.matches = (str, regex) ->
+    adjustedRegex = new RegExp(regex.source, "g")
+    result = []
+    loop
+        match = adjustedRegex.exec(str)
+        if match?
+            result.push(match)
+        else
+            break
+    result
 class $mate.testing.Test
     constructor: (@description = "") ->
         @_children = []
         @_fun = null
+        @_interpretedFunction = null
         @async = false
         @parent = null
         @unitResults = []
         @result = null
     set: (fun) ->
         @_fun = fun
+        s = fun.toString()
+        testArgName = "testArg_834942610148628375"
+        do =>
+            s = s.replace(/\([^\)]*\)/, "(#{testArgName})") # not global, only replace first "(...)"
+
+        do =>
+            quote = null
+            slashQuoteReady = true
+            wordStarted = false
+            i = 0
+            while i < s.length
+                c = s[i]
+                if quote == null
+                    if "a" <= c <= "z" or "A" <= c <= "Z" or "0" <= c <= "9" or
+                            c == "_" or c == "$" or c == ")" or c == "]"
+                        slashQuoteReady = false
+                    else if c == " " or c == "\t" or c == "\n" or c == "\r"
+                    else
+                        slashQuoteReady = true
+                if quote == null
+                    if "a" <= c <= "z" or "A" <= c <= "Z" or "0" <= c <= "9" or
+                            c == "_" or c == "$" or c == "."
+                        wordStarted = true
+                    else if c == " " or c == "\t" or c == "\n" or c == "\r"
+                    else
+                        wordStarted = false
+                if c == "\"" and quote == null
+                    quote = "double"
+                    i++
+                else if c == "'" and quote == null
+                    quote = "single"
+                    i++
+                else if c == "/" and quote == null and slashQuoteReady
+                    quote = "slash"
+                    i++
+                else if (c == "\"" and quote == "double") or
+                        (c == "'" and quote == "single") or
+                        (c == "/" and quote == "slash")
+                    quote = null
+                    i++
+                else if c == "\\" and quote != null
+                    i += 2
+                else if quote == null and not wordStarted
+                    if s.substr(i, 3) == "end"
+                    if c == "="
+                        parsed =
+                            type: "equal"
+                            str1: unitStr.substr(0, i).trim()
+                            str2: unitStr.substr(i + 1).trim()
+                        return
+
+
+        do =>
+            needsSearch = true
+            while needsSearch
+                needsSearch = false
+                console.log("jkdfgfdgsd")
+                s = s.replace(///
+                    ^
+                    (
+                        (?:
+                            (?: [^"'/] | [a-zA-Z0-9_$\])]\s*/ )+?
+                            (?:
+                                " (?: [^"\\] | \\. )* " |
+                                ' (?: [^'\\] | \\. )* ' |
+                                [^a-zA-Z0-9_$\])]\s* / (?:
+                                    [^/\\] | \\.
+                                )* /
+                            )?
+                        )*?
+                        (?:
+                            [^"'/.]\s+ |
+                            [^"'/.a-zA-Z0-9_$]\s* |
+                            [a-zA-Z0-9_$\])]\s*/\s*
+                        )
+                    )
+                    (end | equal | unit)
+                    ([^a-zA-Z0-9_$])
+                ///, (match, p1, p2, p3) =>
+                    needsSearch = true
+                    p1 + testArgName + "." + p2 + p3
+                )
+                console.log(s)
+            console.log("jkdf")
+        console.log(s)
+        do =>
+            s = s.replace(///
+                #{testArgName}\.unit\s*\(\s*
+                (
+                    " (?: [^"\\] | \\. )* " |
+                    ' (?: [^'\\] | \\. )* '
+                )
+            ///g, (match, p1) =>
+                unitStr = eval(p1)
+                parsed = null
+                newStr = null
+                do =>
+                    quote = null
+                    parenthesis = 0
+                    bracket = 0
+                    brace = 0
+                    for i in [0...unitStr.length]
+                        c = unitStr[i]
+                        if c == "\"" and quote == null
+                            quote = "double"
+                        else if c == "'" and quote == null
+                            quote = "single"
+                        else if (c == "\"" and quote == "double") or
+                                (c == "'" and quote == "single")
+                            quote = null
+                        else if c == "("
+                            parenthesis++
+                        else if c == "["
+                            bracket++
+                        else if c == "{"
+                            brace++
+                        else if c == ")"
+                            parenthesis--
+                        else if c == "]"
+                            bracket--
+                        else if c == "}"
+                            brace--
+                        else if quote == null and parenthesis == bracket == brace == 0
+                            if c == "="
+                                parsed =
+                                    type: "equal"
+                                    str1: unitStr.substr(0, i).trim()
+                                    str2: unitStr.substr(i + 1).trim()
+                                return
+                # An `eval` string must be enclosed by parentheses, otherwise
+                # an object literal (i.e. wrapped in braces) can't be evaluated.
+                do =>
+                    if parsed.type == "equal"
+                        newStr = "#{testArgName}.equal(#{parsed.str1}, #{parsed.str2}"
+                newStr
+            )
+        console.log(s)
+        @_interpretedFunction = eval("(#{s})")
         @
     get: ->
         @_fun
@@ -49,7 +200,7 @@ class $mate.testing.Test
             # We use `setTimeout(..., 0)` only to make all tests "unordered", at least theoretically.
             setTimeout(=>
                 doTest = =>
-                    @_fun(@)
+                    @_interpretedFunction(@)
                     if not @async then @end(type: true)
                 if exports? and module?.exports?
                     domain = require("domain").create()
