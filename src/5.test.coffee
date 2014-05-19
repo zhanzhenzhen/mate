@@ -28,19 +28,23 @@ class $mate.testing.Test
         @result = null
     set: (fun) ->
         @_fun = fun
-        s = fun.toString()
+        funStr = fun.toString()
         testArgName = "testArg_834942610148628375"
         do =>
-            s = s.replace(/\([^\)]*\)/, "(#{testArgName})") # not global, only replace first "(...)"
+            # not global, only replace first "(...)"
+            funStr = funStr.replace(/\([^\)]*\)/, "(#{testArgName})")
+        # I used to use regex for this parser, but nearly all JS engine cannot execute it well.
+        # Some report errors. Node even hangs up with CPU usage 100%. Very weird.
+        # Maybe it's because this regex is very complicated, and nested. So I gave it up.
         do =>
             positions = []
             quote = null
-            slashQuoteReady = true
+            slashQuoteReady = true # indicates whether a slash is related to regex, or math division
             wordStarted = false
-            dotAffected = false
+            dotAffected = false # this is to do with things like `abc  .   def`
             i = 0
-            while i < s.length
-                c = s[i]
+            while i < funStr.length
+                c = funStr[i]
                 oldSlashQuoteReady = slashQuoteReady
                 if quote == null
                     if "a" <= c <= "z" or "A" <= c <= "Z" or "0" <= c <= "9" or
@@ -80,25 +84,25 @@ class $mate.testing.Test
                 else if c == "\\" and quote != null
                     i += 2
                 else if quote == null and not oldWordStarted and not oldDotAffected and "a" <= c <= "z"
-                    t = s.substr(i, 10)
-                    if t.indexOf("end") == 0 or t.indexOf("equal") == 0 or t.indexOf("unit") == 0
+                    s = funStr.substr(i, 10) # limit to 10 chars for better performance
+                    if s.indexOf("end") == 0 or s.indexOf("equal") == 0 or s.indexOf("unit") == 0
                         positions.push(i)
                     i++
                 else
                     i++
             positions.forEach((m, index) =>
                 pos = m + (testArgName.length + 1) * index
-                s = s.substr(0, pos) + testArgName + "." + s.substr(pos)
+                funStr = funStr.substr(0, pos) + testArgName + "." + funStr.substr(pos)
             )
         do =>
-            s = s.replace(///
+            funStr = funStr.replace(///
                 #{testArgName}\.unit\s*\(\s*
                 (
                     " (?: [^"\\] | \\. )* " |
                     ' (?: [^'\\] | \\. )* '
                 )
             ///g, (match, p1) =>
-                unitStr = eval(p1)
+                unitStr = eval(p1) # If use `JSON.parse` instead, single quotes string cannot be parsed.
                 parsed = null
                 newStr = null
                 do =>
@@ -134,15 +138,15 @@ class $mate.testing.Test
                                     str1: unitStr.substr(0, i).trim()
                                     str2: unitStr.substr(i + 1).trim()
                                 return
-                # An `eval` string must be enclosed by parentheses, otherwise
-                # an object literal (i.e. wrapped in braces) can't be evaluated.
                 do =>
                     if parsed.type == "equal"
                         newStr = "#{testArgName}.equal(#{parsed.str1}, #{parsed.str2}"
                 newStr
             )
-        console.log(s)
-        @_interpretedFunction = eval("(#{s})")
+        console.log(funStr)
+        # If an `eval` string has leading or trailing braces, then it must be enclosed
+        # by parentheses, otherwise it can't be parsed or evaluated.
+        @_interpretedFunction = eval("(#{funStr})")
         @
     get: ->
         @_fun
@@ -254,44 +258,6 @@ class $mate.testing.Test
     end: (result) ->
         @result = result ? {type: true}
         @
-    unit: (body, description = "") ->
-        parsed = null
-        do =>
-            quote = null
-            parenthesis = 0
-            bracket = 0
-            brace = 0
-            for i in [0...body.length]
-                if body[i] == "\"" and quote == null
-                    quote = "double"
-                else if body[i] == "'" and quote == null
-                    quote = "single"
-                else if (body[i] == "\"" and quote == "double") or (body[i] == "'" and quote == "single")
-                    quote = null
-                else if body[i] == "("
-                    parenthesis++
-                else if body[i] == "["
-                    bracket++
-                else if body[i] == "{"
-                    brace++
-                else if body[i] == ")"
-                    parenthesis--
-                else if body[i] == "]"
-                    bracket--
-                else if body[i] == "}"
-                    brace--
-                else if quote == null and parenthesis == bracket == brace == 0
-                    if body[i] == "="
-                        parsed =
-                            type: "equal"
-                            str1: body.substr(0, i).trim()
-                            str2: body.substr(i + 1).trim()
-                        return
-        # An `eval` string must be enclosed by parentheses, otherwise
-        # an object literal (i.e. wrapped in braces) can't be evaluated.
-        do =>
-            if parsed.type == "equal"
-                @equal(eval("(#{parsed.str1})"), eval("(#{parsed.str2})"), body)
     equal: (actual, expected, description = "") ->
         determine = (actual, expected) =>
             if Array.isArray(actual) and Array.isArray(expected)
