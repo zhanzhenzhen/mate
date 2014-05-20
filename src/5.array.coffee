@@ -133,7 +133,7 @@ featureLoaders.push(->
     # These methods use sorting. For `keySelector`, note that the keys must be either
     # numbers, booleans, or strings (can't be mixed of these). [
     Array::group = (keySelector, resultSelector) ->
-        if @.isEmpty() then return []
+        if @isEmpty() then return []
         sorted = @funSort(keySelector)
         groups = []
         comparedKey = Array._elementOrUseSelector(sorted.first(), keySelector)

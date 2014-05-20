@@ -36,7 +36,8 @@ Completed. 4 failures.
 if exports? and module?.exports?
     $mate = require("../mate")
     Test = $mate.testing.Test
-new Test("root").add("String.prototype test", ->
+new Test("root"
+).add("String.prototype test", ->
     str = "hello world"
     equal(str.substr(4, 1), "o", "substr method")
     equal(str.split(" "), ["hello", "world"])

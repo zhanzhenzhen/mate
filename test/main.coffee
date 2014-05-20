@@ -8,7 +8,7 @@ $mate.test.add([
     (state) ->
         class Obj
             constructor: ->
-                @onClick = EventField()
+                @onClick = eventField()
             makeClick: -> @onClick.fire()
         obj = new Obj()
         obj.onClick.bind(-> state(true))
