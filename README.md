@@ -23,7 +23,7 @@ Comparison
     </tr>
     <tr>
         <td>
-            Unit testing (via "Vows"):
+            Unit testing (using "Vows"):
             <pre>
 vows.describe("root").addBatch(
   "String methods":
@@ -52,7 +52,7 @@ new Test("root")
         <td>
             Check if a string starts with a substring:
             <pre>"hey you".indexOf("hey") == 0</pre>
-            Or use underscore.js:
+            Or use "Underscore.js":
             <pre>_.str.startsWith("hey you", "hey")</pre>
         </td>
         <td><pre>"hey you".startsWith("hey")</pre></td>
