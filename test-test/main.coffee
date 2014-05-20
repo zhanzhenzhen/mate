@@ -2,34 +2,36 @@
 
 This is to test the "test". The output should look something like that:
 
-2014-05-02T09:32:42.933Z Success: 6, Failure: 3, Pending: 2
-2014-05-02T09:32:43.931Z Success: 6, Failure: 4, Pending: 1
-2014-05-02T09:32:44.933Z Success: 6, Failure: 4, Pending: 1
-2014-05-02T09:32:45.934Z Success: 7, Failure: 4, Pending: 0
+2014-05-20T11:17:26.103Z OK: 7, Exception: 0, Pending: 1
+2014-05-20T11:17:27.102Z OK: 7, Exception: 0, Pending: 1
+2014-05-20T11:17:28.103Z OK: 7, Exception: 0, Pending: 1
+2014-05-20T11:17:29.103Z OK: 8, Exception: 0, Pending: 0
 
-Failure "simple test 1":
-function () {
-      return 1 + 2 + 3 === 7;
-    }
+********** Failed Unit **********
+    Test: root --> 
+    Unit: 1+2+3=7
+Expected: 7
+  Actual: 6
 
-Failure "simple test 1":
-function () {
-      return assert(false);
-    }
-...
+********** Failed Unit **********
+    Test: root --> 
+    Unit:   obj.unit>1=true
+Expected: true
+  Actual: false
 
-Failure "simple test 1":
-function () {
-      throw new Error();
-    }
-...
+********** Failed Unit **********
+    Test: root --> nested test --> test 2 in nested test
+    Unit: simple boolean test
+Expected: true
+  Actual: false
 
-Failure "Test_0":
-function () {
-    return true === false;
-  }
+********** Failed Unit **********
+    Test: root --> 
+    Unit: ("1"===2)=true
+Expected: true
+  Actual: false
 
-Completed. 4 failures.
+Completed. 0 exceptional tests. 4 failed units.
 
 ###
 
@@ -55,7 +57,8 @@ new Test("root"
     obj.unit()
     unit('  obj.unit>1=true')
 ).add(
-    new Test("nested test").add("test 1 in nested test", ->
+    new Test("nested test"
+    ).add("test 1 in nested test", ->
         unit('false=false')
     ).add("test 2 in nested test", ->
         unit("false=true", "simple boolean test")

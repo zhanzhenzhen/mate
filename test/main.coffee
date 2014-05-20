@@ -1,16 +1,17 @@
-# TODO: Lots of work needed! The `test` feature has just been added.
+# TODO: Lots of work needed! The testing feature has just been added.
 
 if exports? and module?.exports?
-    require("../mate")
-    assert = require("assert")
-$mate.test.add([
-    -> new Date("2014-02-03T18:19:25.987").equals(new Date("2014-02-03T18:19:25.987"))
-    (state) ->
-        class Obj
-            constructor: ->
-                @onClick = eventField()
-            makeClick: -> @onClick.fire()
-        obj = new Obj()
-        obj.onClick.bind(-> state(true))
-        obj.makeClick()
-]).run()
+    require("../mate").enableAllFeatures()
+Test = $mate.testing.Test
+new Test("root"
+).add(->
+    unit(' new Date("2014-02-03T18:19:25.987").equals(new Date("2014-02-03T18:19:25.987"))=true ')
+).addAsync(->
+    class Obj
+        constructor: ->
+            @onClick = eventField()
+        makeClick: -> @onClick.fire()
+    obj = new Obj()
+    obj.onClick.bind(-> end())
+    obj.makeClick()
+).run()
