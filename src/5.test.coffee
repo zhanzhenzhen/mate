@@ -176,6 +176,9 @@ class $mate.testing.Test
         @_children.push(newChild)
         @
     addAsync: (description, fun) ->
+        if not fun?
+            fun = description
+            description = ""
         @add(description, fun, true)
         @
     getChildren: ->
