@@ -16,143 +16,149 @@ class $mate.testing.Test
         @result = null
     set: (fun) ->
         @_fun = fun
-        funStr = fun.toString()
-        # This is only to ensure the argument name will be not used by user.
-        # We must interprete the "pretty" function to an "ugly" function as an intermediate
-        # layer using this mechanism. The missing argument representing the test object
-        # in the "pretty" function will be added, as well as the missing dot notation in
-        # unit declarations.
-        # The key point is that the "pretty" function is legal. It fully complies with
-        # JavaScript (or CoffeeScript) grammars.
-        testArgName = "testArg_834942610148628375"
-        # Recover argument.
+        funStr_834942610148628375 = null
+        # Why wrap all these things into a `do`? Because we want to avoid disclosing variables
+        # to `eval`. The only variable disclosed is `funStr_834942610148628375`, which user
+        # is unlikely to use.
         do =>
-            # not global, only replace first "(...)"
-            funStr = funStr.replace(/\([^\)]*\)/, "(#{testArgName})")
-        # Recover dot notation.
-        # I used to use regex for this parser, but nearly all JS engine cannot execute it well.
-        # Some report errors. Node even hangs up with CPU usage 100%. Very weird.
-        # Maybe it's because this regex is very complicated, and nested. So I gave it up.
-        do =>
-            positions = []
-            quote = null
-            slashQuoteReady = true # indicates whether a slash is related to regex, or math division
-            wordStarted = false
-            dotAffected = false # this is to do with things like `abc  .   def`
-            i = 0
-            while i < funStr.length
-                c = funStr[i]
-                oldSlashQuoteReady = slashQuoteReady
-                if quote == null
-                    if "a" <= c <= "z" or "A" <= c <= "Z" or "0" <= c <= "9" or
-                            c == "_" or c == "$" or c == ")" or c == "]"
-                        slashQuoteReady = false
-                    else if c == " " or c == "\t" or c == "\n" or c == "\r"
+            funStr = fun.toString()
+            # This is only to ensure the argument name will be not used by user.
+            # We must interprete the "pretty" function to an "ugly" function as an intermediate
+            # layer using this mechanism. The missing argument representing the test object
+            # in the "pretty" function will be added, as well as the missing dot notation in
+            # unit declarations.
+            # The key point is that the "pretty" function is legal. It fully complies with
+            # JavaScript (or CoffeeScript) grammars.
+            testArgName = "testArg_834942610148628375"
+            # Recover argument.
+            do =>
+                # not global, only replace first "(...)"
+                funStr = funStr.replace(/\([^\)]*\)/, "(#{testArgName})")
+            # Recover dot notation.
+            # I used to use regex for this parser, but nearly all JS engine cannot execute it well.
+            # Some report errors. Node even hangs up with CPU usage 100%. Very weird.
+            # Maybe it's because this regex is very complicated, and nested. So I gave it up.
+            do =>
+                positions = []
+                quote = null
+                slashQuoteReady = true # indicates whether a slash is related to regex, or math division
+                wordStarted = false
+                dotAffected = false # this is to do with things like `abc  .   def`
+                i = 0
+                while i < funStr.length
+                    c = funStr[i]
+                    oldSlashQuoteReady = slashQuoteReady
+                    if quote == null
+                        if "a" <= c <= "z" or "A" <= c <= "Z" or "0" <= c <= "9" or
+                                c == "_" or c == "$" or c == ")" or c == "]"
+                            slashQuoteReady = false
+                        else if c == " " or c == "\t" or c == "\n" or c == "\r"
+                        else
+                            slashQuoteReady = true
+                    oldWordStarted = wordStarted
+                    if quote == null
+                        if "a" <= c <= "z" or "A" <= c <= "Z" or "0" <= c <= "9" or
+                                c == "_" or c == "$" or c == "."
+                            wordStarted = true
+                        else
+                            wordStarted = false
+                    oldDotAffected = dotAffected
+                    if quote == null
+                        if c == "."
+                            dotAffected = true
+                        else if c == " " or c == "\t" or c == "\n" or c == "\r"
+                        else
+                            dotAffected = false
+                    if c == "\"" and quote == null
+                        quote = "double"
+                        i++
+                    else if c == "'" and quote == null
+                        quote = "single"
+                        i++
+                    else if c == "/" and quote == null and oldSlashQuoteReady
+                        quote = "slash"
+                        i++
+                    else if (c == "\"" and quote == "double") or
+                            (c == "'" and quote == "single") or
+                            (c == "/" and quote == "slash")
+                        quote = null
+                        i++
+                    else if c == "\\" and quote != null
+                        i += 2
+                    else if quote == null and not oldWordStarted and not oldDotAffected and "a" <= c <= "z"
+                        s = funStr.substr(i, 10) # limit to 10 chars for better performance
+                        if s.indexOf("end") == 0 or s.indexOf("equal") == 0 or s.indexOf("unit") == 0
+                            positions.push(i)
+                        i++
                     else
-                        slashQuoteReady = true
-                oldWordStarted = wordStarted
-                if quote == null
-                    if "a" <= c <= "z" or "A" <= c <= "Z" or "0" <= c <= "9" or
-                            c == "_" or c == "$" or c == "."
-                        wordStarted = true
-                    else
-                        wordStarted = false
-                oldDotAffected = dotAffected
-                if quote == null
-                    if c == "."
-                        dotAffected = true
-                    else if c == " " or c == "\t" or c == "\n" or c == "\r"
-                    else
-                        dotAffected = false
-                if c == "\"" and quote == null
-                    quote = "double"
-                    i++
-                else if c == "'" and quote == null
-                    quote = "single"
-                    i++
-                else if c == "/" and quote == null and oldSlashQuoteReady
-                    quote = "slash"
-                    i++
-                else if (c == "\"" and quote == "double") or
-                        (c == "'" and quote == "single") or
-                        (c == "/" and quote == "slash")
-                    quote = null
-                    i++
-                else if c == "\\" and quote != null
-                    i += 2
-                else if quote == null and not oldWordStarted and not oldDotAffected and "a" <= c <= "z"
-                    s = funStr.substr(i, 10) # limit to 10 chars for better performance
-                    if s.indexOf("end") == 0 or s.indexOf("equal") == 0 or s.indexOf("unit") == 0
-                        positions.push(i)
-                    i++
-                else
-                    i++
-            positions.forEach((m, index) =>
-                pos = m + (testArgName.length + 1) * index
-                funStr = funStr.substr(0, pos) + testArgName + "." + funStr.substr(pos)
-            )
-        # Recover the actual methods from the symbolic `unit` method.
-        do =>
-            funStr = funStr.replace(///
-                #{testArgName}\.unit \s* \( \s*
-                (
-                    " (?: [^"\\] | \\. )* " |
-                    ' (?: [^'\\] | \\. )* '
+                        i++
+                positions.forEach((m, index) =>
+                    pos = m + (testArgName.length + 1) * index
+                    funStr = funStr.substr(0, pos) + testArgName + "." + funStr.substr(pos)
                 )
-                (?:
-                    \s* , \s*
+            # Recover the actual methods from the symbolic `unit` method.
+            do =>
+                funStr = funStr.replace(///
+                    #{testArgName}\.unit \s* \( \s*
                     (
                         " (?: [^"\\] | \\. )* " |
                         ' (?: [^'\\] | \\. )* '
                     )
-                )? \s* \)
-            ///g, (match, p1, p2) =>
-                unitStr = eval(p1) # If use `JSON.parse` instead, single quotes string cannot be parsed.
-                parsed = null
-                newStr = null
-                do =>
-                    quote = null
-                    parenthesis = 0
-                    bracket = 0
-                    brace = 0
-                    for i in [0...unitStr.length]
-                        c = unitStr[i]
-                        if c == "\"" and quote == null
-                            quote = "double"
-                        else if c == "'" and quote == null
-                            quote = "single"
-                        else if (c == "\"" and quote == "double") or
-                                (c == "'" and quote == "single")
-                            quote = null
-                        else if c == "("
-                            parenthesis++
-                        else if c == "["
-                            bracket++
-                        else if c == "{"
-                            brace++
-                        else if c == ")"
-                            parenthesis--
-                        else if c == "]"
-                            bracket--
-                        else if c == "}"
-                            brace--
-                        else if quote == null and parenthesis == bracket == brace == 0
-                            if c == "="
-                                parsed =
-                                    type: "equal"
-                                    str1: unitStr.substr(0, i).trim()
-                                    str2: unitStr.substr(i + 1).trim()
-                                return
-                do =>
-                    if parsed.type == "equal"
-                        newStr = "#{testArgName}.equal(#{parsed.str1}, #{parsed.str2}, #{p2 ? p1})"
-                newStr
-            )
+                    (?:
+                        \s* , \s*
+                        (
+                            " (?: [^"\\] | \\. )* " |
+                            ' (?: [^'\\] | \\. )* '
+                        )
+                    )? \s* \)
+                ///g, (match, p1, p2) =>
+                    unitStr = eval(p1) # If use `JSON.parse` instead, single quotes string cannot be parsed.
+                    parsed = null
+                    newStr = null
+                    do =>
+                        quote = null
+                        parenthesis = 0
+                        bracket = 0
+                        brace = 0
+                        for i in [0...unitStr.length]
+                            c = unitStr[i]
+                            if c == "\"" and quote == null
+                                quote = "double"
+                            else if c == "'" and quote == null
+                                quote = "single"
+                            else if (c == "\"" and quote == "double") or
+                                    (c == "'" and quote == "single")
+                                quote = null
+                            else if c == "("
+                                parenthesis++
+                            else if c == "["
+                                bracket++
+                            else if c == "{"
+                                brace++
+                            else if c == ")"
+                                parenthesis--
+                            else if c == "]"
+                                bracket--
+                            else if c == "}"
+                                brace--
+                            else if quote == null and parenthesis == bracket == brace == 0
+                                if c == "="
+                                    parsed =
+                                        type: "equal"
+                                        str1: unitStr.substr(0, i).trim()
+                                        str2: unitStr.substr(i + 1).trim()
+                                    return
+                    do =>
+                        if parsed.type == "equal"
+                            newStr = "#{testArgName}.equal(#{parsed.str1}, #{parsed.str2}, #{p2 ? p1})"
+                    newStr
+                )
+            funStr_834942610148628375 = funStr
         # `eval` here exactly meets our requirement. It also works in ES5 "strict mode",
         # because it does not introduce new variables into the surrounding scope.
         # If an `eval` string has leading or trailing braces, then it must be enclosed
         # by parentheses, otherwise it can't be parsed or evaluated.
-        @_interpretedFunction = eval("(#{funStr})")
+        @_interpretedFunction = eval("(#{funStr_834942610148628375})")
         @
     get: ->
         @_fun
