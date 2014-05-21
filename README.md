@@ -24,8 +24,8 @@ Comparison
     <tr>
         <td>
             Unit testing (using "Vows"):
-            <pre>
-vows.describe("root").addBatch(
+<pre>
+vows.describe("main").addBatch(
   "String methods":
     topic: -&gt;
       "hello world"
@@ -37,15 +37,18 @@ vows.describe("root").addBatch(
      (topic) -&gt;
       assert.strictEqual(
         topic.substr(6, 3), "wor")
-)</pre>
+)
+</pre>
         </td>
-        <td><pre>
-new Test("root")
+        <td>
+<pre>
+new Test("main")
 .add("String methods", -&gt;
   s = "hello world"
   unit(' s.charAt(3)="l" ')
   unit(' s.substr(6,3)="wor" ')
-)</pre>
+)
+</pre>
         </td>
     </tr>
     <tr>
