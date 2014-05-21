@@ -35,6 +35,7 @@ Completed. 0 exceptional tests. 4 failed units.
 
 ###
 
+global.equall = -> true
 if exports? and module?.exports?
     $mate = require("../mate")
     Test = $mate.testing.Test
@@ -46,6 +47,7 @@ new Test("root"
     unit(' str.substr(4,1)="o" ')
     unit(' str.split(" ")=["hello","world"] ')
     unit(' str.split(" ")=["hello","world"] ')
+    equall()
 ).add(->
     unit('Math.round(5.3)=5')
 ).add(->

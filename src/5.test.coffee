@@ -87,7 +87,7 @@ class $mate.testing.Test
                         i += 2
                     else if quote == null and not oldWordStarted and not oldDotAffected and "a" <= c <= "z"
                         s = funStr.substr(i, 10) # limit to 10 chars for better performance
-                        if s.indexOf("finish") == 0 or s.indexOf("equal") == 0 or s.indexOf("unit") == 0
+                        if /^(finish|equal|unit)[^a-zA-Z0-9_$]/g.test(s)
                             positions.push(i)
                         i++
                     else
@@ -154,6 +154,9 @@ class $mate.testing.Test
                     newStr
                 )
             funStr_834942610148628375 = funStr
+            # TODO: Maybe a regex is needed? If we later implement another method
+            # named as `finishSomething`, then it won't work correctly. But most likely we
+            # will never implement such methods.
             @async = funStr.indexOf("#{testArgName}.finish") != -1
         # `eval` here exactly meets our requirement. It also works in ES5 "strict mode",
         # because it does not introduce new variables into the surrounding scope.
