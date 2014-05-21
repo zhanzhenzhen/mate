@@ -2,10 +2,10 @@
 
 This is to test the "test". The output should look something like that:
 
-2014-05-20T11:17:26.103Z OK: 7, Exception: 0, Pending: 1
-2014-05-20T11:17:27.102Z OK: 7, Exception: 0, Pending: 1
-2014-05-20T11:17:28.103Z OK: 7, Exception: 0, Pending: 1
-2014-05-20T11:17:29.103Z OK: 8, Exception: 0, Pending: 0
+2014-05-21T09:48:13.003Z OK: 7, Exception: 0, Pending: 1
+2014-05-21T09:48:14.001Z OK: 7, Exception: 0, Pending: 1
+2014-05-21T09:48:15.002Z OK: 7, Exception: 0, Pending: 1
+2014-05-21T09:48:16.002Z OK: 8, Exception: 0, Pending: 0
 
 ********** Failed Unit **********
     Test: root --> 
@@ -15,7 +15,7 @@ Expected: 7
 
 ********** Failed Unit **********
     Test: root --> 
-    Unit:   obj.unit>1=true
+    Unit:   (obj.unit>1)=true
 Expected: true
   Actual: false
 
@@ -55,7 +55,7 @@ new Test("root"
     obj.unit = ->
         Math.random()
     obj.unit()
-    unit('  obj.unit>1=true')
+    unit('  (obj.unit>1)=true')
 ).add(
     new Test("nested test"
     ).add("test 1 in nested test", ->
