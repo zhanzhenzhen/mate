@@ -87,7 +87,7 @@ class $mate.testing.Test
                         i += 2
                     else if quote == null and not oldWordStarted and not oldDotAffected and "a" <= c <= "z"
                         s = funStr.substr(i, 10) # limit to 10 chars for better performance
-                        if s.indexOf("end") == 0 or s.indexOf("equal") == 0 or s.indexOf("unit") == 0
+                        if s.indexOf("finish") == 0 or s.indexOf("equal") == 0 or s.indexOf("unit") == 0
                             positions.push(i)
                         i++
                     else
@@ -154,6 +154,7 @@ class $mate.testing.Test
                     newStr
                 )
             funStr_834942610148628375 = funStr
+            @async = funStr.indexOf("#{testArgName}.finish") != -1
         # `eval` here exactly meets our requirement. It also works in ES5 "strict mode",
         # because it does not introduce new variables into the surrounding scope.
         # If an `eval` string has leading or trailing braces, then it must be enclosed
@@ -162,24 +163,16 @@ class $mate.testing.Test
         @
     get: ->
         @_fun
-    add: (description, fun, async) ->
+    add: (description, fun) ->
         if typeof description == "object"
             newChild = description
         else
             if typeof description != "string"
-                async = fun ? false
                 fun = description
                 description = ""
             newChild = new $mate.testing.Test(description).set(fun)
-            newChild.async = async
         newChild.parent = @
         @_children.push(newChild)
-        @
-    addAsync: (description, fun) ->
-        if not fun?
-            fun = description
-            description = ""
-        @add(description, fun, true)
         @
     getChildren: ->
         # use a shallow copy to encapsule `_children` to prevent direct operation on the array
@@ -197,11 +190,11 @@ class $mate.testing.Test
             setTimeout(=>
                 doTest = =>
                     @_interpretedFunction(@)
-                    if not @async then @end(type: true)
+                    if not @async then @finish(type: true)
                 if exports? and module?.exports?
                     domain = require("domain").create()
                     domain.on("error", (error) =>
-                        @end(
+                        @finish(
                             type: false
                             errorMessage: """
                                 Error Name: #{error.name}
@@ -215,7 +208,7 @@ class $mate.testing.Test
                     try
                         doTest()
                     catch
-                        @end(type: false)
+                        @finish(type: false)
             , 0)
         @getChildren().forEach((m) => m.run(false))
         if showsMessage
@@ -269,7 +262,7 @@ class $mate.testing.Test
             timer = setInterval(timerJob, 1000)
             setTimeout(timerJob, 0)
         @
-    end: (result) ->
+    finish: (result) ->
         @result = result ? {type: true}
         @
     equal: (actual, expected, description = "") ->

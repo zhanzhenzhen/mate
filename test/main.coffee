@@ -6,12 +6,12 @@ Test = $mate.testing.Test
 new Test("root"
 ).add(->
     unit(' new Date("2014-02-03T18:19:25.987").equals(new Date("2014-02-03T18:19:25.987"))=true ')
-).addAsync(->
+).add(->
     class Obj
         constructor: ->
             @onClick = eventField()
         makeClick: -> @onClick.fire()
     obj = new Obj()
-    obj.onClick.bind(-> end())
+    obj.onClick.bind(-> finish())
     obj.makeClick()
 ).run()

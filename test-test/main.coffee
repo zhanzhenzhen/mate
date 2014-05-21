@@ -63,10 +63,10 @@ new Test("root"
     ).add("test 2 in nested test", ->
         unit("false=true", "simple boolean test")
     )
-).addAsync("simple test 2", ->
+).add("simple test 2", ->
     setTimeout(->
         equal(true, true, "truthy unit")
-        end()
+        finish()
     , 2500)
 ).add(->
     unit("(\"1\"===2)=true")
