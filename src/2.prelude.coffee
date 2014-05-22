@@ -8,5 +8,7 @@ $mate.environmentType =
     else
         undefined
 $mate.enableAllFeatures = ->
+    if $mate.environmentType == "browser"
+        window.global = window
     global.$mate = $mate
     featureLoaders.forEach((m) -> m())

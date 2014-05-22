@@ -2,8 +2,6 @@
 # It also brings some ECMAScript 6 features (considered as "future compatibility").
 
 featureLoaders.push(->
-    if $mate.environmentType == "browser" and window.global == undefined
-        window.global = window
     # This is in ECMAScript 6. Only Firefox natively supports this.
     if Number.EPSILON == undefined
         Number.EPSILON = 2.2204460492503130808472633361816e-16

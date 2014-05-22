@@ -5,6 +5,8 @@
 if not (typeof $mate == "object" and $mate != null)
     $mate = {}
 $mate.testing = {}
+if not (typeof featureLoaders == "object" and featureLoaders != null and Array.isArray(featureLoaders))
+    featureLoaders = []
 class $mate.testing.Test
     constructor: (@description = "") ->
         @_children = []
@@ -297,3 +299,6 @@ class $mate.testing.Test
             newResult.expected = JSON.stringify(expected)
         @unitResults.push(newResult)
         @
+featureLoaders.push(->
+    global.Test = $mate.testing.Test
+)

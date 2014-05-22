@@ -2,7 +2,6 @@
 
 if exports? and module?.exports?
     require("../mate").enableAllFeatures()
-Test = $mate.testing.Test
 new Test("root"
 ).add(->
     unit(' new Date("2014-02-03T18:19:25.987").equals(new Date("2014-02-03T18:19:25.987"))=true ')
