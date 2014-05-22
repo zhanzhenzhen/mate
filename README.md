@@ -54,38 +54,68 @@ new Test("main")
     <tr>
         <td>
             Check if a string starts with a substring:
-            <pre>"hey you".indexOf("hey") == 0</pre>
+<pre>
+"hey you".indexOf("hey") == 0
+</pre>
             Or use "Underscore.js":
-            <pre>_.str.startsWith("hey you", "hey")</pre>
+<pre>
+_.str.startsWith("hey you", "hey")
+</pre>
         </td>
-        <td><pre>"hey you".startsWith("hey")</pre></td>
+        <td>
+<pre>
+"hey you".startsWith("hey")
+</pre>
+        </td>
     </tr>
     <tr>
         <td>
             Let <i>myArray</i> be [0,0,0,...] (length=100)
-            <pre>myArray = (0 for i in [0...100])</pre>
+<pre>
+myArray = (0 for i in [0...100])
+</pre>
         </td>
-        <td><pre>myArray = spread(0, 100)</pre></td>
+        <td>
+<pre>
+myArray = spread(0, 100)
+</pre>
+        </td>
     </tr>
     <tr>
         <td>
             Let <i>time</i> be 5 seconds after the current time.
-            <pre>time = new Date(new Date().getTime()
-  + 5000)</pre>
+<pre>
+time = new Date(new Date().getTime()
+  + 5000)
+</pre>
             or
-            <pre>time = new Date(Date.now() + 5000)</pre>
+<pre>
+time = new Date(Date.now() + 5000)
+</pre>
             or
-            <pre>time = new Date(new Date()
-  - (-5000))</pre>
+<pre>
+time = new Date(new Date()
+  - (-5000))
+</pre>
         </td>
-        <td><pre>time = new Date().add(5000)</pre></td>
+        <td>
+<pre>
+time = new Date().add(5000)
+</pre>
+        </td>
     </tr>
     <tr>
         <td>
             Let it throw an error.
-            <pre>throw new Error()</pre>
+<pre>
+throw new Error()
+</pre>
         </td>
-        <td><pre>fail()</pre></td>
+        <td>
+<pre>
+fail()
+</pre>
+        </td>
     </tr>
     <tr>
         <td>...　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　</td>
