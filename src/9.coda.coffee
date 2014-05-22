@@ -1,5 +1,5 @@
 if $mate.environmentType == "browser"
-    global.$mate = $mate
+    window.$mate = $mate
 else if $mate.environmentType == "node"
     module.exports = $mate
 else
