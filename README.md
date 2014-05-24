@@ -42,6 +42,5 @@ git checkout -b release && git add -f mate.js mate.min.js test/compiled.js test-
 Then commit it and tag it and push it and push tags. Then:
 
 ```bash
-npm publish .
-git checkout master && git branch -D release
+npm publish . && git checkout master && git branch -D release
 ```
