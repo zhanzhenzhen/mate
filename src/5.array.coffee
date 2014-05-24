@@ -130,29 +130,32 @@ featureLoaders.push(->
                 (if index == 1 then Array._elementOrUseSelector(a, selector) else a) *
                         Array._elementOrUseSelector(b, selector)
             )
-    # These methods use sorting. For `keySelector`, note that the keys must be either
-    # numbers, booleans, or strings (can't be mixed of these). [
-    Array::group = (keySelector, resultSelector) ->
+    # These methods use sorting. For `keySelector`, note that the keys of all elements must be either
+    # all numbers, all booleans, or all strings. [
+    # Why don't use {key: ..., value: ...}, but a non-intuitive array for the key-value pair?
+    # Because ECMAScript 6th's Map constructor only accepts the array form to denote a key-value pair.
+    # I don't want to break the consistency.
+    Array::group = (keySelector, valueSelector) ->
         if @isEmpty() then return []
         sorted = @funSort(keySelector)
-        groups = []
+        results = []
         comparedKey = Array._elementOrUseSelector(sorted.first(), keySelector)
         elements = []
         for m in sorted
             key = Array._elementOrUseSelector(m, keySelector)
             if key != comparedKey
-                groups.push(
-                    key: comparedKey
-                    result: Array._elementOrUseSelector(elements, resultSelector)
-                )
+                results.push([
+                    comparedKey
+                    Array._elementOrUseSelector(elements, valueSelector)
+                ])
                 comparedKey = key
                 elements = []
             elements.push(m)
-        groups.push(
-            key: comparedKey
-            result: Array._elementOrUseSelector(elements, resultSelector)
-        )
-        groups
+        results.push([
+            comparedKey
+            Array._elementOrUseSelector(elements, valueSelector)
+        ])
+        results
     Array::_sort = (keySelector, isDescending) ->
         @copy().sort((a, b) =>
             a1 = Array._elementOrUseSelector(a, keySelector)

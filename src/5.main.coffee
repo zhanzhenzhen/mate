@@ -50,12 +50,9 @@ featureLoaders.push(->
             @ - x
     Date::equals = (x) -> x <= @ <= x
     console.logt = -> console.log.apply(null, [new Date().toISOString()].concat(Array.from(arguments)))
-    # I think `eventField` can do all that `ObjectWithEvents` can do, plus support for static events.
-    # And it can avoid using strings so `eventField` is better. But maybe others like `ObjectWithEvents`
+    # I think `eventField` can do all that `EventedObject` can do, plus support for static events.
+    # And it can avoid using strings so `eventField` is better. But maybe others like `EventedObject`
     # so I keep both.
-    # Why `eventField().fire` and `ObjectWithEvents::trigger`? Because although "fire" is simpler,
-    # it's a more frequently used word, so in `ObjectWithEvent` we should keep "fire" from occupying
-    # this naming space.
     # [
     # This function is weird and hard to understand, but we must use this mechanism
     # (function+object hybrid) to support cascade (chaining).
@@ -80,9 +77,7 @@ featureLoaders.push(->
                 m(arg)
             undefined
         f
-    # Node.js uses `emit` but we use `trigger`. I guess why node.js uses that strange name is maybe
-    # only to avoid the name `EventTriggerer`.
-    class global.ObjectWithEvents
+    class global.EventedObject
         constructor: ->
             @_eventList = {} # Using object to simulate a "dictionary" here is simpler than using array.
         on: (eventName, listener) ->
@@ -92,7 +87,7 @@ featureLoaders.push(->
         off: (eventName, listener) ->
             @_eventList[eventName].removeAll(listener)
             @
-        trigger: (eventName, arg) ->
+        fire: (eventName, arg) ->
             @_eventList[eventName] ?= []
             m(arg) for m in @_eventList[eventName]
             undefined
