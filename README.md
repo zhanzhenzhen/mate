@@ -33,6 +33,8 @@ awk 'FNR==1{print ""}1' src/*.coffee src/package-start.txt package.json src/pack
 
 The compiled .js files should ONLY be included in the tagged commits. To achieve this goal, we put the release version into a new branch and then delete the branch. This approach makes sense because Git's gc does not delete tagged commits, regardless of whether a branch refers to it. Detailed steps:
 
+First, compile. Then:
+
 ```bash
 git checkout -b release && git add -f mate.js mate.min.js test/compiled.js test-test/compiled.js
 ```
