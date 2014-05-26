@@ -15,4 +15,6 @@ new Test("root"
     obj = new Obj()
     obj.onClick.bind(-> finish())
     obj.makeClick()
+).add(->
+    console.logt(3)
 ).run()

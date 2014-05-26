@@ -114,6 +114,9 @@ class $mate.testing.Test
                         )
                     )? \s* \)
                 ///g, (match, p1, p2) =>
+                    # In Firefox if there's no p2 then p2 is "". This may be a bug in Firefox.
+                    # This statement is only a Firefox workaround.
+                    if p2 == "" then p2 = undefined
                     unitStr = eval(p1) # If use `JSON.parse` instead, single quotes string cannot be parsed.
                     parsed = null
                     newStr = null

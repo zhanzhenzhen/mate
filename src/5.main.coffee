@@ -49,7 +49,7 @@ featureLoaders.push(->
         else
             @ - x
     Date::equals = (x) -> x <= @ <= x
-    console.logt = -> console.log.apply(null, [new Date().toISOString()].concat(Array.from(arguments)))
+    console.logt = -> console.log.apply(console, [new Date().toISOString()].concat(Array.from(arguments)))
     # I think `eventField` can do all that `EventedObject` can do, plus support for static events.
     # And it can avoid using strings so `eventField` is better. But maybe others like `EventedObject`
     # so I keep both.
