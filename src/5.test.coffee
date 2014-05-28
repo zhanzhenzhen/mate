@@ -89,7 +89,7 @@ class $mate.testing.Test
                         i += 2
                     else if quote == null and not oldWordStarted and not oldDotAffected and "a" <= c <= "z"
                         s = funStr.substr(i, 10) # limit to 10 chars for better performance
-                        if /^(finish|equal|unit)[^a-zA-Z0-9_$]/g.test(s)
+                        if /^(finish|unit)[^a-zA-Z0-9_$]/g.test(s)
                             positions.push(i)
                         i++
                     else
@@ -114,10 +114,14 @@ class $mate.testing.Test
                         )
                     )? \s* \)
                 ///g, (match, p1, p2) =>
-                    # In Firefox if there's no p2 then p2 is "". This may be a bug in Firefox.
-                    # This statement is only a Firefox workaround.
+                    # In Firefox if there's no p2 then p2 is "". This may be a bug of Firefox.
+                    # This statement is only a workaround for Firefox.
                     if p2 == "" then p2 = undefined
-                    unitStr = eval(p1) # If use `JSON.parse` instead, single quotes string cannot be parsed.
+                    # Why use `eval` to strip p1? Because if we use string methods to strip it,
+                    # then escaped characters can't be processed.
+                    # If use `JSON.parse` instead, then single quotes string cannot be parsed.
+                    unitStr = eval(p1).trim()
+                    description = p2 ? JSON.stringify(unitStr)
                     parsed = null
                     newStr = null
                     do =>
@@ -147,15 +151,38 @@ class $mate.testing.Test
                             else if c == "}"
                                 brace--
                             else if quote == null and parenthesis == bracket == brace == 0
-                                if c == "="
+                                if unitStr.substr(i, 1) == "="
                                     parsed =
                                         type: "equal"
                                         str1: unitStr.substr(0, i).trim()
                                         str2: unitStr.substr(i + 1).trim()
                                     return
+                                else if unitStr.substr(i, 4) == " is "
+                                    parsed =
+                                        type: "is"
+                                        str1: unitStr.substr(0, i).trim()
+                                        str2: unitStr.substr(i + 4).trim()
+                                    return
+                                else if (i == unitStr.length - 7 and unitStr.substr(i) == " throws") or
+                                        unitStr.substr(i, 8) == " throws "
+                                    parsed =
+                                        type: "throws"
+                                        str1: unitStr.substr(0, i).trim()
+                                        str2: unitStr.substr(i + 7).trim()
+                                    if parsed.str2 == "" then parsed.str2 = "undefined"
+                                    return
+                        parsed =
+                            type: "doesNotThrow"
+                            str1: unitStr
                     do =>
                         if parsed.type == "equal"
-                            newStr = "#{testArgName}.equal(#{parsed.str1}, #{parsed.str2}, #{p2 ? p1})"
+                            newStr = "#{testArgName}.equal(#{parsed.str1}, #{parsed.str2}, #{description})"
+                        else if parsed.type == "is"
+                            newStr = "#{testArgName}.is(#{parsed.str1}, #{parsed.str2}, #{description})"
+                        else if parsed.type == "throws"
+                            newStr = "#{testArgName}.throws(#{parsed.str1}, #{parsed.str2}, #{description})"
+                        else if parsed.type == "doesNotThrow"
+                            newStr = "#{testArgName}.doesNotThrow(#{parsed.str1}, #{description})"
                     newStr
                 )
             funStr_834942610148628375 = funStr
@@ -286,14 +313,8 @@ class $mate.testing.Test
                     true
                 else
                     false
-            else if typeof actual == "number" and typeof expected == "number"
-                # +0 and -0 things. +0 and -0 should be treated as NOT equal.
-                if actual == 0 and expected == 0 and 1 / actual != 1 / expected
-                    false
-                else
-                    actual == expected
             else
-                actual == expected
+                objectIs(actual, expected)
         newResult =
             type: determine(actual, expected)
             description: description
@@ -302,6 +323,69 @@ class $mate.testing.Test
             newResult.expected = JSON.stringify(expected)
         @unitResults.push(newResult)
         @
+    is: (actual, expected, description = "") ->
+        newResult =
+            type: objectIs(actual, expected)
+            description: description
+        if newResult.type == false
+            newResult.actual = JSON.stringify(actual)
+            newResult.expected = JSON.stringify(expected)
+        @unitResults.push(newResult)
+        @
+    throws: (fun, expected, description = "") ->
+        passed = false
+        resultType =
+            try
+                fun()
+                passed = true
+                false
+            catch error
+                if not expected?
+                    true
+                else if expected instanceof RegExp
+                    if expected.test(error.message)
+                        true
+                    else
+                        false
+                else
+                    if error instanceof expected
+                        true
+                    else
+                        false
+        newResult =
+            type: resultType
+            description: description
+        if newResult.type == false
+            newResult.actual = if passed then "no exception" else "another exception"
+            newResult.expected = if passed then "exception" else "an exception"
+        @unitResults.push(newResult)
+        @
+    doesNotThrow: (fun, description = "") ->
+        resultType =
+            try
+                fun()
+                true
+            catch
+                false
+        newResult =
+            type: resultType
+            description: description
+        if newResult.type == false
+            newResult.actual = "exception"
+            newResult.expected = "no exception"
+        @unitResults.push(newResult)
+        @
+# This function is equivalent to ECMAScript 6th's `Object.is`.
+objectIs = (a, b) ->
+    if typeof a == "number" and typeof b == "number"
+        if a == 0 and b == 0
+            1 / a == 1 / b
+        else if isNaN(a) and isNaN(b)
+            true
+        else
+            a == b
+    else
+        a == b
 featureLoaders.push(->
     global.Test = $mate.testing.Test
 )

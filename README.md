@@ -16,7 +16,7 @@ Mate performs consistently in all modern browsers and node.js.
 Tutorial
 ====
 
-[Please click here for tutorial.](http://zhanzhenzhen.github.io/project-tutorials/mate/)
+[Please click here for tutorial.](http://zhanzhenzhen.github.io/mate/)
 
 Compile & Publish
 ====

@@ -1,6 +1,6 @@
 {
     "name": "mate",
-    "version": "0.6.5",
+    "version": "0.6.6",
     "description": "Your JavaScript/CoffeeScript mate.",
     "keywords": ["test", "unit", "testing", "event", "coffeescript", "timer", "math", "javascript", "es6", "js", "coffee"],
     "author": "Zhenzhen Zhan <zhanzhenzhen@hotmail.com>",

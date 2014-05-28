@@ -44,8 +44,6 @@ else
 new Test("root"
 ).add("String.prototype test", ->
     str = "hello world"
-    equal(str.substr(4, 1), "o", "substr method")
-    equal(str.split(" "), ["hello", "world"])
     unit(' str.substr(4,1)="o" ')
     unit(' str.split(" ")=["hello","world"] ')
     unit(' str.split(" ")=["hello","world"] ')
@@ -69,9 +67,37 @@ new Test("root"
     )
 ).add("simple test 2", ->
     setTimeout(->
-        equal(true, true, "truthy unit")
+        unit("true=true", "truthy unit")
         finish()
     , 2500)
 ).add(->
     unit("(\"1\"===2)=true")
+).add(->
+    unit("{} is {}")
+    unit("    [] is []             ")
+    unit("NaN is NaN")
+    unit("NaN = NaN")
+    unit("NaN= 3")
+    unit("'' =NaN")
+    unit("0=0")
+    unit("0=-0")
+    unit("0 is -0")
+    unit("-0 is 0")
+    class CustomError extends Error
+        constructor: (msg) -> super(msg)
+    a = ->
+        throw new Error()
+    b = ->
+    c = ->
+        throw new CustomError()
+    unit('a throws')
+    unit('b throws')
+    unit('a throws /kkk/')
+    unit('a throws /^$/')
+    unit('a throws Error')
+    unit('a throws CustomError')
+    unit('c throws Error')
+    unit('c throws CustomError')
+    unit('b')
+    unit('a')
 ).run()
