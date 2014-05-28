@@ -17,4 +17,11 @@ new Test("root"
     obj.makeClick()
 ).add(->
     console.logt(3)
+).add("Object.is", ->
+    unit(' Object.is(5,5)=true ')
+    unit(' Object.is(5,7)=false ')
+    unit(' Object.is(0,-0)=false ')
+    unit(' Object.is(0,0)=true ')
+    unit(' Object.is(NaN,NaN)=true ')
+    unit(' Object.is({},{})=false ')
 ).run()

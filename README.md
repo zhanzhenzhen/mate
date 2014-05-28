@@ -8,7 +8,7 @@ Mate is your JavaScript/CoffeeScript mate that brings these key features:
 - Array Extensions
 - Advanced Timers
 - "Functional" Functions
-- Complex Math
+- 2D Point & Complex Math
 - ECMAScript 6th Features
 
 Mate performs consistently in all modern browsers and node.js.
