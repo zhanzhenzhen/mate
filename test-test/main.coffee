@@ -2,10 +2,10 @@
 
 This is to test the "test". The output should look something like that:
 
-2014-05-21T09:48:13.003Z OK: 7, Exception: 0, Pending: 1
-2014-05-21T09:48:14.001Z OK: 7, Exception: 0, Pending: 1
-2014-05-21T09:48:15.002Z OK: 7, Exception: 0, Pending: 1
-2014-05-21T09:48:16.002Z OK: 8, Exception: 0, Pending: 0
+2014-05-28T05:29:21.394Z OK: 8, Exception: 0, Pending: 1
+2014-05-28T05:29:22.392Z OK: 8, Exception: 0, Pending: 1
+2014-05-28T05:29:23.392Z OK: 8, Exception: 0, Pending: 1
+2014-05-28T05:29:24.394Z OK: 9, Exception: 0, Pending: 0
 
 ********** Failed Unit **********
     Test: root --> 
@@ -15,7 +15,7 @@ Expected: 7
 
 ********** Failed Unit **********
     Test: root --> 
-    Unit:   (obj.unit>1)=true
+    Unit: (obj.unit>1)=true
 Expected: true
   Actual: false
 
@@ -31,7 +31,79 @@ Expected: true
 Expected: true
   Actual: false
 
-Completed. 0 exceptional tests. 4 failed units.
+********** Failed Unit **********
+    Test: root --> 
+    Unit: {} is {}
+Expected: {}
+  Actual: {}
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: [] is []
+Expected: []
+  Actual: []
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: sampleNaN1=1
+Expected: 1
+  Actual: null
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: NaN= 3
+Expected: 3
+  Actual: null
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: '' =NaN
+Expected: null
+  Actual: ""
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: 0=-0
+Expected: 0
+  Actual: 0
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: 0 is -0
+Expected: 0
+  Actual: 0
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: -0 is 0
+Expected: 0
+  Actual: 0
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: b throws
+Expected: exception
+  Actual: no exception
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: a throws /kkk/
+Expected: an exception
+  Actual: another exception
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: a throws CustomError
+Expected: an exception
+  Actual: another exception
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: a
+Expected: no exception
+  Actual: exception
+
+Completed. 0 exceptional tests. 16 failed units.
 
 ###
 
@@ -77,6 +149,10 @@ new Test("root"
     unit("    [] is []             ")
     unit("NaN is NaN")
     unit("NaN = NaN")
+    sampleNaN1 = NaN
+    sampleNaN2 = NaN
+    unit('sampleNaN1=sampleNaN2')
+    unit('sampleNaN1=1')
     unit("NaN= 3")
     unit("'' =NaN")
     unit("0=0")
