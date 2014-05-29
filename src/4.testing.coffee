@@ -36,6 +36,11 @@ class $mate.testing.Test
                 funStr = funStr.substr(0, pos) + testArgName + "." + funStr.substr(pos)
             )
             # Recover the actual methods from the symbolic `unit` method.
+            # Important: The `unit` method must be symbolic. If it has a real `unit` method,
+            # there is no way to evaluate the variables that is contained in a unit string
+            # inside this method.
+            # Actually, while `set` method begins, `unit` is a symbolic function. As of this position
+            # it's a symbolic method.
             funStr = funStr.replace(///
                 #{testArgName}\.unit \s* \( \s*
                 (
@@ -198,7 +203,7 @@ class $mate.testing.Test
             description: description
         if newResult.type == false
             newResult.actual = JSON.stringify(actual)
-            newResult.expected = JSON.stringify(expected)
+            newResult.expected = "= " + JSON.stringify(expected)
         @unitResults.push(newResult)
         @
     is: (actual, expected, description = "") ->
@@ -207,7 +212,7 @@ class $mate.testing.Test
             description: description
         if newResult.type == false
             newResult.actual = JSON.stringify(actual)
-            newResult.expected = JSON.stringify(expected)
+            newResult.expected = "is " + JSON.stringify(expected)
         @unitResults.push(newResult)
         @
     throws: (fun, expected, description = "") ->
