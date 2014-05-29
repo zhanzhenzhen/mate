@@ -1,6 +1,6 @@
 ###
 
-This is to test the "test". The output should look something like that:
+This is to test the "test". The output should look something like this:
 
 2014-05-28T05:29:21.394Z OK: 8, Exception: 0, Pending: 1
 2014-05-28T05:29:22.392Z OK: 8, Exception: 0, Pending: 1
@@ -176,4 +176,9 @@ new Test("root"
     unit('c throws CustomError')
     unit('b')
     unit('a')
+    unit(' /=/.test("=")=true ')
+    unit(' /=/.test("=")=false ')
+    unit('Object .   is is Object.is')
+    unit('Object.is = Object. is')
+    unit(' "\\""="\\"abc" ')
 ).run()

@@ -1,12 +1,7 @@
-# This file must NOT depend on any other parts of the project, because this file
-# will be used to test other parts.
+# This file must NOT depend on any other parts of the project except "prelude.coffee"
+# and "testing.**.coffee". Because this file will be used to test other parts.
 # Otherwise the test result may be incorrect.
 
-if not (typeof $mate == "object" and $mate != null)
-    $mate = {}
-$mate.testing = {}
-if not (typeof featureLoaders == "object" and featureLoaders != null and Array.isArray(featureLoaders))
-    featureLoaders = []
 class $mate.testing.Test
     constructor: (@description = "") ->
         @_children = []
@@ -33,158 +28,41 @@ class $mate.testing.Test
             # JavaScript (or CoffeeScript) grammars.
             testArgName = "testArg_834942610148628375"
             # Recover argument.
-            do =>
-                # not global, only replace first "(...)"
-                funStr = funStr.replace(/\([^\)]*\)/, "(#{testArgName})")
+            # not global, only replace first "(...)"
+            funStr = funStr.replace(/\([^\)]*\)/, "(#{testArgName})")
             # Recover dot notation.
-            # I used to use regex for this parser, but nearly all JS engine cannot execute it well.
-            # Some report errors. Node even hangs up with CPU usage 100%. Very weird.
-            # Maybe it's because this regex is very complicated, and nested. So I gave it up.
-            do =>
-                positions = []
-                quote = null
-                slashQuoteReady = true # indicates whether a slash is related to regex, or math division
-                wordStarted = false
-                dotAffected = false # this is to do with things like `abc  .   def`
-                i = 0
-                while i < funStr.length
-                    c = funStr[i]
-                    oldSlashQuoteReady = slashQuoteReady
-                    if quote == null
-                        if "a" <= c <= "z" or "A" <= c <= "Z" or "0" <= c <= "9" or
-                                c == "_" or c == "$" or c == ")" or c == "]"
-                            slashQuoteReady = false
-                        else if c == " " or c == "\t" or c == "\n" or c == "\r"
-                        else
-                            slashQuoteReady = true
-                    oldWordStarted = wordStarted
-                    if quote == null
-                        if "a" <= c <= "z" or "A" <= c <= "Z" or "0" <= c <= "9" or
-                                c == "_" or c == "$" or c == "."
-                            wordStarted = true
-                        else
-                            wordStarted = false
-                    oldDotAffected = dotAffected
-                    if quote == null
-                        if c == "."
-                            dotAffected = true
-                        else if c == " " or c == "\t" or c == "\n" or c == "\r"
-                        else
-                            dotAffected = false
-                    if c == "\"" and quote == null
-                        quote = "double"
-                        i++
-                    else if c == "'" and quote == null
-                        quote = "single"
-                        i++
-                    else if c == "/" and quote == null and oldSlashQuoteReady
-                        quote = "slash"
-                        i++
-                    else if (c == "\"" and quote == "double") or
-                            (c == "'" and quote == "single") or
-                            (c == "/" and quote == "slash")
-                        quote = null
-                        i++
-                    else if c == "\\" and quote != null
-                        i += 2
-                    else if quote == null and not oldWordStarted and not oldDotAffected and "a" <= c <= "z"
-                        s = funStr.substr(i, 10) # limit to 10 chars for better performance
-                        if /^(finish|unit)[^a-zA-Z0-9_$]/g.test(s)
-                            positions.push(i)
-                        i++
-                    else
-                        i++
-                positions.forEach((m, index) =>
-                    pos = m + (testArgName.length + 1) * index
-                    funStr = funStr.substr(0, pos) + testArgName + "." + funStr.substr(pos)
-                )
+            $mate.testing.parseFunction(funStr).forEach((m, index) =>
+                pos = m + (testArgName.length + 1) * index
+                funStr = funStr.substr(0, pos) + testArgName + "." + funStr.substr(pos)
+            )
             # Recover the actual methods from the symbolic `unit` method.
-            do =>
-                funStr = funStr.replace(///
-                    #{testArgName}\.unit \s* \( \s*
+            funStr = funStr.replace(///
+                #{testArgName}\.unit \s* \( \s*
+                (
+                    " (?: [^"\\] | \\. )* " |
+                    ' (?: [^'\\] | \\. )* '
+                )
+                (?:
+                    \s* , \s*
                     (
                         " (?: [^"\\] | \\. )* " |
                         ' (?: [^'\\] | \\. )* '
                     )
-                    (?:
-                        \s* , \s*
-                        (
-                            " (?: [^"\\] | \\. )* " |
-                            ' (?: [^'\\] | \\. )* '
-                        )
-                    )? \s* \)
-                ///g, (match, p1, p2) =>
-                    # In Firefox if there's no p2 then p2 is "". This may be a bug of Firefox.
-                    # This statement is only a workaround for Firefox.
-                    if p2 == "" then p2 = undefined
-                    # Why use `eval` to strip p1? Because if we use string methods to strip it,
-                    # then escaped characters can't be processed.
-                    # If use `JSON.parse` instead, then single quotes string cannot be parsed.
-                    unitStr = eval(p1).trim()
-                    description = p2 ? JSON.stringify(unitStr)
-                    parsed = null
-                    newStr = null
-                    do =>
-                        quote = null
-                        parenthesis = 0
-                        bracket = 0
-                        brace = 0
-                        for i in [0...unitStr.length]
-                            c = unitStr[i]
-                            if c == "\"" and quote == null
-                                quote = "double"
-                            else if c == "'" and quote == null
-                                quote = "single"
-                            else if (c == "\"" and quote == "double") or
-                                    (c == "'" and quote == "single")
-                                quote = null
-                            else if c == "("
-                                parenthesis++
-                            else if c == "["
-                                bracket++
-                            else if c == "{"
-                                brace++
-                            else if c == ")"
-                                parenthesis--
-                            else if c == "]"
-                                bracket--
-                            else if c == "}"
-                                brace--
-                            else if quote == null and parenthesis == bracket == brace == 0
-                                if unitStr.substr(i, 1) == "="
-                                    parsed =
-                                        type: "equal"
-                                        str1: unitStr.substr(0, i).trim()
-                                        str2: unitStr.substr(i + 1).trim()
-                                    return
-                                else if unitStr.substr(i, 4) == " is "
-                                    parsed =
-                                        type: "is"
-                                        str1: unitStr.substr(0, i).trim()
-                                        str2: unitStr.substr(i + 4).trim()
-                                    return
-                                else if (i == unitStr.length - 7 and unitStr.substr(i) == " throws") or
-                                        unitStr.substr(i, 8) == " throws "
-                                    parsed =
-                                        type: "throws"
-                                        str1: unitStr.substr(0, i).trim()
-                                        str2: unitStr.substr(i + 7).trim()
-                                    if parsed.str2 == "" then parsed.str2 = "undefined"
-                                    return
-                        parsed =
-                            type: "doesNotThrow"
-                            str1: unitStr
-                    do =>
-                        if parsed.type == "equal"
-                            newStr = "#{testArgName}.equal(#{parsed.str1}, #{parsed.str2}, #{description})"
-                        else if parsed.type == "is"
-                            newStr = "#{testArgName}.is(#{parsed.str1}, #{parsed.str2}, #{description})"
-                        else if parsed.type == "throws"
-                            newStr = "#{testArgName}.throws(#{parsed.str1}, #{parsed.str2}, #{description})"
-                        else if parsed.type == "doesNotThrow"
-                            newStr = "#{testArgName}.doesNotThrow(#{parsed.str1}, #{description})"
-                    newStr
-                )
+                )? \s* \)
+            ///g, (match, p1, p2) =>
+                # In Firefox if there's no p2 then p2 is "". This may be a bug of Firefox.
+                # This statement is only a workaround for Firefox.
+                if p2 == "" then p2 = undefined
+                # Why use `eval` to strip p1? Because if we use string methods to strip it,
+                # then escaped characters can't be processed.
+                # If use `JSON.parse` instead, then single quotes string cannot be parsed.
+                unitStr = eval(p1).trim()
+                description = p2 ? JSON.stringify(unitStr)
+                parsed = $mate.testing.parseUnitString(unitStr)
+                args = parsed.components
+                args.push(description)
+                "#{testArgName}.#{parsed.type}(#{args.join(', ')})"
+            )
             funStr_834942610148628375 = funStr
             # TODO: Maybe a regex is needed? If we later implement another method
             # named as `finishSomething`, then it won't work correctly. But most likely we

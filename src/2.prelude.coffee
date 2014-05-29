@@ -1,5 +1,6 @@
 featureLoaders = []
 $mate = {}
+$mate.testing = {}
 $mate.environmentType =
     if exports? and module?.exports?
         "node"
