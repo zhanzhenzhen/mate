@@ -183,39 +183,71 @@ class $mate.testing.Test
     finish: (result) ->
         @result = result ? {type: true}
         @
-    equal: (actual, expected, description = "") ->
-        determine = (actual, expected) =>
-            if Array.isArray(actual) and Array.isArray(expected)
-                if expected.every((m, index) => determine(actual[index], m))
+    equal: (actual, ruler, description = "") ->
+        determine = (actual, ruler) =>
+            if Array.isArray(actual) and Array.isArray(ruler)
+                if ruler.every((m, index) => determine(actual[index], m))
                     true
                 else
                     false
             else if typeof actual == "object" and actual != null and
-                    typeof expected == "object" and expected != null
-                if Object.keys(expected).every((m) => determine(actual[m], expected[m]))
+                    typeof ruler == "object" and ruler != null
+                if Object.keys(ruler).every((m) => determine(actual[m], ruler[m]))
                     true
                 else
                     false
             else
-                objectIs(actual, expected)
+                objectIs(actual, ruler)
         newResult =
-            type: determine(actual, expected)
+            type: determine(actual, ruler)
             description: description
         if newResult.type == false
             newResult.actual = testResultValueToMessage(actual)
-            newResult.expected = "= " + testResultValueToMessage(expected)
+            newResult.expected = "= " + testResultValueToMessage(ruler)
         @unitResults.push(newResult)
         @
-    is: (actual, expected, description = "") ->
+    notEqual: (actual, ruler, description = "") ->
+        determine = (actual, ruler) =>
+            if Array.isArray(actual) and Array.isArray(ruler)
+                if ruler.some((m, index) => determine(actual[index], m))
+                    true
+                else
+                    false
+            else if typeof actual == "object" and actual != null and
+                    typeof ruler == "object" and ruler != null
+                if Object.keys(ruler).some((m) => determine(actual[m], ruler[m]))
+                    true
+                else
+                    false
+            else
+                not objectIs(actual, ruler)
         newResult =
-            type: objectIs(actual, expected)
+            type: determine(actual, ruler)
             description: description
         if newResult.type == false
             newResult.actual = testResultValueToMessage(actual)
-            newResult.expected = "is " + testResultValueToMessage(expected)
+            newResult.expected = "≠ " + testResultValueToMessage(ruler)
         @unitResults.push(newResult)
         @
-    throws: (fun, expected, description = "") ->
+    is: (actual, ruler, description = "") ->
+        newResult =
+            type: objectIs(actual, ruler)
+            description: description
+        if newResult.type == false
+            newResult.actual = testResultValueToMessage(actual)
+            newResult.expected = "is " + testResultValueToMessage(ruler)
+        @unitResults.push(newResult)
+        @
+    isnt: (actual, ruler, description = "") ->
+        newResult =
+            type: not objectIs(actual, ruler)
+            description: description
+        if newResult.type == false
+            newResult.actual = testResultValueToMessage(actual)
+            newResult.expected = "isn't " + testResultValueToMessage(ruler)
+        @unitResults.push(newResult)
+        @
+    throws: (fun, ruler, description = "") ->
         passed = false
         resultType =
             try
@@ -223,15 +255,15 @@ class $mate.testing.Test
                 passed = true
                 false
             catch error
-                if not expected?
+                if not ruler?
                     true
-                else if expected instanceof RegExp
-                    if expected.test(error.message)
+                else if ruler instanceof RegExp
+                    if ruler.test(error.message)
                         true
                     else
                         false
                 else
-                    if error instanceof expected
+                    if error instanceof ruler
                         true
                     else
                         false

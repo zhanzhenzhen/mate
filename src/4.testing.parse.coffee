@@ -130,9 +130,25 @@ $mate.testing.parseUnitString = (unitStr) ->
                         match[1]
                     ]
                 break
+            else if (match = s.match(/^<>(.+)$/))?
+                parsed =
+                    type: "notEqual"
+                    components: [
+                        unitStr.substr(0, i)
+                        match[1]
+                    ]
+                break
             else if (match = s.match(/^ is (.+)$/))?
                 parsed =
                     type: "is"
+                    components: [
+                        unitStr.substr(0, i)
+                        match[1]
+                    ]
+                break
+            else if (match = s.match(/^ isnt (.+)$/))?
+                parsed =
+                    type: "isnt"
                     components: [
                         unitStr.substr(0, i)
                         match[1]
