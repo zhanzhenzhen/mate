@@ -185,6 +185,8 @@ new Test("root"
     unit(' 123<>456 ')
     unit(' {a:1,b:2}<>{a:1,b:1} ')
     unit(' {a:1,b:2}<>{a:1,b:2} ')
+    unit(' {a:1,b:2}<>{a:1,b:2,c:function(){}} ')
+    unit(' {a:1,b:2}={a:1,b:2,c:function(){}} ')
     unit(' 8 isnt 4 ')
     unit(' NaN isnt NaN ')
     unit(' {} isnt {} ')
