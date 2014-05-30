@@ -21,7 +21,7 @@ featureLoaders.push(->
         String::contains = (s) -> @indexOf(s) != -1
     # This is in ECMAScript 6. Only Firefox and Chrome natively supports this.
     if Object.is == undefined
-        Object.is = objectIs
+        Object.is = $mate.testing.objectIs
     # This is in ECMAScript 6. No browser natively supports this.
     if Array.from == undefined
         Array.from = (arrayLike) -> m for m in arrayLike

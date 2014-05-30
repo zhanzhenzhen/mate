@@ -197,13 +197,13 @@ class $mate.testing.Test
                 else
                     false
             else
-                objectIs(actual, ruler)
+                $mate.testing.objectIs(actual, ruler)
         newResult =
             type: determine(actual, ruler)
             description: description
         if newResult.type == false
-            newResult.actual = testResultValueToMessage(actual)
-            newResult.expected = "= " + testResultValueToMessage(ruler)
+            newResult.actual = $mate.testing.valueToMessage(actual)
+            newResult.expected = "= " + $mate.testing.valueToMessage(ruler)
         @unitResults.push(newResult)
         @
     notEqual: (actual, ruler, description = "") ->
@@ -220,31 +220,31 @@ class $mate.testing.Test
                 else
                     false
             else
-                not objectIs(actual, ruler)
+                not $mate.testing.objectIs(actual, ruler)
         newResult =
             type: determine(actual, ruler)
             description: description
         if newResult.type == false
-            newResult.actual = testResultValueToMessage(actual)
-            newResult.expected = "≠ " + testResultValueToMessage(ruler)
+            newResult.actual = $mate.testing.valueToMessage(actual)
+            newResult.expected = "≠ " + $mate.testing.valueToMessage(ruler)
         @unitResults.push(newResult)
         @
     is: (actual, ruler, description = "") ->
         newResult =
-            type: objectIs(actual, ruler)
+            type: $mate.testing.objectIs(actual, ruler)
             description: description
         if newResult.type == false
-            newResult.actual = testResultValueToMessage(actual)
-            newResult.expected = "is " + testResultValueToMessage(ruler)
+            newResult.actual = $mate.testing.valueToMessage(actual)
+            newResult.expected = "is " + $mate.testing.valueToMessage(ruler)
         @unitResults.push(newResult)
         @
     isnt: (actual, ruler, description = "") ->
         newResult =
-            type: not objectIs(actual, ruler)
+            type: not $mate.testing.objectIs(actual, ruler)
             description: description
         if newResult.type == false
-            newResult.actual = testResultValueToMessage(actual)
-            newResult.expected = "isn't " + testResultValueToMessage(ruler)
+            newResult.actual = $mate.testing.valueToMessage(actual)
+            newResult.expected = "isn't " + $mate.testing.valueToMessage(ruler)
         @unitResults.push(newResult)
         @
     throws: (fun, ruler, description = "") ->
@@ -291,7 +291,7 @@ class $mate.testing.Test
         @unitResults.push(newResult)
         @
 # This function is equivalent to ECMAScript 6th's `Object.is`.
-objectIs = (a, b) ->
+$mate.testing.objectIs = (a, b) ->
     if typeof a == "number" and typeof b == "number"
         if a == 0 and b == 0
             1 / a == 1 / b
@@ -301,7 +301,7 @@ objectIs = (a, b) ->
             a == b
     else
         a == b
-testResultValueToMessage = (value) ->
+$mate.testing.valueToMessage = (value) ->
     # Using "_834942610148628375" is to avoid ambiguous values. For example, if we
     # use only "NaN" then if a string value happens to be "NaN" then it's ambiguous.
     JSON.stringify(value, (key, value) ->
@@ -312,7 +312,7 @@ testResultValueToMessage = (value) ->
                 "Infinity_834942610148628375"
             else if value == -Infinity
                 "-Infinity_834942610148628375"
-            else if objectIs(value, -0)
+            else if $mate.testing.objectIs(value, -0)
                 "-0_834942610148628375"
             else
                 value
