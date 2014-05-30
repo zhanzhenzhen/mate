@@ -2,81 +2,93 @@
 
 This is to test the "test". The output should look something like this:
 
-2014-05-28T05:29:21.394Z OK: 8, Exception: 0, Pending: 1
-2014-05-28T05:29:22.392Z OK: 8, Exception: 0, Pending: 1
-2014-05-28T05:29:23.392Z OK: 8, Exception: 0, Pending: 1
-2014-05-28T05:29:24.394Z OK: 9, Exception: 0, Pending: 0
+2014-05-30T20:54:28.380Z OK: 9, Exception: 0, Pending: 1
+2014-05-30T20:54:29.375Z OK: 9, Exception: 0, Pending: 1
+2014-05-30T20:54:30.375Z OK: 9, Exception: 0, Pending: 1
+2014-05-30T20:54:31.376Z OK: 10, Exception: 0, Pending: 0
 
 ********** Failed Unit **********
     Test: root --> 
     Unit: 1+2+3=7
-Expected: 7
+Expected: = 7
   Actual: 6
 
 ********** Failed Unit **********
     Test: root --> 
     Unit: (obj.unit>1)=true
-Expected: true
+Expected: = true
   Actual: false
 
 ********** Failed Unit **********
     Test: root --> nested test --> test 2 in nested test
     Unit: simple boolean test
-Expected: true
+Expected: = true
   Actual: false
 
 ********** Failed Unit **********
     Test: root --> 
     Unit: ("1"===2)=true
-Expected: true
+Expected: = true
   Actual: false
 
 ********** Failed Unit **********
     Test: root --> 
     Unit: {} is {}
-Expected: {}
+Expected: is {}
   Actual: {}
 
 ********** Failed Unit **********
     Test: root --> 
     Unit: [] is []
-Expected: []
+Expected: is []
   Actual: []
 
 ********** Failed Unit **********
     Test: root --> 
-    Unit: sampleNaN1=1
-Expected: 1
+    Unit: null<>null
+Expected: ≠ null
   Actual: null
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: undefined<>undefined
+Expected: ≠ undefined
+  Actual: undefined
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: sampleNaN1=1
+Expected: = 1
+  Actual: NaN
 
 ********** Failed Unit **********
     Test: root --> 
     Unit: NaN= 3
-Expected: 3
-  Actual: null
+Expected: = 3
+  Actual: NaN
 
 ********** Failed Unit **********
     Test: root --> 
     Unit: '' =NaN
-Expected: null
+Expected: = NaN
   Actual: ""
 
 ********** Failed Unit **********
     Test: root --> 
     Unit: 0=-0
-Expected: 0
+Expected: = 0
   Actual: 0
 
 ********** Failed Unit **********
     Test: root --> 
     Unit: 0 is -0
-Expected: 0
+Expected: is 0
   Actual: 0
 
 ********** Failed Unit **********
     Test: root --> 
     Unit: -0 is 0
-Expected: 0
+Expected: is 0
   Actual: 0
 
 ********** Failed Unit **********
@@ -103,7 +115,97 @@ Expected: an exception
 Expected: no exception
   Actual: exception
 
-Completed. 0 exceptional tests. 16 failed units.
+********** Failed Unit **********
+    Test: root --> 
+    Unit: /=/.test("=")=false
+Expected: = false
+  Actual: true
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: "\""="\"abc"
+Expected: = "\"abc"
+  Actual: "\""
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: 123<>123
+Expected: ≠ 123
+  Actual: 123
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: {a:1,b:2}<>{a:1,b:2}
+Expected: ≠ {a:1,b:2}
+  Actual: {a:1,b:2}
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: NaN isnt NaN
+Expected: isn't NaN
+  Actual: NaN
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: {a:1,b:2}={a:1,b:2,c:function(){}}
+Expected: = {a:1,b:2,c:[Function]}
+  Actual: {a:1,b:2}
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: {a:{a:{a:{a:{}}}}}={a:{a:{a:{a:1}}}}
+Expected: = {a:{a:{a:[Object]}}}
+  Actual: {a:{a:{a:[Object]}}}
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: circularObj isnt circularObj
+Expected: isn't {a:{a:{a:[Object],b:[Array]},b:[undefined,undefined]},b:[undefined,undefined]}
+  Actual: {a:{a:{a:[Object],b:[Array]},b:[undefined,undefined]},b:[undefined,undefined]}
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: circularObj <> circularObj
+Expected: ≠ {a:{a:{a:[Object],b:[Array]},b:[undefined,undefined]},b:[undefined,undefined]}
+  Actual: {a:{a:{a:[Object],b:[Array]},b:[undefined,undefined]},b:[undefined,undefined]}
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: circularObj is circularObj2
+Expected: is {a:{a:{a:[Object],b:[Array]},b:[undefined,undefined]},b:[undefined,undefined]}
+  Actual: {a:{a:{a:[Object],b:[Array]},b:[undefined,undefined]},b:[undefined,undefined]}
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: circularObj = circularObj2
+Expected: = {a:{a:{a:[Object],b:[Array]},b:[undefined,undefined]},b:[undefined,undefined]}
+  Actual: {a:{a:{a:[Object],b:[Array]},b:[undefined,undefined]},b:[undefined,undefined]}
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: circularWrapper is circularWrapper2
+Expected: is {content:{a:{a:[Object],b:[Array]},b:[undefined,undefined]},b:[undefined,undefined]}
+  Actual: {content:{a:{a:[Object],b:[Array]},b:[undefined,undefined]},b:[undefined,undefined]}
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: circularWrapper <> circularWrapper2
+Expected: ≠ {content:{a:{a:[Object],b:[Array]},b:[undefined,undefined]},b:[undefined,undefined]}
+  Actual: {content:{a:{a:[Object],b:[Array]},b:[undefined,undefined]},b:[undefined,undefined]}
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: veryLongCircularObj1=veryLongCircularObj2
+Expected: = {me:[Object],secondMe:[Object],thirdMe:[Object],meArray:[Array],a:"............................................................",b:"............................................................",c:"............................................................",d:"............................................................",e:"............................................................",f:"............................................................",g:"............................................................",h:"............................................................",i:"............................................................",j:"............................................................",k:"............................................................",l:"............................................................",m:"............................................................",n:"............................................................"}
+  Actual: {me:[Object],secondMe:[Object],thirdMe:[Object],meArray:[Array],a:"............................................................",b:"............................................................",c:"............................................................",d:"............................................................",e:"............................................................",f:"............................................................",g:"............................................................",h:"............................................................",i:"............................................................",j:"............................................................",k:"............................................................",l:"............................................................",m:"............................................................",n:"............................................................"}
+
+********** Failed Unit **********
+    Test: root --> 
+    Unit: veryLongCircularObj1 is veryLongCircularObj2
+Expected: is {me:[Object],secondMe:[Object],thirdMe:[Object],meArray:[Array],a:"............................................................",b:"............................................................",c:"............................................................",d:"............................................................",e:"............................................................",f:"............................................................",g:"............................................................",h:"............................................................",i:"............................................................",j:"............................................................",k:"............................................................",l:"............................................................",m:"............................................................",n:"............................................................"}
+  Actual: {me:[Object],secondMe:[Object],thirdMe:[Object],meArray:[Array],a:"............................................................",b:"............................................................",c:"............................................................",d:"............................................................",e:"............................................................",f:"............................................................",g:"............................................................",h:"............................................................",i:"............................................................",j:"............................................................",k:"............................................................",l:"............................................................",m:"............................................................",n:"............................................................"}
+
+Completed. Exceptional Tests: 0, Failed Units: 33, Mark: 8a4f7
 
 ###
 
