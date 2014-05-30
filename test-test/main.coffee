@@ -149,6 +149,8 @@ new Test("root"
     unit("    [] is []             ")
     unit("NaN is NaN")
     unit("NaN = NaN")
+    unit("null<>null")
+    unit("undefined<>undefined")
     sampleNaN1 = NaN
     sampleNaN2 = NaN
     unit('sampleNaN1=sampleNaN2')
@@ -186,8 +188,79 @@ new Test("root"
     unit(' {a:1,b:2}<>{a:1,b:1} ')
     unit(' {a:1,b:2}<>{a:1,b:2} ')
     unit(' {a:1,b:2}<>{a:1,b:2,c:function(){}} ')
-    unit(' {a:1,b:2}={a:1,b:2,c:function(){}} ')
     unit(' 8 isnt 4 ')
     unit(' NaN isnt NaN ')
     unit(' {} isnt {} ')
+    # circular ----------------------------------------[
+    unit(' {a:1,b:2}={a:1,b:2,c:function(){}} ')
+    unit(' {a:{a:{a:{a:{}}}}}={a:{a:{a:{a:{}}}}} ')
+    unit(' {a:{a:{a:{a:{}}}}}={a:{a:{a:{a:1}}}} ')
+    circularObj = {}
+    circularObj.a = circularObj
+    circularObj.b = [3, 4]
+    circularObj2 = {}
+    circularObj2.a = circularObj2
+    circularObj2.b = [3, 4]
+    unit(' circularObj isnt circularObj ')
+    unit(' circularObj is circularObj ')
+    unit(' circularObj = circularObj ')
+    unit(' circularObj <> circularObj ')
+    unit(' circularObj isnt circularObj2 ')
+    unit(' circularObj is circularObj2 ')
+    unit(' circularObj = circularObj2 ')
+    unit(' circularObj <> circularObj2 ')
+    circularWrapper = {}
+    circularWrapper.content = circularObj
+    circularWrapper.b = [5, 6]
+    circularWrapper2 = {}
+    circularWrapper2.content = circularObj
+    circularWrapper2.b = [5, 6]
+    unit(' circularWrapper isnt circularWrapper2 ')
+    unit(' circularWrapper is circularWrapper2 ')
+    unit(' circularWrapper = circularWrapper2 ')
+    unit(' circularWrapper <> circularWrapper2 ')
+    # ]----------------------------------------
+).add(->
+    veryLongCircularObj1 = {}
+    veryLongCircularObj1.me = veryLongCircularObj1
+    veryLongCircularObj1.secondMe = veryLongCircularObj1
+    veryLongCircularObj1.thirdMe = veryLongCircularObj1
+    veryLongCircularObj1.meArray = [veryLongCircularObj1, veryLongCircularObj1]
+    veryLongCircularObj1.a = "............................................................"
+    veryLongCircularObj1.b = "............................................................"
+    veryLongCircularObj1.c = "............................................................"
+    veryLongCircularObj1.d = "............................................................"
+    veryLongCircularObj1.e = "............................................................"
+    veryLongCircularObj1.f = "............................................................"
+    veryLongCircularObj1.g = "............................................................"
+    veryLongCircularObj1.h = "............................................................"
+    veryLongCircularObj1.i = "............................................................"
+    veryLongCircularObj1.j = "............................................................"
+    veryLongCircularObj1.k = "............................................................"
+    veryLongCircularObj1.l = "............................................................"
+    veryLongCircularObj1.m = "............................................................"
+    veryLongCircularObj1.n = "............................................................"
+    veryLongCircularObj2 = {}
+    veryLongCircularObj2.me = veryLongCircularObj2
+    veryLongCircularObj2.secondMe = veryLongCircularObj2
+    veryLongCircularObj2.thirdMe = veryLongCircularObj2
+    veryLongCircularObj2.meArray = [veryLongCircularObj2, veryLongCircularObj2]
+    veryLongCircularObj2.a = "............................................................"
+    veryLongCircularObj2.b = "............................................................"
+    veryLongCircularObj2.c = "............................................................"
+    veryLongCircularObj2.d = "............................................................"
+    veryLongCircularObj2.e = "............................................................"
+    veryLongCircularObj2.f = "............................................................"
+    veryLongCircularObj2.g = "............................................................"
+    veryLongCircularObj2.h = "............................................................"
+    veryLongCircularObj2.i = "............................................................"
+    veryLongCircularObj2.j = "............................................................"
+    veryLongCircularObj2.k = "............................................................"
+    veryLongCircularObj2.l = "............................................................"
+    veryLongCircularObj2.m = "............................................................"
+    veryLongCircularObj2.n = "............................................................"
+    unit('veryLongCircularObj1=veryLongCircularObj2')
+    unit('veryLongCircularObj1<>veryLongCircularObj2')
+    unit('veryLongCircularObj1 is veryLongCircularObj2')
+    unit('veryLongCircularObj1 isnt veryLongCircularObj2')
 ).run()

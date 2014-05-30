@@ -184,15 +184,28 @@ class $mate.testing.Test
         @result = result ? {type: true}
         @
     equal: (actual, ruler, description = "") ->
+        objects = [] # This variable is to avoid circular object/array.
         determine = (actual, ruler) =>
             if Array.isArray(actual) and Array.isArray(ruler)
-                if ruler.every((m, index) => determine(actual[index], m))
+                if ruler.every((m, index) =>
+                    if m in objects
+                        $mate.testing.objectIs(actual[index], m)
+                    else
+                        objects.push(m) if typeof m == "object" and m != null
+                        determine(actual[index], m)
+                )
                     true
                 else
                     false
             else if typeof actual == "object" and actual != null and
                     typeof ruler == "object" and ruler != null
-                if Object.keys(ruler).every((m) => determine(actual[m], ruler[m]))
+                if Object.keys(ruler).every((m) =>
+                    if ruler[m] in objects
+                        $mate.testing.objectIs(actual[m], ruler[m])
+                    else
+                        objects.push(ruler[m]) if typeof ruler[m] == "object" and ruler[m] != null
+                        determine(actual[m], ruler[m])
+                )
                     true
                 else
                     false
@@ -207,15 +220,28 @@ class $mate.testing.Test
         @unitResults.push(newResult)
         @
     notEqual: (actual, ruler, description = "") ->
+        objects = [] # This variable is to avoid circular object/array.
         determine = (actual, ruler) =>
             if Array.isArray(actual) and Array.isArray(ruler)
-                if ruler.some((m, index) => determine(actual[index], m))
+                if ruler.some((m, index) =>
+                    if m in objects
+                        not $mate.testing.objectIs(actual[index], m)
+                    else
+                        objects.push(m) if typeof m == "object" and m != null
+                        determine(actual[index], m)
+                )
                     true
                 else
                     false
             else if typeof actual == "object" and actual != null and
                     typeof ruler == "object" and ruler != null
-                if Object.keys(ruler).some((m) => determine(actual[m], ruler[m]))
+                if Object.keys(ruler).some((m) =>
+                    if ruler[m] in objects
+                        not $mate.testing.objectIs(actual[m], ruler[m])
+                    else
+                        objects.push(ruler[m]) if typeof ruler[m] == "object" and ruler[m] != null
+                        determine(actual[m], ruler[m])
+                )
                     true
                 else
                     false
@@ -302,25 +328,32 @@ $mate.testing.objectIs = (a, b) ->
     else
         a == b
 $mate.testing.valueToMessage = (value) ->
-    # Using "_834942610148628375" is to avoid ambiguous values. For example, if we
-    # use only "NaN" then if a string value happens to be "NaN" then it's ambiguous.
-    JSON.stringify(value, (key, value) ->
-        if typeof value == "number"
-            if value != value # Can't use `isNaN`. Weird. If use `isNaN` then always true.
-                "NaN_834942610148628375"
-            else if value == Infinity
-                "Infinity_834942610148628375"
-            else if value == -Infinity
-                "-Infinity_834942610148628375"
-            else if $mate.testing.objectIs(value, -0)
-                "-0_834942610148628375"
+    internal = (value, maxLevel) ->
+        if value == undefined
+            "undefined"
+        else if value == null
+            "null"
+        else if Array.isArray(value)
+            if maxLevel > 0
+                "[" + value.map((m) -> internal(value[m], maxLevel - 1)).join(",") + "]"
             else
-                value
+                "[Array]"
         else if typeof value == "function"
-            "[Function]_834942610148628375"
+            "[Function]"
+        else if typeof value == "object"
+            if maxLevel > 0
+                "{" + Object.keys(value).map((m) -> "#{m}:" + internal(value[m], maxLevel - 1))
+                        .join(",") + "}"
+            else
+                "[Object]"
+        else if typeof value == "string"
+            JSON.stringify(value.toString())
         else
-            value
-    ).replace(/"((?:[^"\\]|\\.)+)_834942610148628375"/g, "$1")
+            value.toString()
+    r = internal(value, 3)
+    r = internal(value, 2) if r.length > 1000
+    r = internal(value, 1) if r.length > 1000
+    r
 featureLoaders.push(->
     global.Test = $mate.testing.Test
 )
