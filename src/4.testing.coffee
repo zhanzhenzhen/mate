@@ -156,8 +156,8 @@ class $mate.testing.Test
                         console.log(m.result.errorMessage) if m.result.errorMessage?
                     )
                     failureCount = 0
-                    allTests.forEach((m) =>
-                        m.unitResults.filter((m) => m.type == false).forEach((n) =>
+                    allTests.forEach((m) => m.unitResults.forEach((n) =>
+                        if n.type == false
                             failureCount++
                             ancestors = m.getAncestors()
                             ancestors.reverse()
@@ -167,8 +167,7 @@ class $mate.testing.Test
                             console.log("    Unit: #{n.description}")
                             console.log("Expected: #{n.expected}")
                             console.log("  Actual: #{n.actual}")
-                        )
-                    )
+                    ))
                     console.log("\n" + (
                         if exceptionTests.length == 0 and failureCount == 0
                             "Completed. All tests are OK. All units succeeded."
