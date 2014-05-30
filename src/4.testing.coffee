@@ -202,8 +202,8 @@ class $mate.testing.Test
             type: determine(actual, expected)
             description: description
         if newResult.type == false
-            newResult.actual = JSON.stringify(actual)
-            newResult.expected = "= " + JSON.stringify(expected)
+            newResult.actual = testResultValueToMessage(actual)
+            newResult.expected = "= " + testResultValueToMessage(expected)
         @unitResults.push(newResult)
         @
     is: (actual, expected, description = "") ->
@@ -211,8 +211,8 @@ class $mate.testing.Test
             type: objectIs(actual, expected)
             description: description
         if newResult.type == false
-            newResult.actual = JSON.stringify(actual)
-            newResult.expected = "is " + JSON.stringify(expected)
+            newResult.actual = testResultValueToMessage(actual)
+            newResult.expected = "is " + testResultValueToMessage(expected)
         @unitResults.push(newResult)
         @
     throws: (fun, expected, description = "") ->
@@ -269,6 +269,26 @@ objectIs = (a, b) ->
             a == b
     else
         a == b
+testResultValueToMessage = (value) ->
+    # Using "_834942610148628375" is to avoid ambiguous values. For example, if we
+    # use only "NaN" then if a string value happens to be "NaN" then it's ambiguous.
+    JSON.stringify(value, (key, value) ->
+        if typeof value == "number"
+            if value != value # Can't use `isNaN`. Weird. If use `isNaN` then always true.
+                "NaN_834942610148628375"
+            else if value == Infinity
+                "Infinity_834942610148628375"
+            else if value == -Infinity
+                "-Infinity_834942610148628375"
+            else if objectIs(value, -0)
+                "-0_834942610148628375"
+            else
+                value
+        else if typeof value == "function"
+            "[Function]_834942610148628375"
+        else
+            value
+    ).replace(/"((?:[^"\\]|\\.)+)_834942610148628375"/g, "$1")
 featureLoaders.push(->
     global.Test = $mate.testing.Test
 )
