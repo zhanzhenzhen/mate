@@ -156,7 +156,9 @@ class $mate.testing.Test
                         console.log(m.result.errorMessage) if m.result.errorMessage?
                     )
                     failureCount = 0
+                    markString = ""
                     allTests.forEach((m) => m.unitResults.forEach((n) =>
+                        markString += " " + n.type.toString()
                         if n.type == false
                             failureCount++
                             ancestors = m.getAncestors()
@@ -168,12 +170,14 @@ class $mate.testing.Test
                             console.log("Expected: #{n.expected}")
                             console.log("  Actual: #{n.actual}")
                     ))
+                    markString = markString.trim()
+                    mark = $mate.testing.sha256(markString).substr(0, 5)
                     console.log("\n" + (
                         if exceptionTests.length == 0 and failureCount == 0
                             "Completed. All tests are OK. All units succeeded."
                         else
-                            "Completed. #{exceptionTests.length} exceptional tests. " +
-                                    "#{failureCount} failed units."
+                            "Completed. Exceptional Tests: #{exceptionTests.length}, " +
+                                    "Failed Units: #{failureCount}, Mark: #{mark}"
                     ) + "\n")
                     process.exit() if process?
             timer = setInterval(timerJob, 1000)
