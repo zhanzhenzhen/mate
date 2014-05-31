@@ -4,7 +4,7 @@
 
 class $mate.testing.Test
     constructor: (@description = "") ->
-        @env = {}
+        @_env = {}
         @_children = []
         @_fun = null
         @_interpretedFunction = null
@@ -13,8 +13,16 @@ class $mate.testing.Test
         @unitResults = []
         @result = null
     define: (fun) ->
-        fun(@env)
+        fun(@_env)
         @
+    getEnv: ->
+        r = $mate.testing.objectClone(@_env)
+        @getAncestors().forEach((ancestor) ->
+            Object.keys(ancestor._env).forEach((key) ->
+                if key not in Object.keys(r) then r[key] = ancestor._env[key]
+            )
+        )
+        r
     set: (fun) ->
         @_fun = fun
         @
@@ -77,8 +85,8 @@ class $mate.testing.Test
                 args.push(description)
                 "#{testArgName}.#{parsed.type}(#{args.join(', ')})"
             )
-            $mate.testing.parseFunction(funStr, Object.keys(@env)).forEach((m, index) =>
-                insertedString = testArgName + ".env."
+            $mate.testing.parseFunction(funStr, Object.keys(@getEnv())).forEach((m, index) =>
+                insertedString = testArgName + ".getEnv()."
                 pos = m + insertedString.length * index
                 funStr = funStr.substr(0, pos) + insertedString + funStr.substr(pos)
             )
@@ -142,9 +150,6 @@ class $mate.testing.Test
                         @finish(type: false)
             , 0)
         @getChildren().forEach((m) =>
-            Object.keys(@env).forEach((key) =>
-                if key not in Object.keys(m.env) then m.env[key] = @env[key]
-            )
             m.run(false)
         )
         if showsMessage
@@ -349,6 +354,11 @@ $mate.testing.objectIs = (a, b) ->
             a == b
     else
         a == b
+$mate.testing.objectClone = (x) ->
+    y = {}
+    for key in Object.keys(x)
+        y[key] = x[key]
+    y
 $mate.testing.valueToMessage = (value) ->
     internal = (value, maxLevel) ->
         if value == undefined
