@@ -249,6 +249,10 @@ new Test("root"
     unit(' str.split(" ")=["hello","world"] ')
     unit(' str.split(" ")=["hello","world"] ')
     unitsomething()
+    wrongStr = "helloo world"
+    unit(' wrongStr.substr(4,1)="o" ')
+    unit(' wrongStr.split(" ")=["hello","world"] ')
+    unit(' wrongStr.split(" ")=["hello","world"] ')
 ).add(->
     unit('Math.round(5.3)=5')
     a = var2
@@ -337,6 +341,33 @@ new Test("root"
     unit(' 8 isnt 4 ')
     unit(' NaN isnt NaN ')
     unit(' {} isnt {} ')
+    unit("""
+        [
+            1, 2, 3,
+            "asdf", "jkl",
+            {
+                yyy: 4,
+                iii: 5,
+                jjj: NaN,
+                kkk: null,
+                "mmm e": -9,
+                d: undefined
+            }
+        ]
+        =
+        [
+            1, 2, 3,
+            "asdf", "jkl",
+            {
+                yyy: 4,
+                iii: 5,
+                jjj: NaN,
+                kkk: null,
+                "mmm e": -10,
+                d: undefined
+            }
+        ]
+    """)
     # circular ----------------------------------------[
     unit(' {a:1,b:2}={a:1,b:2,c:function(){}} ')
     unit(' {a:{a:{a:{a:{}}}}}={a:{a:{a:{a:{}}}}} ')

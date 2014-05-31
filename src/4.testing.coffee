@@ -370,7 +370,7 @@ $mate.testing.valueToMessage = (value) ->
             "null"
         else if Array.isArray(value)
             if maxLevel > 0
-                "[" + value.map((m) -> internal(value[m], maxLevel - 1)).join(",") + "]"
+                "[" + value.map((m) -> internal(m, maxLevel - 1)).join(",") + "]"
             else
                 "[Array]"
         else if typeof value == "function"
