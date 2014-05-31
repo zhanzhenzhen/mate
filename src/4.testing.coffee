@@ -192,10 +192,11 @@ class $mate.testing.Test
                     mark = $mate.testing.sha256(markString).substr(0, 5)
                     console.log("\n" + (
                         if exceptionTests.length == 0 and failureCount == 0
-                            "Completed. All tests are OK. All units succeeded."
+                            "All tests are OK. All units succeeded."
                         else
-                            "Completed. Exceptional Tests: #{exceptionTests.length}, " +
-                                    "Failed Units: #{failureCount}, Mark: #{mark}"
+                            "#{exceptionTests.length} Exceptional Tests, " +
+                            "#{failureCount} Failed Units, " +
+                            "Mark: #{mark}"
                     ) + "\n")
                     process.exit() if process?
             timer = setInterval(timerJob, 1000)
@@ -374,6 +375,7 @@ $mate.testing.valueToMessage = (value) ->
     r = internal(value, 3)
     r = internal(value, 2) if r.length > 1000
     r = internal(value, 1) if r.length > 1000
+    r = internal(value, 0) if r.length > 1000
     r
 featureLoaders.push(->
     global.Test = $mate.testing.Test

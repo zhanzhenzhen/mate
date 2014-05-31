@@ -1,3 +1,12 @@
+# Why use SHA-256? Is it OK to use CRC32? My answer is:
+# The reason is for security. There's a potential issue if we use a weak checksum algorithm.
+# If the tests include "get info from the web", then attackers may have the ability to affect the units'
+# true/false results that lead to the same checksum.
+# These are "user"-caused collisions, which need to be avoided logically. In contrast,
+# it's not necessary when it comes to "developer"-caused deliberate
+# collisions, like "834942610148628375" in
+# the core of the testing module. If another library deliberately uses this name, we can simply
+# discard this library and choose another.
 # I strictly followed the steps on:
 # http://csrc.nist.gov/publications/fips/fips180-4/fips-180-4.pdf
 # In doing math power and division, I use `round` to avoid possible fractions in old engine.

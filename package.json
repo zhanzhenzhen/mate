@@ -1,7 +1,7 @@
 {
     "name": "mate",
     "version": "0.7.0",
-    "description": "Your JavaScript/CoffeeScript mate.",
+    "description": "New concept testing, array extensions, ES6 shim, etc. Small but all in one.",
     "keywords": ["test", "unit", "testing", "event", "coffeescript", "timer", "math", "javascript", "es6", "js", "coffee"],
     "author": "Zhenzhen Zhan <zhanzhenzhen@hotmail.com>",
     "homepage": "https://github.com/zhanzhenzhen/mate",
