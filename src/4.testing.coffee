@@ -82,7 +82,6 @@ class $mate.testing.Test
                 pos = m + insertedString.length * index
                 funStr = funStr.substr(0, pos) + insertedString + funStr.substr(pos)
             )
-            console.log(funStr)
             funStr_834942610148628375 = funStr
             # TODO: Maybe a regex is needed? If we later implement another method
             # named as `finishSomething`, then it won't work correctly. But most likely we
@@ -143,8 +142,8 @@ class $mate.testing.Test
                         @finish(type: false)
             , 0)
         @getChildren().forEach((m) =>
-            Object.keys(@env).forEach((n) =>
-                m.env[n] = @env[n]
+            Object.keys(@env).forEach((key) =>
+                if key not in Object.keys(m.env) then m.env[key] = @env[key]
             )
             m.run(false)
         )

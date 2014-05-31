@@ -244,6 +244,18 @@ new Test("root"
     ).add("test 2 in nested test", ->
         unit("false=true", "simple boolean test")
     )
+).add(
+    new Test("nested var"
+    ).add(->
+        unit('var1=var2')
+    ).add(->
+        unit('var1<>var2')
+    ).define((env) ->
+        env.var2 = 8888
+    ).set(->
+        unit('var1 is var2')
+        unit('var1 isnt var2')
+    )
 ).add("simple test 2", ->
     setTimeout(->
         unit("true=true", "truthy unit")
