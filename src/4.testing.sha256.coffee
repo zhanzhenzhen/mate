@@ -1,7 +1,10 @@
-# Strictly based on:
+# I strictly followed the steps on:
 # http://csrc.nist.gov/publications/fips/fips180-4/fips-180-4.pdf
+# In doing math power and division, I use `round` to avoid possible fractions in old engine.
 
 $mate.testing.sha256 = (str) ->
+    if str.length > Math.round(Math.pow(2, 31) - 1)
+        throw new Error()
     wordToString = (n) -> (((n >>> (i * 4)) % 16).toString(16) for i in [7..0]).join("")
     add = ->
         r = 0
@@ -26,7 +29,7 @@ $mate.testing.sha256 = (str) ->
         0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3
         0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
     ]
-    # preprocessing ----------------------------------------[
+    # preprocessing ========================================[
     H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19]
     bytes = str.split("").map((m) -> m.charCodeAt(0))
     l = str.length * 8
@@ -35,9 +38,9 @@ $mate.testing.sha256 = (str) ->
         k += 512
     paddedLength = l + 1 + k + 64
     bytes.push(0x80)
-    for i in [0...Math.round((k - 7) / 8)] # use `round` to avoid possible fractions in old engine
+    for i in [0...Math.round((k - 7) / 8)]
         bytes.push(0)
-    # This only supports max length of 2^32. But it's enough for testing. [
+    # This only supports max length of 2^32. But it's enough for testing. -----[
     bytes.push(0)
     bytes.push(0)
     bytes.push(0)
@@ -46,7 +49,7 @@ $mate.testing.sha256 = (str) ->
     bytes.push((l >>> 16) % 256)
     bytes.push((l >>> 8) % 256)
     bytes.push(l % 256)
-    # ]
+    # ]--------------------
     N = Math.round(paddedLength / 512)
     M = new Array(N)
     for i in [0...N]
@@ -55,8 +58,7 @@ $mate.testing.sha256 = (str) ->
             offset = i * 64 + j * 4
             M[i][j] = (bytes[offset] << 24) | (bytes[offset + 1] << 16) |
                     (bytes[offset + 2] << 8) | bytes[offset + 3]
-    # ]----------------------------------------
-    # hash computation ----------------------------------------[
+    # ]==================== hash computation ====================[
     W = new Array(64)
     for i in [0...N]
         for t in [0...64]
@@ -92,5 +94,5 @@ $mate.testing.sha256 = (str) ->
         H[5] = add(f, H[5])
         H[6] = add(g, H[6])
         H[7] = add(h, H[7])
-    # ]----------------------------------------
+    # ]========================================
     H.map((m) -> wordToString(m)).join("")

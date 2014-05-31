@@ -4,6 +4,7 @@
 
 class $mate.testing.Test
     constructor: (@description = "") ->
+        @env = {}
         @_children = []
         @_fun = null
         @_interpretedFunction = null
@@ -11,14 +12,21 @@ class $mate.testing.Test
         @parent = null
         @unitResults = []
         @result = null
+    define: (fun) ->
+        fun(@env)
+        @
     set: (fun) ->
         @_fun = fun
+        @
+    get: ->
+        @_fun
+    _interpret: ->
         funStr_834942610148628375 = null
         # Why wrap all these things into a `do`? Because we want to avoid disclosing variables
         # to `eval`. The only variable disclosed is `funStr_834942610148628375`, which user
         # is unlikely to use.
         do =>
-            funStr = fun.toString()
+            funStr = @_fun.toString()
             # This is only to ensure the argument name will be not used by user.
             # We must interprete the "pretty" function to an "ugly" function as an intermediate
             # layer using this mechanism. The missing argument representing the test object
@@ -32,8 +40,9 @@ class $mate.testing.Test
             funStr = funStr.replace(/\([^\)]*\)/, "(#{testArgName})")
             # Recover dot notation.
             $mate.testing.parseFunction(funStr).forEach((m, index) =>
-                pos = m + (testArgName.length + 1) * index
-                funStr = funStr.substr(0, pos) + testArgName + "." + funStr.substr(pos)
+                insertedString = testArgName + "."
+                pos = m + insertedString.length * index
+                funStr = funStr.substr(0, pos) + insertedString + funStr.substr(pos)
             )
             # Recover the actual methods from the symbolic `unit` method.
             # Important: The `unit` method must be symbolic. If it has a real `unit` method,
@@ -68,6 +77,12 @@ class $mate.testing.Test
                 args.push(description)
                 "#{testArgName}.#{parsed.type}(#{args.join(', ')})"
             )
+            $mate.testing.parseFunction(funStr, Object.keys(@env)).forEach((m, index) =>
+                insertedString = testArgName + ".env."
+                pos = m + insertedString.length * index
+                funStr = funStr.substr(0, pos) + insertedString + funStr.substr(pos)
+            )
+            console.log(funStr)
             funStr_834942610148628375 = funStr
             # TODO: Maybe a regex is needed? If we later implement another method
             # named as `finishSomething`, then it won't work correctly. But most likely we
@@ -79,8 +94,6 @@ class $mate.testing.Test
         # by parentheses, otherwise it can't be parsed or evaluated.
         @_interpretedFunction = eval("(#{funStr_834942610148628375})")
         @
-    get: ->
-        @_fun
     add: (description, fun) ->
         if typeof description == "object"
             newChild = description
@@ -104,6 +117,7 @@ class $mate.testing.Test
         r
     run: (showsMessage = true) ->
         if @_fun?
+            @_interpret()
             # We use `setTimeout(..., 0)` only to make all tests "unordered", at least theoretically.
             setTimeout(=>
                 doTest = =>
@@ -128,7 +142,12 @@ class $mate.testing.Test
                     catch
                         @finish(type: false)
             , 0)
-        @getChildren().forEach((m) => m.run(false))
+        @getChildren().forEach((m) =>
+            Object.keys(@env).forEach((n) =>
+                m.env[n] = @env[n]
+            )
+            m.run(false)
+        )
         if showsMessage
             allTests = []
             allTests.push(@) if @.get()?

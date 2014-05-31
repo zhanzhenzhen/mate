@@ -216,6 +216,9 @@ else
     Test = $mate.testing.Test
     window.unitsomething = -> true
 new Test("root"
+).define((env) ->
+    env.var1 = 111
+    env.var2 = 1234
 ).add("String.prototype test", ->
     str = "hello world"
     unit(' str.substr(4,1)="o" ')
@@ -224,6 +227,8 @@ new Test("root"
     unitsomething()
 ).add(->
     unit('Math.round(5.3)=5')
+    unit('var1=var2')
+    unit('var1<>var2')
 ).add(->
     unit('1+2+3=7')
 ).add(->

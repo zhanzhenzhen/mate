@@ -4,7 +4,10 @@
 # I used to use regex for this parser, but nearly all JS engine cannot execute it well.
 # Some report errors. Node even hangs up with CPU usage 100%. Very weird.
 # Maybe it's because this regex is very complicated, and nested. So I gave it up.
-$mate.testing.parseFunction = (funStr) ->
+$mate.testing.parseFunction = (funStr, envNames) ->
+    keywords = envNames ? ["finish", "unit"]
+    if keywords.length == 0 then return []
+    regex = new RegExp("^(" + keywords.join("|") + ")[^a-zA-Z0-9_$]", "g")
     positions = []
     quote = null
     slashQuoteReady = true
@@ -52,8 +55,8 @@ $mate.testing.parseFunction = (funStr) ->
         else if c == "\\" and quote != null
             i += 2
         else if quote == null and not oldWordStarted and not oldDotAffected and "a" <= c <= "z"
-            s = funStr.substr(i, 10) # limit to 10 chars for better performance
-            if /^(finish|unit)[^a-zA-Z0-9_$]/g.test(s)
+            s = funStr.substr(i, 31) # limit to 31 chars for better performance (max keyword length is 30)
+            if s.search(regex) != -1
                 positions.push(i)
             i++
         else
