@@ -10,6 +10,8 @@ class $mate.testing.Test
         @_interpretedFunction = null
         @async = false
         @parent = null
+        @resetAllResults()
+    resetAllResults: ->
         @unitResults = []
         @result = null
     define: (fun) ->
@@ -17,8 +19,8 @@ class $mate.testing.Test
         @
     getEnv: ->
         r = $mate.testing.objectClone(@_env)
-        @getAncestors().forEach((ancestor) ->
-            Object.keys(ancestor._env).forEach((key) ->
+        @getAncestors().forEach((ancestor) =>
+            Object.keys(ancestor._env).forEach((key) =>
                 if key not in Object.keys(r) then r[key] = ancestor._env[key]
             )
         )
@@ -123,6 +125,7 @@ class $mate.testing.Test
             test = test.parent
         r
     run: (showsMessage = true) ->
+        @resetAllResults()
         if @_fun?
             @_interpret()
             # We use `setTimeout(..., 0)` only to make all tests "unordered", at least theoretically.
