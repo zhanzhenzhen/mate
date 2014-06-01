@@ -4,27 +4,20 @@
 
 class $mate.testing.Test
     constructor: (@description = "") ->
-        @_env = {}
         @_children = []
         @_fun = null
         @_interpretedFunction = null
+        @_envFun = null
         @async = false
         @parent = null
-        @resetAllResults()
-    resetAllResults: ->
+        @_resetContext()
+    _resetContext: ->
+        @env = {}
         @unitResults = []
         @result = null
     define: (fun) ->
-        fun(@_env)
+        @_envFun = fun
         @
-    getEnv: ->
-        r = $mate.testing.objectClone(@_env)
-        @getAncestors().forEach((ancestor) =>
-            Object.keys(ancestor._env).forEach((key) =>
-                if key not in Object.keys(r) then r[key] = ancestor._env[key]
-            )
-        )
-        r
     set: (fun) ->
         @_fun = fun
         @
@@ -87,8 +80,8 @@ class $mate.testing.Test
                 args.push(description)
                 "#{testArgName}.#{parsed.type}(#{args.join(', ')})"
             )
-            $mate.testing.parseFunction(funStr, Object.keys(@getEnv())).forEach((m, index) =>
-                insertedString = testArgName + ".getEnv()."
+            $mate.testing.parseFunction(funStr, Object.keys(@env)).forEach((m, index) =>
+                insertedString = testArgName + ".env."
                 pos = m + insertedString.length * index
                 funStr = funStr.substr(0, pos) + insertedString + funStr.substr(pos)
             )
@@ -125,7 +118,10 @@ class $mate.testing.Test
             test = test.parent
         r
     run: (showsMessage = true) ->
-        @resetAllResults()
+        @_resetContext()
+        if @parent?
+            @env = $mate.testing.objectClone(@parent.env)
+        @_envFun?(@env)
         if @_fun?
             @_interpret()
             # We use `setTimeout(..., 0)` only to make all tests "unordered", at least theoretically.
