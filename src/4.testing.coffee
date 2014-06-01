@@ -377,12 +377,18 @@ $mate.testing.valueToMessage = (value) ->
             "[Function]"
         else if typeof value == "object"
             if maxLevel > 0
-                "{" + Object.keys(value).map((m) -> "#{m}:" + internal(value[m], maxLevel - 1))
-                        .join(",") + "}"
+                "{" + Object.keys(value).map((m) ->
+                    "#{JSON.stringify(m)}:" + internal(value[m], maxLevel - 1)
+                ).join(",") + "}"
             else
                 "[Object]"
         else if typeof value == "string"
             JSON.stringify(value.toString())
+        else if typeof value == "number"
+            if $mate.testing.objectIs(value, -0)
+                "-0"
+            else
+                value.toString()
         else
             value.toString()
     r = internal(value, 3)

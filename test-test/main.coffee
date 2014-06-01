@@ -341,33 +341,6 @@ new Test("root"
     unit(' 8 isnt 4 ')
     unit(' NaN isnt NaN ')
     unit(' {} isnt {} ')
-    unit("""
-        [
-            1, 2, 3,
-            "asdf", "jkl",
-            {
-                yyy: 4,
-                iii: 5,
-                jjj: NaN,
-                kkk: null,
-                "mmm e": -9,
-                d: undefined
-            }
-        ]
-        =
-        [
-            1, 2, 3,
-            "asdf", "jkl",
-            {
-                yyy: 4,
-                iii: 5,
-                jjj: NaN,
-                kkk: null,
-                "mmm e": -10,
-                d: undefined
-            }
-        ]
-    """)
     # circular ----------------------------------------[
     unit(' {a:1,b:2}={a:1,b:2,c:function(){}} ')
     unit(' {a:{a:{a:{a:{}}}}}={a:{a:{a:{a:{}}}}} ')
@@ -415,8 +388,6 @@ new Test("root"
     veryLongCircularObj1.j = "............................................................"
     veryLongCircularObj1.k = "............................................................"
     veryLongCircularObj1.l = "............................................................"
-    veryLongCircularObj1.m = "............................................................"
-    veryLongCircularObj1.n = "............................................................"
     veryLongCircularObj2 = {}
     veryLongCircularObj2.me = veryLongCircularObj2
     veryLongCircularObj2.secondMe = veryLongCircularObj2
@@ -434,10 +405,63 @@ new Test("root"
     veryLongCircularObj2.j = "............................................................"
     veryLongCircularObj2.k = "............................................................"
     veryLongCircularObj2.l = "............................................................"
-    veryLongCircularObj2.m = "............................................................"
-    veryLongCircularObj2.n = "............................................................"
     unit('veryLongCircularObj1=veryLongCircularObj2')
     unit('veryLongCircularObj1<>veryLongCircularObj2')
     unit('veryLongCircularObj1 is veryLongCircularObj2')
     unit('veryLongCircularObj1 isnt veryLongCircularObj2')
+).add(->
+    unit("""
+        [
+            1, 2, 3,
+            "asdf", "jkl",
+            {
+                yyy: 4,
+                iii: 5,
+                jjj: NaN,
+                kkk: null,
+                "mmm e": -9,
+                d: undefined
+            }
+        ]
+        =
+        [
+            1, 2, 3,
+            "asdf", "jkl",
+            {
+                yyy: 4,
+                iii: 5,
+                jjj: NaN,
+                kkk: null,
+                "mmm e": -10,
+                d: undefined
+            }
+        ]
+    """)
+    unit("""
+        [
+            1, 2, 3,
+            "asdf", "jkl",
+            {
+                yyy: 4,
+                iii: 5,
+                jjj: NaN,
+                kkk: null,
+                "mmm e": -9,
+                d: undefined
+            }
+        ]
+        =
+        [
+            1, 2, 3,
+            "asdf", "jkl",
+            {
+                yyy: 4,
+                iii: 5,
+                jjj: NaN,
+                kkk: null,
+                "mmm e": -9,
+                d: undefined
+            }
+        ]
+    """)
 ).run()

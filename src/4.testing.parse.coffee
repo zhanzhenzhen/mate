@@ -125,7 +125,7 @@ $mate.testing.parseUnitString = (unitStr) ->
             i++
         else if quote == null and not oldDotAffected and parenthesis == bracket == brace == 0
             s = unitStr.substr(i)
-            if (match = s.match(/^=(.+)$/))?
+            if (match = s.match(/// ^ = ([^]+) $ ///))?
                 parsed =
                     type: "equal"
                     components: [
@@ -133,7 +133,7 @@ $mate.testing.parseUnitString = (unitStr) ->
                         match[1]
                     ]
                 break
-            else if (match = s.match(/^<>(.+)$/))?
+            else if (match = s.match(/// ^ <> ([^]+) $ ///))?
                 parsed =
                     type: "notEqual"
                     components: [
@@ -141,7 +141,7 @@ $mate.testing.parseUnitString = (unitStr) ->
                         match[1]
                     ]
                 break
-            else if (match = s.match(/^ is (.+)$/))?
+            else if (match = s.match(/// ^ \s is \s ([^]+) $ ///))?
                 parsed =
                     type: "is"
                     components: [
@@ -149,7 +149,7 @@ $mate.testing.parseUnitString = (unitStr) ->
                         match[1]
                     ]
                 break
-            else if (match = s.match(/^ isnt (.+)$/))?
+            else if (match = s.match(/// ^ \s isnt \s ([^]+) $ ///))?
                 parsed =
                     type: "isnt"
                     components: [
@@ -157,7 +157,7 @@ $mate.testing.parseUnitString = (unitStr) ->
                         match[1]
                     ]
                 break
-            else if (match = s.match(/^ throws(?: (.+))?$/))?
+            else if (match = s.match(///^ \s throws (?: \s ([^]+))? $ ///))?
                 parsed =
                     type: "throws"
                     components: [
