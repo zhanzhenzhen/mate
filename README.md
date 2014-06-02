@@ -3,20 +3,28 @@ Mate
 
 Mate is your JavaScript/CoffeeScript mate that brings these key features:
 
-- A New Way of Unit Testing
-- A New Way of Handling Events
-- Array Extensions
-- Advanced Timers
-- "Functional" Functions
-- 2D Point & Complex Math
-- ECMAScript 6th Features
+- Very natural unit testing
+- A new way of handling events
+- Array extensions
+- Advanced timers
+- "Functional" functions
+- 2D point & complex Math
+- ECMAScript 6th features
 
 Mate performs consistently in all modern browsers and node.js.
 
 Tutorial
 ====
 
-[Please click here for tutorial.](http://zhanzhenzhen.github.io/mate/)
+[Tutorial](http://zhanzhenzhen.github.io/mate/)
+
+[教程](http://zhanzhenzhen.github.io/mate/)
+
+[Lernprogramm](http://zhanzhenzhen.github.io/mate/)
+
+[チュートリアル](http://zhanzhenzhen.github.io/mate/)
+
+[Didacticiel](http://zhanzhenzhen.github.io/mate/)
 
 Compile & Publish
 ====

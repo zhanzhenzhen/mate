@@ -11,7 +11,7 @@
 # http://csrc.nist.gov/publications/fips/fips180-4/fips-180-4.pdf
 # In doing math power and division, I use `round` to avoid possible fractions in old engine.
 
-$mate.testing.sha256 = (str) ->
+npmMate.testing.sha256 = (str) ->
     if str.length > Math.round(Math.pow(2, 31) - 1)
         throw new Error()
     wordToString = (n) -> (((n >>> (i * 4)) % 16).toString(16) for i in [7..0]).join("")

@@ -2,7 +2,7 @@
 # and "testing.**.coffee". Because this file will be used to test other parts.
 # Otherwise the test result may be incorrect.
 
-class $mate.testing.Test
+class npmMate.testing.Test
     constructor: (@description = "") ->
         @_children = []
         @_fun = null
@@ -42,7 +42,7 @@ class $mate.testing.Test
             # not global, only replace first "(...)"
             funStr = funStr.replace(/\([^\)]*\)/, "(#{testArgName})")
             # Recover dot notation.
-            $mate.testing.parseFunction(funStr).forEach((m, index) =>
+            npmMate.testing.parseFunction(funStr).forEach((m, index) =>
                 insertedString = testArgName + "."
                 pos = m + insertedString.length * index
                 funStr = funStr.substr(0, pos) + insertedString + funStr.substr(pos)
@@ -75,12 +75,12 @@ class $mate.testing.Test
                 # If use `JSON.parse` instead, then single quotes string cannot be parsed.
                 unitStr = eval(p1).trim()
                 description = p2 ? JSON.stringify(unitStr)
-                parsed = $mate.testing.parseUnitString(unitStr)
+                parsed = npmMate.testing.parseUnitString(unitStr)
                 args = parsed.components
                 args.push(description)
                 "#{testArgName}.#{parsed.type}(#{args.join(', ')})"
             )
-            $mate.testing.parseFunction(funStr, Object.keys(@env)).forEach((m, index) =>
+            npmMate.testing.parseFunction(funStr, Object.keys(@env)).forEach((m, index) =>
                 insertedString = testArgName + ".env."
                 pos = m + insertedString.length * index
                 funStr = funStr.substr(0, pos) + insertedString + funStr.substr(pos)
@@ -103,7 +103,7 @@ class $mate.testing.Test
             if typeof description != "string"
                 fun = description
                 description = ""
-            newChild = new $mate.testing.Test(description).set(fun)
+            newChild = new npmMate.testing.Test(description).set(fun)
         newChild.parent = @
         @_children.push(newChild)
         @
@@ -120,7 +120,7 @@ class $mate.testing.Test
     run: (showsMessage = true) ->
         @_resetContext()
         if @parent?
-            @env = $mate.testing.objectClone(@parent.env)
+            @env = npmMate.testing.objectClone(@parent.env)
         @_envFun?(@env)
         if @_fun?
             @_interpret()
@@ -193,7 +193,7 @@ class $mate.testing.Test
                             console.log("  Actual: #{n.actual}")
                     ))
                     markString = markString.trim()
-                    mark = $mate.testing.sha256(markString).substr(0, 5)
+                    mark = npmMate.testing.sha256(markString).substr(0, 5)
                     console.log("\n" + (
                         if exceptionTests.length == 0 and failureCount == 0
                             "All tests are OK. All units succeeded."
@@ -215,7 +215,7 @@ class $mate.testing.Test
             if Array.isArray(actual) and Array.isArray(ruler)
                 if ruler.every((m, index) =>
                     if m in objects
-                        $mate.testing.objectIs(actual[index], m)
+                        npmMate.testing.objectIs(actual[index], m)
                     else
                         objects.push(m) if typeof m == "object" and m != null
                         determine(actual[index], m)
@@ -227,7 +227,7 @@ class $mate.testing.Test
                     typeof ruler == "object" and ruler != null
                 if Object.keys(ruler).every((m) =>
                     if ruler[m] in objects
-                        $mate.testing.objectIs(actual[m], ruler[m])
+                        npmMate.testing.objectIs(actual[m], ruler[m])
                     else
                         objects.push(ruler[m]) if typeof ruler[m] == "object" and ruler[m] != null
                         determine(actual[m], ruler[m])
@@ -236,13 +236,13 @@ class $mate.testing.Test
                 else
                     false
             else
-                $mate.testing.objectIs(actual, ruler)
+                npmMate.testing.objectIs(actual, ruler)
         newResult =
             type: determine(actual, ruler)
             description: description
         if newResult.type == false
-            newResult.actual = $mate.testing.valueToMessage(actual)
-            newResult.expected = "= " + $mate.testing.valueToMessage(ruler)
+            newResult.actual = npmMate.testing.valueToMessage(actual)
+            newResult.expected = "= " + npmMate.testing.valueToMessage(ruler)
         @unitResults.push(newResult)
         @
     notEqual: (actual, ruler, description = "") ->
@@ -251,7 +251,7 @@ class $mate.testing.Test
             if Array.isArray(actual) and Array.isArray(ruler)
                 if ruler.some((m, index) =>
                     if m in objects
-                        not $mate.testing.objectIs(actual[index], m)
+                        not npmMate.testing.objectIs(actual[index], m)
                     else
                         objects.push(m) if typeof m == "object" and m != null
                         determine(actual[index], m)
@@ -263,7 +263,7 @@ class $mate.testing.Test
                     typeof ruler == "object" and ruler != null
                 if Object.keys(ruler).some((m) =>
                     if ruler[m] in objects
-                        not $mate.testing.objectIs(actual[m], ruler[m])
+                        not npmMate.testing.objectIs(actual[m], ruler[m])
                     else
                         objects.push(ruler[m]) if typeof ruler[m] == "object" and ruler[m] != null
                         determine(actual[m], ruler[m])
@@ -272,31 +272,31 @@ class $mate.testing.Test
                 else
                     false
             else
-                not $mate.testing.objectIs(actual, ruler)
+                not npmMate.testing.objectIs(actual, ruler)
         newResult =
             type: determine(actual, ruler)
             description: description
         if newResult.type == false
-            newResult.actual = $mate.testing.valueToMessage(actual)
-            newResult.expected = "≠ " + $mate.testing.valueToMessage(ruler)
+            newResult.actual = npmMate.testing.valueToMessage(actual)
+            newResult.expected = "≠ " + npmMate.testing.valueToMessage(ruler)
         @unitResults.push(newResult)
         @
     is: (actual, ruler, description = "") ->
         newResult =
-            type: $mate.testing.objectIs(actual, ruler)
+            type: npmMate.testing.objectIs(actual, ruler)
             description: description
         if newResult.type == false
-            newResult.actual = $mate.testing.valueToMessage(actual)
-            newResult.expected = "is " + $mate.testing.valueToMessage(ruler)
+            newResult.actual = npmMate.testing.valueToMessage(actual)
+            newResult.expected = "is " + npmMate.testing.valueToMessage(ruler)
         @unitResults.push(newResult)
         @
     isnt: (actual, ruler, description = "") ->
         newResult =
-            type: not $mate.testing.objectIs(actual, ruler)
+            type: not npmMate.testing.objectIs(actual, ruler)
             description: description
         if newResult.type == false
-            newResult.actual = $mate.testing.valueToMessage(actual)
-            newResult.expected = "isn't " + $mate.testing.valueToMessage(ruler)
+            newResult.actual = npmMate.testing.valueToMessage(actual)
+            newResult.expected = "isn't " + npmMate.testing.valueToMessage(ruler)
         @unitResults.push(newResult)
         @
     throws: (fun, ruler, description = "") ->
@@ -343,7 +343,7 @@ class $mate.testing.Test
         @unitResults.push(newResult)
         @
 # This function is equivalent to ECMAScript 6th's `Object.is`.
-$mate.testing.objectIs = (a, b) ->
+npmMate.testing.objectIs = (a, b) ->
     if typeof a == "number" and typeof b == "number"
         if a == 0 and b == 0
             1 / a == 1 / b
@@ -353,12 +353,12 @@ $mate.testing.objectIs = (a, b) ->
             a == b
     else
         a == b
-$mate.testing.objectClone = (x) ->
+npmMate.testing.objectClone = (x) ->
     y = {}
     for key in Object.keys(x)
         y[key] = x[key]
     y
-$mate.testing.valueToMessage = (value) ->
+npmMate.testing.valueToMessage = (value) ->
     internal = (value, maxLevel) ->
         if value == undefined
             "undefined"
@@ -381,7 +381,7 @@ $mate.testing.valueToMessage = (value) ->
         else if typeof value == "string"
             JSON.stringify(value.toString())
         else if typeof value == "number"
-            if $mate.testing.objectIs(value, -0)
+            if npmMate.testing.objectIs(value, -0)
                 "-0"
             else
                 value.toString()
@@ -393,5 +393,5 @@ $mate.testing.valueToMessage = (value) ->
     r = internal(value, 0) if r.length > 1000
     r
 featureLoaders.push(->
-    global.Test = $mate.testing.Test
+    global.Test = npmMate.testing.Test
 )

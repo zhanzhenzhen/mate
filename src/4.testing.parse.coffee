@@ -4,7 +4,7 @@
 # I used to use regex for this parser, but nearly all JS engine cannot execute it well.
 # Some report errors. Node even hangs up with CPU usage 100%. Very weird.
 # Maybe it's because this regex is very complicated, and nested. So I gave it up.
-$mate.testing.parseFunction = (funStr, envNames) ->
+npmMate.testing.parseFunction = (funStr, envNames) ->
     keywords = envNames ? ["finish", "unit"]
     if keywords.length == 0 then return []
     regex = new RegExp("^(" + keywords.join("|") + ")[^a-zA-Z0-9_$]", "g")
@@ -63,7 +63,7 @@ $mate.testing.parseFunction = (funStr, envNames) ->
             i++
     positions
 # `unitStr` must be an already-trimmed string
-$mate.testing.parseUnitString = (unitStr) ->
+npmMate.testing.parseUnitString = (unitStr) ->
     parsed = null
     quote = null
     parenthesis = 0

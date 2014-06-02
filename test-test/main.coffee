@@ -291,7 +291,7 @@ if exports? and module?.exports?
     Test = require("../mate").testing.Test
     global.unitsomething = -> true
 else
-    Test = $mate.testing.Test
+    Test = npmMate.testing.Test
     window.unitsomething = -> true
 new Test("root"
 ).define((env) ->

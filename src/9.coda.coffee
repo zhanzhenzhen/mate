@@ -1,6 +1,6 @@
-if $mate.environmentType == "browser"
-    window.$mate = $mate
-else if $mate.environmentType == "node"
-    module.exports = $mate
+if npmMate.environmentType == "browser"
+    window.npmMate = npmMate
+else if npmMate.environmentType == "node"
+    module.exports = npmMate
 else
     throw new Error()
