@@ -1,8 +1,8 @@
 {
     "name": "mate",
-    "version": "0.7.0",
-    "description": "New concept testing, array extensions, ES6 shim, etc. Small but all in one.",
-    "keywords": ["test", "unit", "testing", "event", "coffeescript", "timer", "math", "javascript", "es6", "js", "coffee"],
+    "version": "0.8.0",
+    "description": "Array extensions, ES6 shim, etc. Small but all in one.",
+    "keywords": ["event", "coffeescript", "timer", "math", "javascript", "es6", "js", "coffee"],
     "author": "Zhenzhen Zhan <zhanzhenzhen@hotmail.com>",
     "homepage": "https://github.com/zhanzhenzhen/mate",
     "licenses": [{

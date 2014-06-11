@@ -1,6 +1,5 @@
 featureLoaders = []
 npmMate = {}
-npmMate.testing = {}
 npmMate.environmentType =
     if exports? and module?.exports?
         "node"
