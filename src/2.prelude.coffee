@@ -1,4 +1,3 @@
-featureLoaders = []
 npmMate = {}
 npmMate.environmentType =
     if exports? and module?.exports?
@@ -7,8 +6,3 @@ npmMate.environmentType =
         "browser"
     else
         undefined
-npmMate.enableAllFeatures = ->
-    if npmMate.environmentType == "browser"
-        window.global = window
-    global.npmMate = npmMate
-    featureLoaders.forEach((m) -> m())
