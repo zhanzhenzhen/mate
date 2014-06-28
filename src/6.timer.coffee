@@ -2,6 +2,7 @@
 # additive timespans. It's based on "time" and timespans. So it's related to `Date`.
 # Why default precision is 30ms? Because in most cases we don't want it to bring more CPU usage.
 # In my test if it's 1ms then CPU usage will be around 5%. If 30ms then 0.4%.
+# These two numbers are in single-core, so it's 1.25% and 0.1% in all my 4 cores.
 
 class Date.Timer
     @_endOfTime: new Date("9999-12-30T00:00:00Z")

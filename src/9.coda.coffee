@@ -1,6 +1,2 @@
-if npmMate.environmentType == "browser"
-    window.npmMate = npmMate
-else if npmMate.environmentType == "node"
+if npmMate.moduleSystem == "commonjs"
     module.exports = npmMate
-else
-    throw new Error()

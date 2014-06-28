@@ -25,7 +25,7 @@ This section is only for the author of this repo, so other developers can just i
 **How to compile**
 
 ```bash
-awk 'FNR==1{print ""}1' src/*.coffee src/package-start.txt package.json src/package-end.txt | node_modules/coffee-script/bin/coffee -cs > mate.js && node_modules/uglify-js/bin/uglifyjs mate.js -o mate.min.js -m --screw-ie8 --comments && awk 'FNR==1{print ""}1' test/*.coffee | node_modules/coffee-script/bin/coffee -cs > test/compiled.js
+npm install && awk 'FNR==1{print ""}1' src/*.coffee src/package-start.txt package.json src/package-end.txt | node_modules/coffee-script/bin/coffee -cs > mate.js && node_modules/js-bundler/bin/bundle mate.js > mate.b.js && node_modules/uglify-js/bin/uglifyjs mate.b.js -o mate.b.min.js -m --screw-ie8 --comments && awk 'FNR==1{print ""}1' test/*.coffee | node_modules/coffee-script/bin/coffee -cs > test/compiled.js
 ```
 
 **How to publish**
@@ -35,7 +35,7 @@ The compiled .js files should ONLY be included in the tagged commits. To achieve
 First, make sure all changes are recorded in master branch. Then, compile. Then:
 
 ```bash
-git checkout -b release && git add -f mate.js mate.min.js test/compiled.js
+git checkout -b release && git add -f mate.js mate.b.js mate.b.min.js test/compiled.js
 ```
 
 Then commit it and tag it and push it and push tags. Then:

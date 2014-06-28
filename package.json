@@ -1,6 +1,6 @@
 {
     "name": "mate",
-    "version": "0.8.0",
+    "version": "0.9.0",
     "description": "Array extensions, ES6 shim, etc. Small but all in one.",
     "keywords": ["event", "coffeescript", "timer", "math", "javascript", "es6", "js", "coffee"],
     "author": "Zhenzhen Zhan <zhanzhenzhen@hotmail.com>",
@@ -13,9 +13,13 @@
         "type": "git",
         "url": "https://github.com/zhanzhenzhen/mate.git"
     },
+    "dependencies": {
+        "wishlist": "0.2.5"
+    },
     "devDependencies": {
         "coffee-script": "1.7.1",
-        "uglify-js": "2.4.13"
+        "uglify-js": "2.4.13",
+        "js-bundler": "0.1.1"
     },
     "main": "mate"
 }

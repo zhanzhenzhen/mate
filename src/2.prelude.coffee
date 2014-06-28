@@ -1,8 +1,7 @@
+wishlist = require("wishlist")
 npmMate = {}
-npmMate.environmentType =
-    if exports? and module?.exports?
-        "node"
-    else if window?
-        "browser"
-    else
-        undefined
+npmMate.environmentType = wishlist.environmentType
+npmMate.moduleSystem = wishlist.moduleSystem
+if npmMate.environmentType == "browser"
+    window.global = window
+global.npmMate = npmMate
