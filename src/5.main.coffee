@@ -17,11 +17,7 @@ global.spread = (value, count) ->
 # ]
 Object.getter = (obj, prop, fun) -> Object.defineProperty(obj, prop, {get: fun, configurable: true})
 Object.setter = (obj, prop, fun) -> Object.defineProperty(obj, prop, {set: fun, configurable: true})
-Object.clone = (x) ->
-    y = {}
-    for key in Object.keys(x)
-        y[key] = x[key]
-    y
+Object.clone = wishlist.objectClone
 JSON.clone = (x) -> JSON.parse(JSON.stringify(x))
 # Better than the built-in regular expression method when global mode
 # and submatches are both required.
