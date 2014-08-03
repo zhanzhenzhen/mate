@@ -20,7 +20,16 @@ if String::contains == undefined
     String::contains = (s) -> @indexOf(s) != -1
 # This is in ECMAScript 6. Only Firefox and Chrome natively supports this.
 if Object.is == undefined
-    Object.is = wishlist.objectIs
+    Object.is = (a, b) ->
+        if typeof a == "number" and typeof b == "number"
+            if a == 0 and b == 0
+                1 / a == 1 / b
+            else if isNaN(a) and isNaN(b)
+                true
+            else
+                a == b
+        else
+            a == b
 # This is in ECMAScript 6. No browser natively supports this.
 if Array.from == undefined
     Array.from = (arrayLike) -> m for m in arrayLike
