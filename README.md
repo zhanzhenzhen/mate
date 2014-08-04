@@ -25,7 +25,7 @@ This section is only for the author of this repo, so other developers can just i
 **How to compile**
 
 ```bash
-npm install && awk 'FNR==1{print ""}1' src/*.coffee src/package-start.txt package.json src/package-end.txt | node_modules/coffee-script/bin/coffee -cs > mate.js && node_modules/js-bundler/bin/bundle mate.js > mate.b.js && node_modules/uglify-js/bin/uglifyjs mate.b.js -o mate.b.min.js -m --screw-ie8 --comments && awk 'FNR==1{print ""}1' test/*.coffee | node_modules/coffee-script/bin/coffee -cs > test/compiled.js
+npm install && awk 'FNR==1{print ""}1' src/*.coffee | node_modules/coffee-script/bin/coffee -cs > mate.js && node_modules/js-bundler/bin/bundle mate.js > mate.b.js && node_modules/uglify-js/bin/uglifyjs mate.b.js -o mate.b.min.js -m --screw-ie8 --comments && awk 'FNR==1{print ""}1' test/*.coffee | node_modules/coffee-script/bin/coffee -cs > test/compiled.js
 ```
 
 **How to publish**
