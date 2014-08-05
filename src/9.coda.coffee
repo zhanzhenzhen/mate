@@ -1,2 +1,2 @@
-if npmMate.moduleSystem == "commonjs"
-    module.exports = npmMate
+if mate.moduleSystem == "commonjs"
+    module.exports = mate

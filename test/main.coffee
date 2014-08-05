@@ -1,6 +1,6 @@
 # TODO: Lots of work needed!
 
-if not npmMate? then require("../mate")
+mate = npmMate ? require("../mate")
 new Test("root"
 ).add((my, I) ->
     I.wish(' new Date("2014-02-03T18:19:25.987").equals(new Date("2014-02-03T18:19:25.987"))=true ')

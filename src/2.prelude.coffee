@@ -1,8 +1,8 @@
 wishlist = require("wishlist")
-npmMate = {}
-npmMate.packageInfo = require("./package.json")
-npmMate.environmentType = wishlist.environmentType
-npmMate.moduleSystem = wishlist.moduleSystem
-if npmMate.environmentType == "browser"
+mate = {}
+mate.packageInfo = require("./package.json")
+mate.environmentType = wishlist.environmentType
+mate.moduleSystem = wishlist.moduleSystem
+if mate.environmentType == "browser"
     window.global = window
-global.npmMate = npmMate
+global.npmMate = mate
