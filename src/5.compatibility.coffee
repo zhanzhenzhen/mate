@@ -9,6 +9,18 @@ if Number.isInteger == undefined
     Number.isInteger = (x) ->
         typeof x == "number" and isFinite(x) and x > -9007199254740992 and
                 x < 9007199254740992 and Math.floor(x) == x
+# This is in ECMAScript 6. Only Firefox and Chrome natively support this.
+if Number.isFinite == undefined
+    Number.isFinite = (x) -> typeof x == "number" and isFinite(x)
+# This is in ECMAScript 6. Only Firefox and Chrome natively support this.
+if Number.isNaN == undefined
+    Number.isNaN = (x) -> typeof x == "number" and isNaN(x)
+# This is in ECMAScript 6. Only Firefox and Chrome natively support this.
+if Number.parseInt == undefined
+    Number.parseInt = parseInt
+# This is in ECMAScript 6. Only Firefox and Chrome natively support this.
+if Number.parseFloat == undefined
+    Number.parseFloat = parseFloat
 # This is in ECMAScript 6. Only Firefox natively supports this.
 if String::startsWith == undefined
     String::startsWith = (s) -> @indexOf(s) == 0
@@ -18,7 +30,7 @@ if String::endsWith == undefined
 # This is in ECMAScript 6. Only Firefox natively supports this.
 if String::contains == undefined
     String::contains = (s) -> @indexOf(s) != -1
-# This is in ECMAScript 6. Only Firefox and Chrome natively supports this.
+# This is in ECMAScript 6. Only Firefox and Chrome natively support this.
 if Object.is == undefined
     Object.is = (a, b) ->
         if typeof a == "number" and typeof b == "number"
@@ -63,6 +75,9 @@ if Math.sign == undefined
                 NaN
         else
             NaN
+# This is in ECMAScript 6. Only Firefox natively supports this.
+if Math.trunc == undefined
+    Math.trunc = (x) -> if x < 0 then Math.ceil(x) else Math.floor(x)
 # Only IE natively supports this.
 if global.setImmediate == undefined
     global.setImmediate = (callback, args) -> setTimeout(callback, 0, args)
