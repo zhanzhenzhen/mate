@@ -1,7 +1,7 @@
 Mate
 ====
 
-Mate is your JavaScript/CoffeeScript mate that brings these key features:
+Mate extends the native JavaScript/CoffeeScript, and works on browsers and Node.js:
 
 - A new way of handling events
 - Array extensions
@@ -10,8 +10,6 @@ Mate is your JavaScript/CoffeeScript mate that brings these key features:
 - 2D point & complex math
 - ECMAScript 6th features
 - Very natural testing
-
-Mate performs consistently in all modern browsers and node.js.
 
 Tutorial
 ====
