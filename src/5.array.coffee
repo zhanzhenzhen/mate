@@ -55,10 +55,7 @@ class ArrayLazyWrapper
 Array._elementOrUseSelector = (element, selector) -> if selector? then selector(element) else element
 Array::_numberToIndex = (pos) -> if 0 < pos < 1 then pos = Math.round(pos * (@length - 1)) else pos
 Array::_numberToLength = (pos) -> if 0 < pos < 1 then pos = Math.round(pos * @length) else pos
-# We name it "copy" instead of "clone" because "clone" is more related to object
-# and its properties/methods. This method does not copy array methods or negative index values
-# so it's just "copy".
-Array::copy = -> @[..]
+Array::clone = -> @[..]
 Array::isEmpty = -> @length == 0
 Array::lazy = -> new ArrayLazyWrapper(@)
 Array::portion = (startIndex, length, endIndex) ->
@@ -156,7 +153,7 @@ Array::group = (keySelector, valueSelector) ->
     ])
     results
 Array::_sort = (keySelector, isDescending) ->
-    @copy().sort((a, b) =>
+    @clone().sort((a, b) =>
         a1 = Array._elementOrUseSelector(a, keySelector)
         b1 = Array._elementOrUseSelector(b, keySelector)
         if a1 < b1 then (if isDescending then 1 else -1)
@@ -166,7 +163,7 @@ Array::_sort = (keySelector, isDescending) ->
 Array::funSort = (keySelector) -> @_sort(keySelector, false)
 Array::funSortDescending = (keySelector) -> @_sort(keySelector, true)
 # ]
-Array::funReverse = -> @copy().reverse()
+Array::funReverse = -> @clone().reverse()
 Array::except = (array) -> @filter((m) -> m not in array)
 Array::flatten = (level) ->
     if level <= 0
@@ -191,7 +188,7 @@ Array::flatten = (level) ->
         else
             r
 Array::randomOne = -> @[Math.randomInt(@length)]
-Array::random = (count) -> @copy().takeRandom(count)
+Array::random = (count) -> @clone().takeRandom(count)
 Array::takeRandomOne = ->
     index = Math.randomInt(@length)
     r = @[index]

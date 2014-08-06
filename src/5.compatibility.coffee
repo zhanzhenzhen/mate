@@ -45,6 +45,9 @@ if Object.is == undefined
 # This is in ECMAScript 6. No browser natively supports this.
 if Array.from == undefined
     Array.from = (arrayLike) -> m for m in arrayLike
+# This is in ECMAScript 6. Only Firefox natively supports this.
+if Array.of == undefined
+    Array.of = -> Array.from(arguments)
 # This is in ECMAScript 6. No browser natively supports this.
 # TODO: performance
 if Array::find == undefined
