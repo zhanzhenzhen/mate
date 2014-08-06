@@ -21,4 +21,9 @@ new Test("root"
     I.wish(' Object.is(0,0)=true ')
     I.wish(' Object.is(NaN,NaN)=true ')
     I.wish(' Object.is({},{})=false ')
+).add("Array::funReverse", (my, I) ->
+    my.array = [3, 4, 5]
+    my.reversed = my.array.funReverse()
+    I.wish(' reversed=[5,4,3] ')
+    I.wish(' array=[3,4,5] ')
 ).run()
