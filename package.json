@@ -1,10 +1,13 @@
 {
     "name": "mate",
-    "version": "0.9.1",
-    "description": "Array extensions, ES6 shim, etc. Small but all in one.",
-    "keywords": ["event", "coffeescript", "timer", "math", "javascript", "es6", "js", "coffee"],
+    "version": "0.10.0",
+    "description": "Array extensions, ES6 shims, testing, timers, events, etc. It extends the native JavaScript/CoffeeScript.",
+    "keywords": [
+        "event", "coffeescript", "timer", "math", "javascript", "js", "coffee",
+        "es6", "shim", "test", "testing"
+    ],
     "author": "Zhenzhen Zhan <zhanzhenzhen@hotmail.com>",
-    "homepage": "https://github.com/zhanzhenzhen/mate",
+    "homepage": "http://zhanzhenzhen.github.io/mate/",
     "license": "MIT",
     "repository": {
         "type": "git",
