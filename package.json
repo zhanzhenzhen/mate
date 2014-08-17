@@ -1,6 +1,6 @@
 {
     "name": "mate",
-    "version": "0.10.0",
+    "version": "0.11.0",
     "description": "Array extensions, ES6 shims, testing, timers, events, etc. It extends the native JavaScript/CoffeeScript.",
     "keywords": [
         "event", "coffeescript", "timer", "math", "javascript", "js", "coffee",
@@ -14,7 +14,7 @@
         "url": "https://github.com/zhanzhenzhen/mate.git"
     },
     "dependencies": {
-        "wishlist": "0.2.6"
+        "wishlist": "0.3.1"
     },
     "devDependencies": {
         "coffee-script": "1.7.1",
