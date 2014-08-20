@@ -14,7 +14,7 @@
         "url": "https://github.com/zhanzhenzhen/mate.git"
     },
     "dependencies": {
-        "wishlist": "0.3.1"
+        "wishlist": "0.3.2"
     },
     "devDependencies": {
         "coffee-script": "1.7.1",
