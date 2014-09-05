@@ -1,7 +1,7 @@
 # How to compile
 
 ```bash
-npm install && awk 'FNR==1{print ""}1' src/*.coffee | node_modules/coffee-script/bin/coffee -cs > mate.js && node_modules/js-bundler/bin/bundle mate.js | awk 'FNR==1{print ""}1' src/license.txt - > mate.b.js && node_modules/uglify-js/bin/uglifyjs mate.b.js -o mate.b.min.js -m --screw-ie8 --comments && awk 'FNR==1{print ""}1' test/*.coffee | node_modules/coffee-script/bin/coffee -cs > test/compiled.js
+npm update && awk 'FNR==1{print ""}1' src/*.coffee | node_modules/coffee-script/bin/coffee -cs > mate.js && node_modules/js-bundler/bin/bundle mate.js | awk 'FNR==1{print ""}1' src/license.txt - > mate.b.js && node_modules/uglify-js/bin/uglifyjs mate.b.js -o mate.b.min.js -m --screw-ie8 --comments && awk 'FNR==1{print ""}1' test/*.coffee | node_modules/coffee-script/bin/coffee -cs > test/compiled.js
 ```
 
 # How to Test
