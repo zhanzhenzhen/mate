@@ -14,7 +14,7 @@ Mate extends the native JavaScript/CoffeeScript, and works on browsers and Node.
 Tutorial
 ====
 
-[Click here to view the tutorial.](http://zhanzhenzhen.github.io/mate/)
+[Click here to view the tutorial.](http://zizisoft.com/mate/)
 
 # Contributing
 
