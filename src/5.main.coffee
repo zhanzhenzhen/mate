@@ -65,6 +65,8 @@ global.eventField = ->
         f[method](arg)
         @
     f._listeners = []
+    f.getListeners = ->
+        f._listeners.clone()
     f.bind = (listener) ->
         f._listeners.push(listener) if listener not in f._listeners
         f
