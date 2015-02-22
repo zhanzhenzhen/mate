@@ -65,3 +65,20 @@ class Date.IntervalTimer extends Date.Timer
         if @getRunning() then return
         @targetTime = @startTime
         super()
+class Date.Observer extends Date.IntervalTimer
+    constructor: (fun) ->
+        @_fun = fun
+        @onChange = eventField()
+        @onArrive.bind(=>
+            newValue = @_fun()
+            if newValue != @oldValue then @onChange.fire(
+                oldValue: @oldValue
+                newValue: newValue
+            )
+            @oldValue = newValue
+        )
+        super(200)
+    run: ->
+        if @getRunning() then return
+        @oldValue = @_fun()
+        super()
