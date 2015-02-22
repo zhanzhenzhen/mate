@@ -67,6 +67,7 @@ class Date.IntervalTimer extends Date.Timer
         super()
 class Date.Observer extends Date.IntervalTimer
     constructor: (fun) ->
+        super(200)
         @_fun = fun
         @onChange = eventField()
         @onArrive.bind(=>
@@ -77,7 +78,6 @@ class Date.Observer extends Date.IntervalTimer
             )
             @oldValue = newValue
         )
-        super(200)
     run: ->
         if @getRunning() then return
         @oldValue = @_fun()
