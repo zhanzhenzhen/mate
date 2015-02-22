@@ -54,8 +54,9 @@ global.Test = wishlist.Test
 # And it can avoid using strings so `eventField` is better. But maybe others like `EventedObject`
 # so I keep both.
 # ====================[
-# This function is weird and hard to understand, but we must use this mechanism
+# This function `f` is weird and hard to understand, but we must use this mechanism
 # (function+object hybrid) to support cascade (chaining).
+# For chaining, I mean not `obj.onAbc.bind(a).unbind(a)`, but `obj.onAbc(a).onDef(b).doSth()`.
 global.eventField = ->
     f = (method, arg) ->
         if typeof method == "function"
@@ -73,11 +74,14 @@ global.eventField = ->
     f.unbind = (listener) ->
         f._listeners.removeAll(listener)
         f
+    f.unbindAll = ->
+        f._listeners = []
+        f
     f.fire = (arg) ->
-        for m in f._listeners
+        for listener in f._listeners
             if arg?.blocksListeners then break
-            m(arg)
-        undefined
+            listener(arg)
+        f
     f
 class global.EventedObject
     constructor: ->
@@ -92,6 +96,6 @@ class global.EventedObject
     fire: (eventName, arg) ->
         @_eventList[eventName] ?= []
         m(arg) for m in @_eventList[eventName]
-        undefined
+        @
     listeners: (eventName) -> @_eventList[eventName]
 # ====================]
