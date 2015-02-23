@@ -8,13 +8,13 @@ global.compose = (functions) ->
 global.fail = (errorMessage) -> throw new Error(errorMessage)
 global.assert = (condition, message) -> if not condition then fail(message)
 # Can `spread` and `repeat` be combined into one function? No, because:
-# If we combine them into one, then it cannot spread a function. [
+# If we combine them into one, then it cannot spread a function. ==========[
 global.repeat = (iterator, times) ->
     if typeof iterator == "number" then [times, iterator] = [iterator, times]
     iterator() for i in [0...times]
 global.spread = (value, count) ->
     value for i in [0...count]
-# ]
+# ]==========
 Object.getter = (obj, prop, fun) -> Object.defineProperty(obj, prop, {get: fun, configurable: true})
 Object.setter = (obj, prop, fun) -> Object.defineProperty(obj, prop, {set: fun, configurable: true})
 Object.clone = (x) ->
@@ -23,23 +23,6 @@ Object.clone = (x) ->
         y[key] = x[key]
     y
 JSON.clone = (x) -> JSON.parse(JSON.stringify(x))
-# Better than the built-in regular expression method when global mode
-# and submatches are both required.
-# It always uses global mode and returns an array of arrays if any matches are found.
-# If not, it returns an empty array.
-String::matches = (regex) ->
-    adjustedRegex = new RegExp(regex.source, "g")
-    result = []
-    loop
-        match = adjustedRegex.exec(@)
-        if match?
-            result.push(match)
-        else
-            break
-    result
-String::capitalize = ->
-    # Use `charAt[0]` instead of `[0]` because `[0]` will return undefined if string is empty.
-    @charAt(0).toUpperCase() + @substr(1)
 Date::add = (x) -> # `x` must be a number
     new Date(@ - (-x))
 Date::subtract = (x) -> # `x` can be a number or `Date` instance
@@ -98,4 +81,4 @@ class global.EventedObject
         m(arg) for m in @_eventList[eventName]
         @
     listeners: (eventName) -> @_eventList[eventName]
-# ====================]
+# ]====================
