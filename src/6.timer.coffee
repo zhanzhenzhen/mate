@@ -15,7 +15,6 @@ class Date.Timer
         @onArrive = eventField()
     run: ->
         if @_running then return
-        @_counter = 0
         @_internalTimer = setInterval(=>
             nowTime = new Date()
             if (if @allowsEqual then nowTime >= @targetTime else nowTime > @targetTime)
@@ -41,6 +40,7 @@ class Date.Timer
 class Date.IntervalTimer extends Date.Timer
     constructor: (@interval = 1000, @startTime = new Date(), @endTime) ->
         super()
+        @targetTime = @startTime
         @_started = false
         @includesStart = true
         @includesEnd = false
@@ -61,10 +61,6 @@ class Date.IntervalTimer extends Date.Timer
             )
                 @stop()
         )
-    run: ->
-        if @getRunning() then return
-        @targetTime = @startTime
-        super()
 class Date.Observer extends Date.IntervalTimer
     constructor: (fun) ->
         super(200)
