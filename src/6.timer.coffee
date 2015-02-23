@@ -7,7 +7,7 @@
 class Date.Timer
     @_endOfTime: new Date("9999-12-30T00:00:00Z")
     constructor: (@targetTime = Date.Timer._endOfTime) ->
-        @_counterValue = 0
+        @_counter = 0
         @_internalTimer = null
         @_running = false
         @allowsEqual = true
@@ -15,17 +15,17 @@ class Date.Timer
         @onArrive = eventField()
     run: ->
         if @_running then return
-        @_counterValue = 0
+        @_counter = 0
         @_internalTimer = setInterval(=>
             nowTime = new Date()
             if (if @allowsEqual then nowTime >= @targetTime else nowTime > @targetTime)
-                @_counterValue++
+                @_counter++
                 lastTargetTime = @targetTime
                 @targetTime = Date.Timer._endOfTime
                 @onArrive.fire(
                     idealTime: lastTargetTime
                     nowTime: nowTime
-                    index: @_counterValue - 1
+                    index: @_counter - 1
                 )
         , @precision)
         @_running = true
@@ -36,8 +36,8 @@ class Date.Timer
         @_running = false
         @
     getRunning: -> @_running
-    resetCounter: -> @_counterValue = 0
-    getCounterValue: -> @_counterValue
+    resetCounter: -> @_counter = 0
+    getCounter: -> @_counter
 class Date.IntervalTimer extends Date.Timer
     constructor: (@interval = 1000, @startTime = new Date(), @endTime) ->
         super()
