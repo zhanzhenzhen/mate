@@ -1,6 +1,6 @@
 {
     "name": "mate",
-    "version": "0.13.0",
+    "version": "0.14.0",
     "description": "Array extensions, ES6 shims, testing, timers, events, etc. It extends the native JavaScript/CoffeeScript.",
     "keywords": [
         "event", "coffeescript", "timer", "math", "javascript", "js", "coffee",
