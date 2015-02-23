@@ -42,9 +42,12 @@ Number::nearlyLessThan = (x) -> Math.nearlyLessThan(@, x)
 # It can even be used for all "ordered pair" things such as size (width and height).
 class global.Point
     constructor: (@x, @y) ->
-    @from: (value) ->
+    @from: (value, second) ->
         if typeof value == "number"
-            new Point(value, 0)
+            if typeof second == "number"
+                new Point(value, second)
+            else
+                new Point(value, 0)
         else if value instanceof Point
             value.clone()
         else if typeof value == "string"
