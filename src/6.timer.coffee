@@ -114,7 +114,7 @@ class Date.Observer extends Date.IntervalTimer
                 catch
                     Date.Observer._error
             if newValue == undefined then newValue = Date.Observer._error
-            if @_oldValue == undefined or newValue != @_oldValue
+            if @_oldValue == undefined or not Object.is(newValue, @_oldValue)
                 @onUpdate.fire(value: newValue)
                 if @_oldValue != undefined
                     @onChange.fire(
