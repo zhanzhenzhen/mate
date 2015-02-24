@@ -114,6 +114,7 @@ class Date.Observer extends Date.IntervalTimer
                 catch
                     Date.Observer._error
             if newValue == undefined then newValue = Date.Observer._error
+            # Must use `Object.is`, otherwise if NaN then the events will be fired endlessly.
             if @_oldValue == undefined or not Object.is(newValue, @_oldValue)
                 @onUpdate.fire(value: newValue)
                 if @_oldValue != undefined
