@@ -15,12 +15,14 @@ class Date.Timer
     @_endOfTime: new Date("9999-12-30T00:00:00Z")
     @_precision: null
     @enable: (precision = 30) ->
+        if Date.Timer.getEnabled() then return
         Date.Timer._precision = precision
         @_internalTimer = setInterval(=>
             Date.Timer._onCheck.fire()
         , precision)
         undefined
     @disable: ->
+        if not Date.Timer.getEnabled() then return
         clearInterval(@_internalTimer)
         Date.Timer._precision = null
         undefined
@@ -36,7 +38,7 @@ class Date.Timer
         @_running = false
         @onArrive = eventField()
     run: ->
-        if @_running then return
+        if @_running then return @
         @_checker = =>
             nowTime = new Date()
             if (if @allowsEqual then nowTime >= @targetTime else nowTime > @targetTime)
@@ -52,7 +54,7 @@ class Date.Timer
         @_running = true
         @
     stop: ->
-        if not @_running then return
+        if not @_running then return @
         Date.Timer._onCheck.unbind(@_checker)
         @_running = false
         @
