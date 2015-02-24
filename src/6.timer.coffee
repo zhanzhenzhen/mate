@@ -13,6 +13,7 @@
 
 class Date.Timer
     @_endOfTime: new Date("9999-12-30T00:00:00Z")
+    @_precision: null
     @enable: (precision = 30) ->
         Date.Timer._precision = precision
         @_internalTimer = setInterval(=>
@@ -21,9 +22,12 @@ class Date.Timer
         undefined
     @disable: ->
         clearInterval(@_internalTimer)
+        Date.Timer._precision = null
         undefined
     @getPrecision: ->
         Date.Timer._precision
+    @getEnabled: ->
+        Date.Timer._precision?
     @_onCheck: eventField()
     constructor: (options) ->
         @targetTime = options?.targetTime ? Date.Timer._endOfTime
