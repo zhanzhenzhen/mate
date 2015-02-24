@@ -80,19 +80,25 @@ class Date.IntervalTimer extends Date.Timer
                 @stop()
         )
 class Date.Observer extends Date.IntervalTimer
+    @_error: new Error()
     constructor: (fun) ->
         super(100)
         @_fun = fun
         @onChange = eventField()
+        @onUpdate = eventField()
         @onArrive.bind(=>
-            newValue = @_fun()
-            if newValue != @oldValue then @onChange.fire(
-                oldValue: @oldValue
-                newValue: newValue
-            )
-            @oldValue = newValue
+            newValue =
+                try
+                    @_fun()
+                catch
+                    Date.Observer._error
+            if newValue == undefined then newValue = Date.Observer._error
+            if @_oldValue == undefined or newValue != @_oldValue
+                @onUpdate.fire(value: newValue)
+                if @_oldValue != undefined
+                    @onChange.fire(
+                        oldValue: @_oldValue
+                        newValue: newValue
+                    )
+                @_oldValue = newValue
         )
-    run: ->
-        if @getRunning() then return
-        @oldValue = @_fun()
-        super()
