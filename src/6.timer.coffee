@@ -23,10 +23,11 @@ class Date.Timer
     @getPrecision: ->
         Date.Timer._precision
     @_onCheck: eventField()
-    constructor: (@targetTime = Date.Timer._endOfTime) ->
+    constructor: (options) ->
+        @targetTime = options?.targetTime ? Date.Timer._endOfTime
+        @allowsEqual = options?.allowsEqual ? true
         @_counter = 0
         @_running = false
-        @allowsEqual = true
         @onArrive = eventField()
     run: ->
         if @_running then return
@@ -53,25 +54,34 @@ class Date.Timer
     resetCounter: -> @_counter = 0
     getCounter: -> @_counter
 class Date.IntervalTimer extends Date.Timer
-    constructor: (@interval = 1000, @startTime = new Date(), @endTime) ->
-        super()
+    constructor: (options) ->
+        super(options)
+        @interval = options?.interval ? 1000
+        @startTime = options?.startTime ? new Date()
+        @endTime = options?.endTime ? Date.Timer._endOfTime.subtract(1000)
+        @includesStart = options?.includesStart ? true
+        @includesEnd = options?.includesEnd ? false
+        @skipsPast = options?.skipsPast ? false
         @targetTime = @startTime
         @_started = false
-        @includesStart = true
-        @includesEnd = false
         @onStart = eventField()
         @onArrive.bind((event) =>
             if @interval < Date.Timer.getPrecision() * 2
                 @stop()
                 return
-            @targetTime = event.idealTime.add(@interval)
+            now = new Date()
+            @targetTime =
+                if @skipsPast
+                    now - (now - event.idealTime) % @interval + @interval
+                else
+                    event.idealTime.add(@interval)
             if not @_started
                 @_started = true
                 if not @includesStart
                     @resetCounter()
                     event.blocksListeners = true
                 @onStart.fire()
-            if @endTime? and (
+            if (
                 if @includesEnd
                     @targetTime > @endTime
                 else
@@ -81,8 +91,15 @@ class Date.IntervalTimer extends Date.Timer
         )
 class Date.Observer extends Date.IntervalTimer
     @_error: new Error()
-    constructor: (fun) ->
-        super(100)
+    constructor: ->
+        [options, fun] =
+            if typeof arguments[0] == "object"
+                [arguments[0], arguments[1]]
+            else
+                [arguments[1], arguments[0]]
+        clonedOptions = if options? then Object.clone(options) else {}
+        clonedOptions.interval ?= 100
+        super(options)
         @_fun = fun
         @onChange = eventField()
         @onUpdate = eventField()
