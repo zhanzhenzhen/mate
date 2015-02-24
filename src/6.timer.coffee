@@ -103,6 +103,7 @@ class Date.Observer extends Date.IntervalTimer
                 [arguments[1], arguments[0]]
         clonedOptions = if options? then Object.clone(options) else {}
         clonedOptions.interval ?= 100
+        clonedOptions.skipsPast ?= true
         super(clonedOptions)
         @_fun = fun
         @onChange = eventField()
