@@ -18,8 +18,10 @@ class Date.Timer
         @_internalTimer = setInterval(=>
             Date.Timer._onCheck.fire()
         , precision)
+        undefined
     @disable: ->
         clearInterval(@_internalTimer)
+        undefined
     @getPrecision: ->
         Date.Timer._precision
     @_onCheck: eventField()
@@ -51,7 +53,9 @@ class Date.Timer
         @_running = false
         @
     getRunning: -> @_running
-    resetCounter: -> @_counter = 0
+    resetCounter: ->
+        @_counter = 0
+        @
     getCounter: -> @_counter
 class Date.IntervalTimer extends Date.Timer
     constructor: (options) ->
@@ -99,7 +103,7 @@ class Date.Observer extends Date.IntervalTimer
                 [arguments[1], arguments[0]]
         clonedOptions = if options? then Object.clone(options) else {}
         clonedOptions.interval ?= 100
-        super(options)
+        super(clonedOptions)
         @_fun = fun
         @onChange = eventField()
         @onUpdate = eventField()
