@@ -39,6 +39,7 @@ class Date.Timer
         @_counter = 0
         @_running = false
         @onArrive = eventField()
+        @run()
     run: ->
         if @_running then return @
         @_running = true
