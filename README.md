@@ -5,6 +5,7 @@ Mate extends the native JavaScript/CoffeeScript, and works on browsers and Node.
 - A new way of handling events
 - Array extensions
 - Advanced timers
+- Observer
 - "Functional" functions
 - 2D point & complex math
 - ECMAScript 6th features
