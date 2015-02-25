@@ -1,10 +1,15 @@
 {
     "name": "mate",
     "version": "0.14.0",
-    "description": "Array extensions, ES6 shims, testing, timers, events, etc. It extends the native JavaScript/CoffeeScript.",
+    "description": "Array extension, ES6 shim, event, observer, test, timer, etc. It extends the native JavaScript / CoffeeScript.",
     "keywords": [
-        "event", "coffeescript", "timer", "math", "javascript", "js", "coffee",
-        "es6", "shim", "test", "testing"
+        "event", "coffeescript", "timer", "observer", "observe", "binding",
+        "array", "math", "complex", "javascript", "js", "coffee",
+        "es6", "shim", "test", "testing",
+        "es6 shims", "es6 shim",
+        "array extensions", "array extension",
+        "complex math", "complex number",
+        "data binding"
     ],
     "author": "Zhenzhen Zhan <zhanzhenzhen@hotmail.com>",
     "homepage": "http://zizisoft.com/mate/",
