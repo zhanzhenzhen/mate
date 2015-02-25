@@ -13,23 +13,25 @@
 
 class Date.Timer
     @_endOfTime: new Date("9999-12-30T00:00:00Z")
-    @_precision: null
-    @enable: (precision = 30) ->
-        if Date.Timer.getEnabled() then return
-        Date.Timer._precision = precision
-        @_internalTimer = setInterval(=>
-            Date.Timer._onCheck.fire()
-        , precision)
-        undefined
-    @disable: ->
-        if not Date.Timer.getEnabled() then return
-        clearInterval(@_internalTimer)
-        Date.Timer._precision = null
+    @_precision: 30
+    @_enable: ->
+        @_internalTimer ?= setInterval(=>
+            @_onCheck.fire()
+        , @_precision)
+    @_disable: ->
+        if @_internalTimer?
+            clearInterval(@_internalTimer)
+        @_internalTimer = null
+    @setPrecision: (precision) ->
+        if @_internalTimer?
+            @_disable()
+            @_precision = precision
+            @_enable()
+        else
+            @_precision = precision
         undefined
     @getPrecision: ->
-        Date.Timer._precision
-    @getEnabled: ->
-        Date.Timer._precision?
+        @_precision
     @_onCheck: eventField()
     constructor: (options) ->
         @targetTime = options?.targetTime ? Date.Timer._endOfTime
@@ -39,6 +41,8 @@ class Date.Timer
         @onArrive = eventField()
     run: ->
         if @_running then return @
+        @_running = true
+        Date.Timer._enable()
         @_checker = =>
             nowTime = new Date()
             if (if @allowsEqual then nowTime >= @targetTime else nowTime > @targetTime)
@@ -51,12 +55,13 @@ class Date.Timer
                     index: @_counter - 1
                 )
         Date.Timer._onCheck.bind(@_checker)
-        @_running = true
         @
     stop: ->
         if not @_running then return @
-        Date.Timer._onCheck.unbind(@_checker)
         @_running = false
+        Date.Timer._onCheck.unbind(@_checker)
+        if Date.Timer._onCheck.getListeners().isEmpty()
+            Date.Timer._disable()
         @
     getRunning: -> @_running
     resetCounter: ->
