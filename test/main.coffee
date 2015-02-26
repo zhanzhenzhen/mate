@@ -14,16 +14,17 @@ new Test("root"
     obj.makeClick()
 ).add(->
     console.logt(3)
-).add("Object.is", (my, I) ->
-    I.wish(' Object.is(5,5)=true ')
-    I.wish(' Object.is(5,7)=false ')
-    I.wish(' Object.is(0,-0)=false ')
-    I.wish(' Object.is(0,0)=true ')
-    I.wish(' Object.is(NaN,NaN)=true ')
-    I.wish(' Object.is({},{})=false ')
-).add("Array::funReverse", (my, I) ->
-    my.array = [3, 4, 5]
-    my.reversed = my.array.funReverse()
-    I.wish(' reversed=[5,4,3] ')
-    I.wish(' array=[3,4,5] ')
+).add("Array functional methods", (my, I) ->
+    I.wish(' [3,-12,23].sum()=14 ')
+    I.wish(' [3,-12,23].max()=23 ')
+    I.wish(' [3,-12,23].average()=4.666666666666667 ')
+    I.wish(' [3,-12,23].funSort()=[-12,3,23] ')
+    I.wish(' [3,-12,23].funSortDescending()=[23,3,-12] ')
+    I.wish(' [3,-12,23].funReverse()=[23,-12,3] ')
+).add("cmath", (my, I) ->
+    I.wish(' cmath.add("2+i","3+6i")=Point.from("5+7i") ')
+    I.wish(' cmath.subtract("2+i","3+6i")=Point.from("-1-5i") ')
+    I.wish(' cmath.sin("2+3i")=Point.from("9.154499146911428-4.168906959966565i") ')
+).add("String", (my, I) ->
+    I.wish(' "Now is {0}-{1}-{2}!".format(2000,2,3) = "Now is 2000-2-3!" ')
 ).run()
