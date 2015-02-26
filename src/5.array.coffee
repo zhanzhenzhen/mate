@@ -75,6 +75,7 @@ Array::at = (index) ->
     assert(0 <= index < @length)
     @[index]
 Array::atOrNull = (index) -> try @at(index) catch then null
+# TODO: In TC39, there's no `contains` but `includes`.
 Array::contains = (value) -> value in @
 # TODO: performance
 Array::first = (predicate) ->

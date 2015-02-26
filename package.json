@@ -19,6 +19,7 @@
         "url": "https://github.com/zhanzhenzhen/mate.git"
     },
     "dependencies": {
+        "es6-shim": "0.26.1",
         "wishlist": "0.3.3"
     },
     "devDependencies": {

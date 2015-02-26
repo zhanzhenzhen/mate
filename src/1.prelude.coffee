@@ -1,3 +1,4 @@
+require("es6-shim")
 wishlist = require("wishlist")
 mate = {}
 mate.packageInfo = require("./package.json")
