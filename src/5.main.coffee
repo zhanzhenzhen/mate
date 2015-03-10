@@ -8,7 +8,7 @@ global.compose = (functions) ->
 global.fail = (errorMessage) -> throw new Error(errorMessage)
 global.assert = (condition, message) -> if not condition then fail(message)
 # Can `spread` and `repeat` be combined into one function? No, because:
-# If we combine them into one, then it cannot spread a function. ==========[
+# If we do so, then it cannot spread a function. ==========[
 global.repeat = (iterator, times) ->
     if typeof iterator == "number" then [times, iterator] = [iterator, times]
     iterator() for i in [0...times]
@@ -17,22 +17,6 @@ global.spread = (value, count) ->
 # ]==========
 getter = (obj, prop, fun) -> Object.defineProperty(obj, prop, {get: fun, configurable: true})
 setter = (obj, prop, fun) -> Object.defineProperty(obj, prop, {set: fun, configurable: true})
-Object.clone = (x) ->
-    y = {}
-    for key in Object.keys(x)
-        y[key] = x[key]
-    y
-JSON.clone = (x) -> JSON.parse(JSON.stringify(x))
-Date::add = (x) -> # `x` must be a number
-    new Date(@ - (-x))
-Date::subtract = (x) -> # `x` can be a number or `Date` instance
-    if typeof x == "number"
-        new Date(@ - x)
-    else
-        @ - x
-Date::equals = (x) -> x <= @ <= x
-console.logt = -> console.log.apply(console, [new Date().toISOString()].concat(Array.from(arguments)))
-global.Test = wishlist.Test
 # I think `eventField` can do all that `EventedObject` can do, plus support for static events.
 # And it can avoid using strings so `eventField` is better. But maybe others like `EventedObject`
 # so I keep both.

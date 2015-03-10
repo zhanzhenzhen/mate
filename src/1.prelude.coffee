@@ -1,5 +1,4 @@
 require("es6-shim")
-wishlist = require("wishlist")
 mate = {}
 mate.packageInfo = require("./package.json")
 mate.environmentType =
@@ -12,3 +11,4 @@ mate.environmentType =
 if mate.environmentType == "browser"
     window.global = window
 global.npmMate = mate
+global.Test = require("wishlist").Test
