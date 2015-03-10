@@ -15,8 +15,8 @@ global.repeat = (iterator, times) ->
 global.spread = (value, count) ->
     value for i in [0...count]
 # ]==========
-Object.getter = (obj, prop, fun) -> Object.defineProperty(obj, prop, {get: fun, configurable: true})
-Object.setter = (obj, prop, fun) -> Object.defineProperty(obj, prop, {set: fun, configurable: true})
+getter = (obj, prop, fun) -> Object.defineProperty(obj, prop, {get: fun, configurable: true})
+setter = (obj, prop, fun) -> Object.defineProperty(obj, prop, {set: fun, configurable: true})
 Object.clone = (x) ->
     y = {}
     for key in Object.keys(x)
@@ -66,7 +66,7 @@ global.eventField = ->
             listener(arg)
         f
     f
-class global.EventedObject
+class mate.EventedObject
     constructor: ->
         @_eventList = {} # Using object to simulate a "dictionary" here is simpler than using array.
     on: (eventName, listener) ->

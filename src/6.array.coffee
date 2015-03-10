@@ -1,12 +1,12 @@
 # In some `Array` methods, I enable the fraction format index and length for convenience.
 # Except that, all `Array` methods arguments are very "strict" without any multi-use purpose.
 
-class Array._ArrayLazyWrapper
+class ArrayLazyWrapper
     constructor: (value, chainToCopy, itemToPush) ->
         @_value = value
         @_chain = (chainToCopy ? [])[..]
         @_chain.push(itemToPush) if itemToPush?
-        Object.getter(@, "length", => @force().length) # simulate `Array`'s `length`
+        getter(@, "length", => @force().length) # simulate `Array`'s `length`
     force: ->
         n = @_value
         for m in @_chain
@@ -48,7 +48,7 @@ class Array._ArrayLazyWrapper
     # ]
     _pushChain: (fun, args) ->
         # Must create a new wrapper to avoid side effects
-        new Array._ArrayLazyWrapper(@_value, @_chain, {fun: fun, args: args})
+        new ArrayLazyWrapper(@_value, @_chain, {fun: fun, args: args})
     _unwrapAndDo: (fun, args) -> fun.apply(@force(), args)
 # If the element is a number or string, it will be more convenient
 # to use the element itself without a selector.
@@ -57,7 +57,7 @@ Array::_numberToIndex = (pos) -> if 0 < pos < 1 then pos = Math.round(pos * (@le
 Array::_numberToLength = (pos) -> if 0 < pos < 1 then pos = Math.round(pos * @length) else pos
 Array::clone = -> @[..]
 Array::isEmpty = -> @length == 0
-Array::lazy = -> new Array._ArrayLazyWrapper(@)
+Array::lazy = -> ArrayLazyWrapper(@)
 Array::portion = (startIndex, length, endIndex) ->
     if Number.isFraction(startIndex) or Number.isFraction(length) or Number.isFraction(endIndex)
         if startIndex == 0 then startIndex = 0 + Number.EPSILON
