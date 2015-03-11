@@ -128,7 +128,7 @@ Array::product = (selector) ->
                     Array._elementOrUseSelector(b, selector)
         )
 # These methods use sorting. For `keySelector`, note that the keys of all elements must be either
-# all numbers, all booleans, or all strings. [
+# all numbers, all booleans, or all strings. --------------------[
 # Why don't use {key: ..., value: ...}, but a non-intuitive array for the key-value pair?
 # Because ECMAScript 6th's Map constructor only accepts the array form to denote a key-value pair.
 # I don't want to break the consistency.
@@ -163,7 +163,7 @@ Array::_sort = (keySelector, isDescending) ->
     )
 Array::funSort = (keySelector) -> @_sort(keySelector, false)
 Array::funSortDescending = (keySelector) -> @_sort(keySelector, true)
-# ]
+# ]--------------------
 Array::funReverse = -> @clone().reverse()
 Array::except = (array) -> @filter((m) -> m not in array)
 Array::flatten = (level) ->
@@ -188,6 +188,12 @@ Array::flatten = (level) ->
                 r.flatten()
         else
             r
+Array::toObject = ->
+    r = {}
+    @forEach((element) =>
+        r[element[0]] = element[1]
+    )
+    r
 Array::randomOne = -> @[Math.randomInt(@length)]
 Array::random = (count) -> @clone().takeRandom(count)
 Array::takeRandomOne = ->

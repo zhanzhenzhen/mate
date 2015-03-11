@@ -44,3 +44,9 @@ String::matches = (regex) ->
 String::capitalize = ->
     # Use `charAt[0]` instead of `[0]` because `[0]` will return undefined if string is empty.
     @charAt(0).toUpperCase() + @substr(1)
+String::splitDeep = (args...) ->
+    arr = @split(args[0])
+    if args.length <= 1
+        arr
+    else
+        arr.map((s) => s.splitDeep(args[1..]...))
