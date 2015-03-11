@@ -58,13 +58,25 @@ web.request = (options) ->
                 console.log("Got error: " + e.message)
             )
     )
-web.get = (url, options) ->
-    web.request(
+web.get = (options) ->
+    actualOptions =
         method: "GET"
-        url: url
-    )
-web.jsonGet = (url, options) ->
-    web.request
+    Object.assign(actualOptions, options)
+    web.request(actualOptions)
+web.jsonGet = (options) ->
+    actualOptions =
         method: "GET"
-        url: url
         responseBodyType: "json"
+    Object.assign(actualOptions, options)
+    web.request(actualOptions)
+web.post = (options) ->
+    actualOptions =
+        method: "POST"
+    Object.assign(actualOptions, options)
+    web.request(actualOptions)
+web.jsonPost = (options) ->
+    actualOptions =
+        method: "POST"
+        responseBodyType: "json"
+    Object.assign(actualOptions, options)
+    web.request(actualOptions)
