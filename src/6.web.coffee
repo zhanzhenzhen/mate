@@ -26,7 +26,11 @@ web.request = (options) ->
                 response =
                     statusCode: xhr.status
                     statusText: xhr.statusText
-                    headers: xhr.getAllResponseHeaders().splitDeep("\r\n", ": ").toObject()
+                    headers:
+                        xhr.getAllResponseHeaders()
+                        .stripTrailingNewline()
+                        .splitDeep("\r\n", ": ")
+                        .toObject()
                     body:
                         if responseBodyType == "binary"
                             new Uint8Array(xhr.response)
@@ -36,7 +40,7 @@ web.request = (options) ->
                             JSON.parse(xhr.response)
                         else
                             fail()
-                    getHeader: (name) -> @headers[name]
+                    getHeader: (name) -> xhr.getResponseHeader(name)
                 if (200 <= xhr.status < 300)
                     resolve(response)
                 else

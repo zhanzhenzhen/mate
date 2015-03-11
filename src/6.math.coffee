@@ -35,9 +35,9 @@ Math.randomInt = (m, n) ->
     Math.floor(Math.randomNumber(min, max))
 Number.isFraction = (x) -> typeof x == "number" and isFinite(x) and Math.floor(x) != x
 Number.parseFloatExt = (s) -> parseFloat(s) * (if s.endsWith("%") then 0.01 else 1)
-Number::nearlyEquals = (x) -> Math.nearlyEquals(@, x)
-Number::nearlyGreaterThan = (x) -> Math.nearlyGreaterThan(@, x)
-Number::nearlyLessThan = (x) -> Math.nearlyLessThan(@, x)
+Number::nearlyEquals = (x) -> Math.nearlyEquals(@valueOf(), x)
+Number::nearlyGreaterThan = (x) -> Math.nearlyGreaterThan(@valueOf(), x)
+Number::nearlyLessThan = (x) -> Math.nearlyLessThan(@valueOf(), x)
 # This class is a combination of 3 things: complex number, 2d point, and 2d vector.
 # It can even be used for all "ordered pair" things such as size (width and height).
 class global.Point

@@ -8,7 +8,7 @@
 # 无法在正则表达式体系中解决这个问题，就改用了循环。
 # 目前这个函数只支持最多10个自定义转义符。
 String::format = ->
-    s = @
+    s = @valueOf()
     m = []
     i = 0
     while i < s.length
@@ -35,7 +35,7 @@ String::matches = (regex) ->
     adjustedRegex = new RegExp(regex.source, "g")
     result = []
     loop
-        match = adjustedRegex.exec(@)
+        match = adjustedRegex.exec(@valueOf())
         if match?
             result.push(match)
         else
@@ -46,7 +46,26 @@ String::capitalize = ->
     @charAt(0).toUpperCase() + @substr(1)
 String::splitDeep = (args...) ->
     arr = @split(args[0])
-    if args.length <= 1
+    if args.length == 2 and typeof args[1] == "number"
+        if args[1] == 0
+            [arr.join(args[0])]
+        else if args[1] <= arr.length - 2
+            arr[..args[1] - 1].concat([arr[args[1]..].join(args[0])])
+        else
+            arr
+    else if args.length <= 1
         arr
     else
         arr.map((s) => s.splitDeep(args[1..]...))
+String::stripTrailingNewline = ->
+    if @[@length - 2] == "\r" and @[@length - 1] == "\n"
+        @substr(0, @length - 2)
+    else if @[@length - 1] == "\n"
+        @substr(0, @length - 1)
+    else
+        @valueOf()
+String::ensureTrailingNewline = ->
+    if @[@length - 1] != "\n"
+        @valueOf() + "\n"
+    else
+        @valueOf()
