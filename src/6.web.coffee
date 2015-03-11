@@ -64,11 +64,7 @@ web.get = (url, options) ->
         url: url
     )
 web.jsonGet = (url, options) ->
-    web.get(url, options)
-    .then (response) ->
-        new Promise((resolve, reject) ->
-            resolve(response)
-        )
     web.request
         method: "GET"
         url: url
+        responseBodyType: "json"
