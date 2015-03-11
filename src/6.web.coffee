@@ -29,7 +29,7 @@ web.request = (options) ->
                     headers:
                         xhr.getAllResponseHeaders()
                         .stripTrailingNewline()
-                        .splitDeep("\r\n", ": ")
+                        .splitDeep("\r\n", ": ", 1)
                         .toObject()
                     body:
                         if responseBodyType == "binary"
