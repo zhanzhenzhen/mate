@@ -11,6 +11,8 @@ web.request = (options) -> new Promise((resolve, reject) ->
     responseBodyType = options.responseBodyType ? "text"
     if body? and typeof body != "string" and body not instanceof Uint8Array
         reject(new Error("error")); return
+    if responseBodyType not in ["binary", "text", "json"]
+        reject(new Error("error")); return
     if mate.environmentType == "browser" then do ->
         xhr = new XMLHttpRequest()
         xhr.open(method, url)
@@ -23,8 +25,6 @@ web.request = (options) -> new Promise((resolve, reject) ->
                 "text"
             else if responseBodyType == "json"
                 "text"
-            else
-                reject(new Error("error")); return
         xhr.timeout = timeout ? 0
         xhr.onload = ->
             response =
@@ -43,8 +43,6 @@ web.request = (options) -> new Promise((resolve, reject) ->
                         xhr.response
                     else if responseBodyType == "json"
                         JSON.parse(xhr.response)
-                    else
-                        reject(new Error("error")); return
             if (200 <= response.statusCode < 300)
                 resolve(response)
             else
@@ -85,8 +83,6 @@ web.request = (options) -> new Promise((resolve, reject) ->
                                 data.toString()
                             else if responseBodyType == "json"
                                 JSON.parse(data.toString())
-                            else
-                                reject(new Error("error")); return
                     if (200 <= response.statusCode < 300)
                         resolve(response)
                     else
