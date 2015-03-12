@@ -59,7 +59,7 @@ web.request = (options) ->
             urlMod = module.require("url")
             parsedUrl = urlMod.parse(url)
             httpOrHttps = if parsedUrl.protocol == "https:" then https else http
-            httpOrHttps.request(
+            rawRequest = httpOrHttps.request(
                 {
                     method: method
                     hostname: parsedUrl.hostname
@@ -91,8 +91,14 @@ web.request = (options) ->
                         else
                             reject(response)
                     )
-            ).on("error", (e) ->
-                fail()
+            )
+            if timeout?
+                rawRequest.setTimeout(timeout, ->
+                    rawRequest.abort()
+                    reject(new Error("timeout"))
+                )
+            rawRequest.on("error", (e) ->
+                reject(new Error("error"))
             ).end()
     )
 web.get = (url, options) ->
