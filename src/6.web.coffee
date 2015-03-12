@@ -99,7 +99,7 @@ web.request = (options) ->
                 )
             rawRequest.on("error", (e) ->
                 reject(new Error("error"))
-            ).end()
+            ).end(if body instanceof Uint8Array then new Buffer(body) else body)
     )
 web.get = (url, options) ->
     actualOptions =
