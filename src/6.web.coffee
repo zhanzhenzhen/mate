@@ -114,6 +114,13 @@ web.jsonGet = (url, options) ->
         responseBodyType: "json"
     Object.assign(actualOptions, options)
     web.request(actualOptions)
+web.binaryGet = (url, options) ->
+    actualOptions =
+        method: "GET"
+        url: url
+        responseBodyType: "binary"
+    Object.assign(actualOptions, options)
+    web.request(actualOptions)
 web.post = (url, body, options) ->
     actualOptions =
         method: "POST"
