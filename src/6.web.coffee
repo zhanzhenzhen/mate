@@ -5,7 +5,7 @@ web.request = (options) ->
     headers = options.headers ? null
     body = options.body ? null
     timeout = options.timeout ? null
-    responseBodyType = options.responseBodyType ? "binary"
+    responseBodyType = options.responseBodyType ? "text"
     new Promise((resolve, reject) ->
         if mate.environmentType == "browser"
             xhr = new XMLHttpRequest()
@@ -58,25 +58,32 @@ web.request = (options) ->
                 console.log("Got error: " + e.message)
             )
     )
-web.get = (options) ->
+web.get = (url, options) ->
     actualOptions =
         method: "GET"
+        url: url
     Object.assign(actualOptions, options)
     web.request(actualOptions)
-web.jsonGet = (options) ->
+web.jsonGet = (url, options) ->
     actualOptions =
         method: "GET"
+        url: url
         responseBodyType: "json"
     Object.assign(actualOptions, options)
     web.request(actualOptions)
-web.post = (options) ->
+web.post = (url, body, options) ->
     actualOptions =
         method: "POST"
+        url: url
+        body: body
     Object.assign(actualOptions, options)
     web.request(actualOptions)
-web.jsonPost = (options) ->
+web.jsonPost = (url, body, options) ->
     actualOptions =
         method: "POST"
+        url: url
+        headers: {"Content-Type": "application/json"}
+        body: JSON.stringify(body)
         responseBodyType: "json"
     Object.assign(actualOptions, options)
     web.request(actualOptions)
