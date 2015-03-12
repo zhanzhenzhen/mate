@@ -1,3 +1,6 @@
+# According to RFC-7230, for HTTP response status we use "status reason"
+# instead of status text or status message.
+
 global.web = {}
 web.request = (options) ->
     method = options.method
@@ -7,7 +10,7 @@ web.request = (options) ->
     timeout = options.timeout ? null
     responseBodyType = options.responseBodyType ? "text"
     new Promise((resolve, reject) ->
-        if mate.environmentType == "browser"
+        if mate.environmentType == "browser" then do ->
             xhr = new XMLHttpRequest()
             xhr.open(method, url)
             if headers?
@@ -25,11 +28,12 @@ web.request = (options) ->
             xhr.onload = ->
                 response =
                     statusCode: xhr.status
-                    statusText: xhr.statusText
+                    statusReason: xhr.statusText
                     headers:
                         xhr.getAllResponseHeaders()
                         .stripTrailingNewline()
                         .splitDeep("\r\n", ": ", 1)
+                        .map((header) -> [header[0].toLowerCase(), header[1]])
                         .toObject()
                     body:
                         if responseBodyType == "binary"
@@ -40,8 +44,7 @@ web.request = (options) ->
                             JSON.parse(xhr.response)
                         else
                             fail()
-                    getHeader: (name) -> xhr.getResponseHeader(name)
-                if (200 <= xhr.status < 300)
+                if (200 <= response.statusCode < 300)
                     resolve(response)
                 else
                     reject(response)
@@ -50,13 +53,47 @@ web.request = (options) ->
             xhr.ontimeout = ->
                 reject(new Error("timeout"))
             xhr.send(body)
-        else
+        else do ->
             http = module.require("http")
-            http.get(url, (res) ->
-                console.log("Got response: " + res.statusCode)
+            https = module.require("https")
+            urlMod = module.require("url")
+            parsedUrl = urlMod.parse(url)
+            httpOrHttps = if parsedUrl.protocol == "https:" then https else http
+            httpOrHttps.request(
+                {
+                    method: method
+                    hostname: parsedUrl.hostname
+                    port: parsedUrl.port
+                    path: parsedUrl.path
+                    headers: headers
+                },
+                (rawResponse) ->
+                    data = new Buffer(0)
+                    rawResponse.on("data", (chunk) ->
+                        data = Buffer.concat([data, chunk])
+                    )
+                    rawResponse.on("end", ->
+                        response =
+                            statusCode: rawResponse.statusCode
+                            statusReason: rawResponse.statusMessage
+                            headers: rawResponse.headers
+                            body:
+                                if responseBodyType == "binary"
+                                    new Uint8Array(data)
+                                else if responseBodyType == "text"
+                                    data.toString()
+                                else if responseBodyType == "json"
+                                    JSON.parse(data.toString())
+                                else
+                                    fail()
+                        if (200 <= response.statusCode < 300)
+                            resolve(response)
+                        else
+                            reject(response)
+                    )
             ).on("error", (e) ->
-                console.log("Got error: " + e.message)
-            )
+                fail()
+            ).end()
     )
 web.get = (url, options) ->
     actualOptions =
