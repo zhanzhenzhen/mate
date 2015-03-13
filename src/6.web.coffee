@@ -1,7 +1,7 @@
 # According to RFC-7230, for HTTP response status we use "status reason"
 # instead of status text or status message.
 
-mate.web = {}
+mate.web = web = {}
 web.request = (options) -> new Promise((resolve, reject) ->
     try
         method = options.method
