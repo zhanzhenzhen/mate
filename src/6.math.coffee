@@ -1,12 +1,15 @@
 # Many degree methods and radian methods are independent, to avoid degrees approximation.
 
 # Useful when come across a computed value like 179.9999999. ==========[
-Math.nearlyEquals = (a, b) ->
-    threshold = 1 + 1 / 65536
+Math.approxEquals = (a, b) ->
+    # 8388608 (23 bits) is the precision of single-floating-point. So
+    # if they are equal in single-precision, they can be considered as
+    # approximately equal in double-precision.
+    threshold = 1 + 1 / 8388608
     1 / threshold < a / b < threshold
-Math.nearlyGreaterThan = (a, b) -> a > b or Math.nearlyEquals(a, b)
-Math.nearlyLessThan = (a, b) -> a < b or Math.nearlyEquals(a, b)
-# ========================================]
+Math.approxGreaterThan = (a, b) -> a > b or Math.approxEquals(a, b)
+Math.approxLessThan = (a, b) -> a < b or Math.approxEquals(a, b)
+# ]========================================
 Math.radiansToDegrees = (radians) -> radians / Math.PI * 180
 Math.degreesToRadians = (degrees) -> degrees / 180 * Math.PI
 Math.principalRadians = (radians) ->
@@ -35,9 +38,9 @@ Math.randomInt = (m, n) ->
     Math.floor(Math.randomNumber(min, max))
 Number.isFraction = (x) -> typeof x == "number" and isFinite(x) and Math.floor(x) != x
 Number.parseFloatExt = (s) -> parseFloat(s) * (if s.endsWith("%") then 0.01 else 1)
-Number::nearlyEquals = (x) -> Math.nearlyEquals(@valueOf(), x)
-Number::nearlyGreaterThan = (x) -> Math.nearlyGreaterThan(@valueOf(), x)
-Number::nearlyLessThan = (x) -> Math.nearlyLessThan(@valueOf(), x)
+Number::approxEquals = (x) -> Math.approxEquals(@valueOf(), x)
+Number::approxGreaterThan = (x) -> Math.approxGreaterThan(@valueOf(), x)
+Number::approxLessThan = (x) -> Math.approxLessThan(@valueOf(), x)
 # This class is a combination of 3 things: complex number, 2d point, and 2d vector.
 # It can even be used for all "ordered pair" things such as size (width and height).
 class global.Point
@@ -126,7 +129,7 @@ class global.Point
         "#{@x}#{sign}#{Math.abs(@y)}i"
     clone: -> new Point(@x, @y)
     equals: (p) -> cmath.equals(@, p)
-    nearlyEquals: (p) -> cmath.nearlyEquals(@, p)
+    approxEquals: (p) -> cmath.approxEquals(@, p)
     opposite: -> cmath.opposite(@)
     reciprocal: -> cmath.reciprocal(@)
     conjugate: -> cmath.conjugate(@)
@@ -166,10 +169,10 @@ global.cmath =
         a = Point.from(a)
         b = Point.from(b)
         a.x == b.x and a.y == b.y
-    nearlyEquals: (a, b) ->
+    approxEquals: (a, b) ->
         a = Point.from(a)
         b = Point.from(b)
-        a.x.nearlyEquals(b.x) and a.y.nearlyEquals(b.y)
+        a.x.approxEquals(b.x) and a.y.approxEquals(b.y)
     opposite: (p) ->
         p = Point.from(p)
         new Point(-p.x, -p.y)
