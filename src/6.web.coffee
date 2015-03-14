@@ -6,7 +6,7 @@ web.request = (options) -> new Promise((resolve, reject) ->
     try
         method = options.method
         uri = options.uri
-        headers = options.headers ? null
+        headerFields = options.headerFields ? null
         body = options.body ? null
         timeout = options.timeout ? null
         responseBodyType = options.responseBodyType ? "text"
@@ -21,8 +21,8 @@ web.request = (options) -> new Promise((resolve, reject) ->
         if mate.environmentType == "browser" then do ->
             xhr = new XMLHttpRequest()
             xhr.open(method, uri)
-            if headers?
-                Object.forKeyValue(headers, (key, value) -> xhr.setRequestHeader(key, value))
+            if headerFields?
+                Object.forKeyValue(headerFields, (key, value) -> xhr.setRequestHeader(key, value))
             xhr.responseType =
                 if responseBodyType == "binary"
                     "arraybuffer"
@@ -35,11 +35,11 @@ web.request = (options) -> new Promise((resolve, reject) ->
                 response =
                     statusCode: xhr.status
                     statusReason: xhr.statusText
-                    headers:
+                    headerFields:
                         xhr.getAllResponseHeaders()
                         .stripTrailingNewline()
                         .splitDeep("\r\n", ": ", 1)
-                        .map((header) -> [header[0].toLowerCase(), header[1]])
+                        .map((field) -> [field[0].toLowerCase(), field[1]])
                         .toObject()
                     body:
                         if responseBodyType == "binary"
@@ -69,7 +69,7 @@ web.request = (options) -> new Promise((resolve, reject) ->
                     hostname: parsedUri.hostname
                     port: parsedUri.port
                     path: parsedUri.path
-                    headers: headers
+                    headers: headerFields
                 },
                 (rawResponse) ->
                     data = new Buffer(0)
@@ -80,7 +80,7 @@ web.request = (options) -> new Promise((resolve, reject) ->
                         response =
                             statusCode: rawResponse.statusCode
                             statusReason: rawResponse.statusMessage
-                            headers: rawResponse.headers
+                            headerFields: rawResponse.headers
                             body:
                                 if responseBodyType == "binary"
                                     new Uint8Array(data)
@@ -136,7 +136,7 @@ web.jsonPost = (uri, body, options) ->
     actualOptions =
         method: "POST"
         uri: uri
-        headers: {"Content-Type": "application/json"}
+        headerFields: {"Content-Type": "application/json"}
         body: JSON.stringify(body)
         responseBodyType: "json"
     Object.assign(actualOptions, options)
