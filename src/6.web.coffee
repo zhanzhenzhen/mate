@@ -10,6 +10,10 @@ web.request = (options) -> new Promise((resolve, reject) ->
         body = options.body ? null
         timeout = options.timeout ? null
         responseBodyType = options.responseBodyType ? "text"
+        if not method?
+            fail()
+        if not url?
+            fail()
         if body? and typeof body != "string" and body not instanceof Uint8Array
             fail()
         if responseBodyType not in ["binary", "text", "json"]
