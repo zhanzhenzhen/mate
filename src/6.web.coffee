@@ -22,7 +22,7 @@ web.request = (options) -> new Promise((resolve, reject) ->
             xhr = new XMLHttpRequest()
             xhr.open(method, uri)
             if headerFields?
-                Object.forKeyValue(headerFields, (key, value) -> xhr.setRequestHeader(key, value))
+                Object.forEach(headerFields, (key, value) -> xhr.setRequestHeader(key, value))
             xhr.responseType =
                 if responseBodyType == "binary"
                     "arraybuffer"
