@@ -3,8 +3,11 @@ Object.clone = (x) ->
     for key in Object.keys(x)
         y[key] = x[key]
     y
+Object.allKeys = (x) -> key for key of x
 Object.keyValues = (x) -> Object.keys(x).map((key) -> [key, x[key]])
+Object.allKeyValues = (x) -> Object.allKeys(x).map((key) -> [key, x[key]])
 Object.forEach = (x, callback) -> Object.keys(x).forEach((key) -> callback(key, x[key]))
+Object.forEachOfAll = (x, callback) -> Object.allKeys(x).forEach((key) -> callback(key, x[key]))
 JSON.clone = (x) -> JSON.parse(JSON.stringify(x))
 Date::add = (x) -> # `x` must be a number
     new Date(@ - (-x))
