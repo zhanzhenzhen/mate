@@ -5,14 +5,14 @@ mate.web = web = {}
 web.request = (options) -> new Promise((resolve, reject) ->
     try
         method = options.method
-        url = options.url
+        uri = options.uri
         headers = options.headers ? null
         body = options.body ? null
         timeout = options.timeout ? null
         responseBodyType = options.responseBodyType ? "text"
         if not method?
             fail()
-        if not url?
+        if not uri?
             fail()
         if body? and typeof body != "string" and body not instanceof Uint8Array
             fail()
@@ -20,7 +20,7 @@ web.request = (options) -> new Promise((resolve, reject) ->
             fail()
         if mate.environmentType == "browser" then do ->
             xhr = new XMLHttpRequest()
-            xhr.open(method, url)
+            xhr.open(method, uri)
             if headers?
                 Object.forKeyValue(headers, (key, value) -> xhr.setRequestHeader(key, value))
             xhr.responseType =
@@ -61,14 +61,14 @@ web.request = (options) -> new Promise((resolve, reject) ->
             http = module.require("http")
             https = module.require("https")
             urlMod = module.require("url")
-            parsedUrl = urlMod.parse(url)
-            httpOrHttps = if parsedUrl.protocol == "https:" then https else http
+            parsedUri = urlMod.parse(uri)
+            httpOrHttps = if parsedUri.protocol == "https:" then https else http
             rawRequest = httpOrHttps.request(
                 {
                     method: method
-                    hostname: parsedUrl.hostname
-                    port: parsedUrl.port
-                    path: parsedUrl.path
+                    hostname: parsedUri.hostname
+                    port: parsedUri.port
+                    path: parsedUri.path
                     headers: headers
                 },
                 (rawResponse) ->
@@ -105,37 +105,37 @@ web.request = (options) -> new Promise((resolve, reject) ->
     catch ex
         reject(ex)
 )
-web.get = (url, options) ->
+web.get = (uri, options) ->
     actualOptions =
         method: "GET"
-        url: url
+        uri: uri
     Object.assign(actualOptions, options)
     web.request(actualOptions)
-web.jsonGet = (url, options) ->
+web.jsonGet = (uri, options) ->
     actualOptions =
         method: "GET"
-        url: url
+        uri: uri
         responseBodyType: "json"
     Object.assign(actualOptions, options)
     web.request(actualOptions)
-web.binaryGet = (url, options) ->
+web.binaryGet = (uri, options) ->
     actualOptions =
         method: "GET"
-        url: url
+        uri: uri
         responseBodyType: "binary"
     Object.assign(actualOptions, options)
     web.request(actualOptions)
-web.post = (url, body, options) ->
+web.post = (uri, body, options) ->
     actualOptions =
         method: "POST"
-        url: url
+        uri: uri
         body: body
     Object.assign(actualOptions, options)
     web.request(actualOptions)
-web.jsonPost = (url, body, options) ->
+web.jsonPost = (uri, body, options) ->
     actualOptions =
         method: "POST"
-        url: url
+        uri: uri
         headers: {"Content-Type": "application/json"}
         body: JSON.stringify(body)
         responseBodyType: "json"
