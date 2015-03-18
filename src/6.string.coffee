@@ -27,6 +27,15 @@ String::format = ->
             m.push(cur)
         i++
     m.join("")
+String::insert = (arr) ->
+    s = @valueOf()
+    insertedCount = 0
+    arr.forEach((info) ->
+        pos = info[0] + insertedCount
+        s = s.substr(0, pos) + info[1] + s.substr(pos)
+        insertedCount += info[1].length
+    )
+    s
 # Better than the built-in regular expression method when global mode
 # and submatches are both required.
 # It always uses global mode and returns an array of arrays if any matches are found.
