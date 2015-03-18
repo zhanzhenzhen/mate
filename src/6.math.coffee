@@ -28,6 +28,9 @@ Math.principalDegrees = (degrees) ->
         t - 360
     else
         t
+Math.roundDecimal = (x, digitCount = 0) ->
+    factor = Math.pow(10, digitCount)
+    Math.round(x * factor) / factor
 # Returns a random number x where m<=x<n.
 Math.randomNumber = (m, n) -> if m < n then m + Math.random() * (n - m) else fail()
 # If n is omitted, returns a random integer x where 0<=x<m.

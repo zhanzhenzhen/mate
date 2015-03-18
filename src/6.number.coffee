@@ -19,8 +19,18 @@ Number::format = (options) ->
     fractionalGroupEnabled = options?.fractionalGroupEnabled ? false
     fractionalGroupSeparator = options?.fractionalGroupSeparator ? " "
     fractionalGroupSize = options?.fractionalGroupSize ? 3
+    if radix != 10
+        fractionalSize = 0
     x = @valueOf()
-    s = x.toString(radix)
+    s =
+        if radix == 10
+            # TODO: I think using `toFixed` is not the best approach because
+            # it causes `(12345678901.2).format(fractionalSize:6)` to be formatted
+            # to "12345678901.200001".
+            # Can't use `toString` because it will cause 0.0000003 to be "3e-7".
+            x.toFixed(fractionalSize)
+        else
+            Math.round(x).toString(radix)
     do ->
         pos = s.indexOf(".")
         rawIntegerSize = if pos == -1 then s.length else pos
