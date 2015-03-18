@@ -58,6 +58,8 @@ Number::format = (options) ->
         if forcesSign and s[0] != "-" then s = "+" + s
     if integerGroupEnabled or fractionalGroupEnabled then do =>
         pos = s.indexOf(".")
+        # All these inserts must be from bottom to top, otherwise it will be harder
+        # to locate the position to insert to. ==========[
         if fractionalGroupEnabled
             fractionalStart = (if pos == -1 then s.length else pos) + 1 + fractionalGroupSize
             (i for i in [fractionalStart..s.length - 1] by fractionalGroupSize)
@@ -68,4 +70,5 @@ Number::format = (options) ->
             integerEnd = if s[0] == "+" or s[0] == "-" then 2 else 1
             (i for i in [integerStart..integerEnd] by -integerGroupSize)
             .forEach((i) => s = s.insert(i, integerGroupSeparator))
+        # ]====================
     s
