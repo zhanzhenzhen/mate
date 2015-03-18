@@ -71,6 +71,7 @@ Number::format = (options) ->
         if s[s.length - 1] == "." then s = s.substr(0, s.length - 1)
         # ]====================
         if forcesSign and s[0] != "-" then s = "+" + s
+        if pos == -1 and fractionalSize > 0 then s += "."
         s = "0".repeat(integerMissing) + s + "0".repeat(Math.max(fractionalMissing, 0))
     if integerGroupEnabled or fractionalGroupEnabled then do ->
         pos = s.indexOf(".")

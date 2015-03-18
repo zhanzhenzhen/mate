@@ -29,11 +29,11 @@ String::format = ->
     m.join("")
 String::insert = (arr) ->
     s = @valueOf()
-    insertedCount = 0
-    arr.forEach((info) ->
-        pos = info[0] + insertedCount
+    totalInsertedLength = 0
+    arr.funSort((info) => info[0]).forEach((info) =>
+        pos = info[0] + totalInsertedLength
         s = s.substr(0, pos) + info[1] + s.substr(pos)
-        insertedCount += info[1].length
+        totalInsertedLength += info[1].length
     )
     s
 # Better than the built-in regular expression method when global mode
