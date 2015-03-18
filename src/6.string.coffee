@@ -27,23 +27,12 @@ String::format = ->
             m.push(cur)
         i++
     m.join("")
-# TODO: Now `arr` must be a sorted array (by index, in ascending order).
-# We can consider checking if it's sorted, and sort it if not. But this
-# requires huge improvement in `Array`.
-String::insert = ->
-    arr =
-        if typeof arguments[0] == "object"
-            arguments[0]
-        else
-            [{index: arguments[0], value: arguments[1]}]
+String::insert = (index, value) ->
     s = @valueOf()
-    totalInsertedLength = 0
-    arr.forEach((info) =>
-        pos = info.index + totalInsertedLength
-        s = s.substr(0, pos) + info.value + s.substr(pos)
-        totalInsertedLength += info.value.length
-    )
-    s
+    s.substr(0, index) + value + s.substr(index)
+String::remove = (start, length = 1) ->
+    s = @valueOf()
+    s.substr(0, start) + s.substr(start + length)
 # Better than the built-in regular expression method when global mode
 # and submatches are both required.
 # It always uses global mode and returns an array of arrays if any matches are found.

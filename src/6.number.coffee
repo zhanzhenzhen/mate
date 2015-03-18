@@ -22,16 +22,27 @@ Number::format = (options) ->
     if radix != 10
         fractionalSize = 0
     x = @valueOf()
+    if integerSize > 80 or fractionalSize > 20 or x >= 1e21
+        fail("Number or argument too large")
     s =
         if radix == 10
-            # TODO: I think using `toFixed` is not the best approach because
-            # it causes `(12345678901.2).format(fractionalSize:6)` to be formatted
-            # to "12345678901.200001".
-            # Can't use `toString` because it will cause 0.0000003 to be "3e-7".
-            x.toFixed(fractionalSize)
+            t = Math.roundDecimal(x, fractionalSize).toString()
+            ePos = t.indexOf("e")
+            if ePos == -1
+                t
+            else
+                if t[ePos + 1] == "+"
+                    fail("Number too large")
+                else
+                    # JavaScript shows any number < 0.000001 in exponential form, so we
+                    # use `toFixed` to disable the exponential form.
+                    # But `toFixed` can't be used for all cases, because
+                    # `(12345678901.2).toFixed(6)` will give "12345678901.200001",
+                    # which looks ugly.
+                    x.toFixed(fractionalSize)
         else
             Math.round(x).toString(radix)
-    do ->
+    do =>
         pos = s.indexOf(".")
         rawIntegerSize = if pos == -1 then s.length else pos
         integerMissing = Math.max(integerSize - rawIntegerSize, 0)
@@ -45,21 +56,16 @@ Number::format = (options) ->
         if pos == -1 and fractionalSize > 0 then s += "."
         s = "0".repeat(integerMissing) + s + "0".repeat(Math.max(fractionalMissing, 0))
         if forcesSign and s[0] != "-" then s = "+" + s
-    if integerGroupEnabled or fractionalGroupEnabled then do ->
+    if integerGroupEnabled or fractionalGroupEnabled then do =>
         pos = s.indexOf(".")
         if fractionalGroupEnabled
             fractionalStart = (if pos == -1 then s.length else pos) + 1 + fractionalGroupSize
-            s = s.insert(
-                for i in [fractionalStart..s.length - 1] by fractionalGroupSize
-                    {index: i, value: fractionalGroupSeparator}
-            )
+            (i for i in [fractionalStart..s.length - 1] by fractionalGroupSize)
+            .funReverse()
+            .forEach((i) => s = s.insert(i, fractionalGroupSeparator))
         if integerGroupEnabled
             integerStart = (if pos == -1 then s.length else pos) - integerGroupSize
             integerEnd = if s[0] == "+" or s[0] == "-" then 2 else 1
-            s = s.insert(
-                (
-                    for i in [integerStart..integerEnd] by -integerGroupSize
-                        {index: i, value: integerGroupSeparator}
-                ).funReverse()
-            )
+            (i for i in [integerStart..integerEnd] by -integerGroupSize)
+            .forEach((i) => s = s.insert(i, integerGroupSeparator))
     s
