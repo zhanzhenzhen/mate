@@ -22,8 +22,9 @@ Number::format = (options) ->
     if radix != 10
         fractionalSize = 0
     x = @valueOf()
-    if integerSize > 80 or fractionalSize > 20 or x >= 1e21 or x <= -1e21
-        fail("Number or argument too large")
+    if integerSize > 80 or fractionalSize > 20 or x >= 1e21 or x <= -1e21 or
+    integerGroupSize < 1 or fractionalGroupSize < 1
+        fail("Number or argument out of range")
     s =
         if radix == 10
             t = Math.roundDecimal(x, fractionalSize).toString()
@@ -42,6 +43,8 @@ Number::format = (options) ->
                     x.toFixed(fractionalSize)
         else
             Math.round(x).toString(radix)
+    isNegative = s[0] == "-"
+    if s[0] == "+" or s[0] == "-" then s = s.remove(0)
     do =>
         pos = s.indexOf(".")
         rawIntegerSize = if pos == -1 then s.length else pos
@@ -55,7 +58,6 @@ Number::format = (options) ->
         # ]====================
         if pos == -1 and fractionalSize > 0 then s += "."
         s = "0".repeat(integerMissing) + s + "0".repeat(Math.max(fractionalMissing, 0))
-        if forcesSign and s[0] != "-" then s = "+" + s
     if integerGroupEnabled or fractionalGroupEnabled then do =>
         pos = s.indexOf(".")
         # All these inserts must be from bottom to top, otherwise it will be harder
@@ -67,8 +69,15 @@ Number::format = (options) ->
             .forEach((i) => s = s.insert(i, fractionalGroupSeparator))
         if integerGroupEnabled
             integerStart = (if pos == -1 then s.length else pos) - integerGroupSize
-            integerEnd = if s[0] == "+" or s[0] == "-" then 2 else 1
-            (i for i in [integerStart..integerEnd] by -integerGroupSize)
+            (i for i in [integerStart..1] by -integerGroupSize)
             .forEach((i) => s = s.insert(i, integerGroupSeparator))
         # ]====================
+    if forcesSign
+        if isNegative
+            s = "-" + s
+        else
+            s = "+" + s
+    else
+        if isNegative
+            s = "-" + s
     s
