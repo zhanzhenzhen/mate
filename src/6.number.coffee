@@ -22,7 +22,7 @@ Number::format = (options) ->
     if radix != 10
         fractionalSize = 0
     x = @valueOf()
-    if integerSize > 80 or fractionalSize > 20 or x >= 1e21
+    if integerSize > 80 or fractionalSize > 20 or x >= 1e21 or x <= -1e21
         fail("Number or argument too large")
     s =
         if radix == 10
@@ -32,7 +32,7 @@ Number::format = (options) ->
                 t
             else
                 if t[ePos + 1] == "+"
-                    fail("Number too large")
+                    fail("Number too large") # Redundant but needed to be robust
                 else
                     # JavaScript shows any number < 0.000001 in exponential form, so we
                     # use `toFixed` to disable the exponential form.
