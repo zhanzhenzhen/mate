@@ -30,7 +30,12 @@ String::format = ->
 # TODO: Now `arr` must be a sorted array (by index, in ascending order).
 # We can consider checking if it's sorted, and sort it if not. But this
 # requires huge improvement in `Array`.
-String::insert = (arr) ->
+String::insert = ->
+    arr =
+        if typeof arguments[0] == "object"
+            arguments[0]
+        else
+            [{index: arguments[0], value: arguments[1]}]
     s = @valueOf()
     totalInsertedLength = 0
     arr.forEach((info) =>

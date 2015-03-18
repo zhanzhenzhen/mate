@@ -87,7 +87,7 @@ Number::format = (options) ->
                 (
                     for i in [integerStart..1] by -integerGroupSize
                         {index: i, value: integerGroupSeparator}
-                ).funSort((info) => info.index)
+                ).funReverse()
             )
     s
 # This class is a combination of 3 things: complex number, 2d point, and 2d vector.
