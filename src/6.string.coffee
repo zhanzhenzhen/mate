@@ -27,13 +27,16 @@ String::format = ->
             m.push(cur)
         i++
     m.join("")
+# TODO: Now `arr` must be a sorted array (by index, in ascending order).
+# We can consider checking if it's sorted, and sort it if not. But this
+# requires huge improvement in `Array`.
 String::insert = (arr) ->
     s = @valueOf()
     totalInsertedLength = 0
-    arr.funSort((info) => info[0]).forEach((info) =>
-        pos = info[0] + totalInsertedLength
-        s = s.substr(0, pos) + info[1] + s.substr(pos)
-        totalInsertedLength += info[1].length
+    arr.forEach((info) =>
+        pos = info.index + totalInsertedLength
+        s = s.substr(0, pos) + info.value + s.substr(pos)
+        totalInsertedLength += info.value.length
     )
     s
 # Better than the built-in regular expression method when global mode

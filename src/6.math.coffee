@@ -79,13 +79,15 @@ Number::format = (options) ->
             fractionalStart = (if pos == -1 then s.length else pos) + 1 + fractionalGroupSize
             s = s.insert(
                 for i in [fractionalStart..s.length - 1] by fractionalGroupSize
-                    [i, fractionalGroupSeparator]
+                    {index: i, value: fractionalGroupSeparator}
             )
         if integerGroupEnabled
             integerStart = (if pos == -1 then s.length else pos) - integerGroupSize
             s = s.insert(
-                for i in [integerStart..1] by -integerGroupSize
-                    [i, integerGroupSeparator]
+                (
+                    for i in [integerStart..1] by -integerGroupSize
+                        {index: i, value: integerGroupSeparator}
+                ).funSort((info) => info.index)
             )
     s
 # This class is a combination of 3 things: complex number, 2d point, and 2d vector.
