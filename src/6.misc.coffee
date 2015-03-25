@@ -1,5 +1,6 @@
 Object.isObject = (x) -> typeof x in ["object", "function"] and x != null
 Object.isNormalObject = (x) -> Object.isObject(x) and typeof x != "function" and not Array.isArray(x)
+# TODO: need to use new concept
 Object.clone = (x) ->
     y = {}
     for key in Object.keys(x)
@@ -12,14 +13,14 @@ Object.forEach = (x, callback) -> Object.keys(x).forEach((key) -> callback(key, 
 Object.forEachOfAll = (x, callback) -> Object.allKeys(x).forEach((key) -> callback(key, x[key]))
 Object.deepAssign = (target, sources...) ->
     sources.forEach((source) ->
-        assign = (target, source) ->
+        deepAssign = (target, source) ->
             Object.forEach(source, (key, value) ->
-                if Object.isObject(value)
-                    assign(target[key], value)
+                if Object.isObject(target[key]) and Object.isObject(value)
+                    deepAssign(target[key], value)
                 else
                     target[key] = value
             )
-        assign(target, source)
+        deepAssign(target, source)
     )
     target
 Object.absorb = (subject, objects...) ->
@@ -29,16 +30,27 @@ Object.absorb = (subject, objects...) ->
     subject
 Object.deepAbsorb = (subject, objects...) ->
     objects.forEach((object) ->
-        absorb = (subject, object) ->
+        deepAbsorb = (subject, object) ->
             Object.forEach(object, (key, value) ->
-                if Object.isObject(value)
-                    absorb(subject[key], value)
+                if Object.isObject(subject[key]) and Object.isObject(value)
+                    deepAbsorb(subject[key], value)
                 else
                     subject[key] = value if subject[key] == undefined
             )
-        absorb(subject, object)
+        deepAbsorb(subject, object)
     )
     subject
+Object.deepClone = (x) ->
+    target = {}
+    deepExtend = (target, source) ->
+        Object.forEach(source, (key, value) ->
+            if Object.isObject(value)
+                target[key] = {}
+                deepExtend(target[key], value)
+            else
+                target[key] = value
+        )
+    deepExtend(target, x)
 JSON.clone = (x) -> JSON.parse(JSON.stringify(x))
 Date::add = (x) -> # `x` must be a number
     new Date(@ - (-x))
