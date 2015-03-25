@@ -1,3 +1,9 @@
+# `deepAssign` and `deepAbsorb` must use deep clone when traverse isn't needed. If otherwise
+# using direct assignment, then it will have severe side-effects: when sources are more than 1,
+# the first or middle source's value may have been changed after the whole thing finishes.
+# `deepAssign` and `deepAbsorb` should only traverse normal objects. If they also traverse
+# arrays, then it will look very unnatural. It's weird to merge arrays.
+
 Object.isObject = (x) -> typeof x in ["object", "function"] and x != null
 Object.isNormalObject = (x) -> Object.isObject(x) and typeof x != "function" and not Array.isArray(x)
 # TODO: need to use new concept
