@@ -51,6 +51,7 @@ Object.deepClone = (x) ->
                 target[key] = value
         )
     deepExtend(target, x)
+    target
 JSON.clone = (x) -> JSON.parse(JSON.stringify(x))
 Date::add = (x) -> # `x` must be a number
     new Date(@ - (-x))
