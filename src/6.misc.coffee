@@ -15,8 +15,8 @@ Object.deepAssign = (target, sources...) ->
     sources.forEach((source) ->
         deepAssign = (target, source) ->
             Object.forEach(source, (key, value) ->
-                if Object.isObject(value)
-                    if Object.isObject(target[key])
+                if Object.isObject(value) and not Array.isArray(value)
+                    if Object.isObject(target[key]) and not Array.isArray(target[key])
                         deepAssign(target[key], value)
                     else
                         target[key] = Object.deepClone(value)
@@ -35,8 +35,8 @@ Object.deepAbsorb = (subject, objects...) ->
     objects.forEach((object) ->
         deepAbsorb = (subject, object) ->
             Object.forEach(object, (key, value) ->
-                if Object.isObject(value)
-                    if Object.isObject(subject[key])
+                if Object.isObject(value) and not Array.isArray(value)
+                    if Object.isObject(subject[key]) and not Array.isArray(subject[key])
                         deepAbsorb(subject[key], value)
                     else
                         subject[key] = Object.deepClone(value) if subject[key] == undefined
@@ -47,16 +47,16 @@ Object.deepAbsorb = (subject, objects...) ->
     )
     subject
 Object.deepClone = (x) ->
-    target = {}
-    deepExtend = (target, source) ->
+    target = if Array.isArray(x) then [] else {}
+    deepCopyFrom = (target, source) ->
         Object.forEach(source, (key, value) ->
             if Object.isObject(value)
-                target[key] = {}
-                deepExtend(target[key], value)
+                target[key] = if Array.isArray(value) then [] else {}
+                deepCopyFrom(target[key], value)
             else
                 target[key] = value
         )
-    deepExtend(target, x)
+    deepCopyFrom(target, x)
     target
 JSON.clone = (x) -> JSON.parse(JSON.stringify(x))
 Date::add = (x) -> # `x` must be a number
