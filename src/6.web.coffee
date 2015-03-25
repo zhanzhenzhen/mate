@@ -38,7 +38,7 @@ web.request = (options) -> new Promise((resolve, reject) ->
                     headerFields:
                         xhr.getAllResponseHeaders()
                         .stripTrailingNewline()
-                        .splitDeep("\r\n", ": ", 1)
+                        .deepSplit("\r\n", ": ", 1)
                         .map((field) -> [field[0].toLowerCase(), field[1]])
                         .toObject()
                     body:

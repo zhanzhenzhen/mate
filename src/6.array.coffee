@@ -194,11 +194,11 @@ Array::toObject = ->
         r[element[0]] = element[1]
     )
     r
-Array::joinDeep = (args...) ->
+Array::deepJoin = (args...) ->
     if args.length <= 1
         @join(args[0])
     else
-        @map((arr) => arr.joinDeep(args[..-2]...)).join(args.last())
+        @map((arr) => arr.deepJoin(args[..-2]...)).join(args.last())
 Array::randomOne = -> @[Math.randomInt(@length)]
 Array::random = (count) -> @clone().takeRandom(count)
 Array::takeRandomOne = ->

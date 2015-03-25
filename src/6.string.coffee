@@ -50,7 +50,7 @@ String::matches = (regex) ->
 String::capitalize = ->
     # Use `charAt[0]` instead of `[0]` because `[0]` will return undefined if string is empty.
     @charAt(0).toUpperCase() + @substr(1)
-String::splitDeep = (args...) ->
+String::deepSplit = (args...) ->
     arr = @split(args[0])
     if args.length == 2 and typeof args[1] == "number"
         if args[1] == 0
@@ -62,7 +62,7 @@ String::splitDeep = (args...) ->
     else if args.length <= 1
         arr
     else
-        arr.map((s) => s.splitDeep(args[1..]...))
+        arr.map((s) => s.deepSplit(args[1..]...))
 String::stripTrailingNewline = ->
     if @[@length - 2] == "\r" and @[@length - 1] == "\n"
         @substr(0, @length - 2)
