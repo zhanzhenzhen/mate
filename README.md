@@ -10,13 +10,13 @@ On both browser and node.js, Mate brings these features:
 - Functional functions
 - 2D point, complex number, complex math
 - ECMAScript 6th features
-- Very natural testing
+- Super natural testing
 
 It extends the native JavaScript/CoffeeScript, and works consistently in every modern web browser and node.js.
 
 # Tutorial
 
-[Click here to view the tutorial.](http://zizisoft.com/mate/)
+[Click here to view the tutorial.](http://zizisoft.com/mate)
 
 # Contributing
 
