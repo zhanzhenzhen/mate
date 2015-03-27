@@ -14,9 +14,9 @@ On both browser and node.js, Mate brings these features:
 
 It extends the native JavaScript/CoffeeScript, and works consistently in every modern web browser and node.js.
 
-# Tutorial
+# Getting Started
 
-[Click here to view the tutorial.](http://zizisoft.com/mate)
+[Click here](http://zizisoft.com/mate) or visit http://zizisoft.com/mate
 
 # Contributing
 
