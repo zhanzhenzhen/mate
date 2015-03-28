@@ -21,6 +21,9 @@ class ArrayLazyWrapper
     funSortDescending: -> @_pushChain(Array::funSortDescending, arguments)
     funReverse: -> @_pushChain(Array::funReverse, arguments)
     except: -> @_pushChain(Array::except, arguments)
+    distinct: -> @_pushChain(Array::distinct, arguments)
+    union: -> @_pushChain(Array::union, arguments)
+    intersect: -> @_pushChain(Array::intersect, arguments)
     group: -> @_pushChain(Array::group, arguments)
     flatten: -> @_pushChain(Array::flatten, arguments)
     random: -> @_pushChain(Array::random, arguments)
@@ -166,6 +169,19 @@ Array::funSortDescending = (keySelector) -> @_sort(keySelector, true)
 # ]--------------------
 Array::funReverse = -> @clone().reverse()
 Array::except = (array) -> @filter((m) -> m not in array)
+Array::distinct = ->
+    r = []
+    @forEach((m) =>
+        r.push(m) if m not in r
+    )
+    r
+Array::union = (arr) -> @concat(arr).distinct()
+Array::intersect = (arr) ->
+    r = []
+    @distinct().forEach((m) =>
+        r.push(m) if m in arr
+    )
+    r
 Array::flatten = (level) ->
     if level <= 0
         fail()
