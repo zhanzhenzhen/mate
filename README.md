@@ -16,7 +16,7 @@ It extends the native JavaScript/CoffeeScript, and works consistently in every m
 
 # Getting Started
 
-[Click here](http://zizisoft.com/mate) or visit http://zizisoft.com/mate
+[Click here](http://zizisoft.com/mate) or visit "http://zizisoft.com/mate".
 
 # Contributing
 
