@@ -168,18 +168,21 @@ Array::funSort = (keySelector) -> @_sort(keySelector, false)
 Array::funSortDescending = (keySelector) -> @_sort(keySelector, true)
 # ]--------------------
 Array::funReverse = -> @clone().reverse()
-Array::except = (array) -> @filter((m) -> m not in array)
-Array::distinct = ->
+Array::except = (array, equalityComparer = (a, b) => a == b) ->
+    @filter((m) =>
+        not array.some((n) => equalityComparer(n, m))
+    )
+Array::distinct = (equalityComparer = (a, b) => a == b) ->
     r = []
     @forEach((m) =>
-        r.push(m) if m not in r
+        r.push(m) if not r.some((n) => equalityComparer(n, m))
     )
     r
-Array::union = (arr) -> @concat(arr).distinct()
-Array::intersect = (arr) ->
+Array::union = (arr, equalityComparer) -> @concat(arr).distinct(equalityComparer)
+Array::intersect = (arr, equalityComparer = (a, b) => a == b) ->
     r = []
-    @distinct().forEach((m) =>
-        r.push(m) if m in arr
+    @distinct(equalityComparer).forEach((m) =>
+        r.push(m) if arr.some((n) => equalityComparer(n, m))
     )
     r
 Array::flatten = (level) ->
