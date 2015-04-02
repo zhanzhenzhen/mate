@@ -79,19 +79,33 @@ Array::_ratioToLength = (ratio) ->
 Array::_reverseToIndex = (reverseIndex) ->
     @length - 1 - reverseIndex
 Array::_positionToIndex = (pos) ->
-    if pos?.Reverse?.Ratio?
+    if typeof pos == "number"
+        if 0 < pos < 1
+            pos = {Ratio: pos}
+        else if -1 < pos < 0
+            pos = {Reverse: Ratio: pos}
+        else if pos < 0
+            pos = {Reverse: pos}
+    if typeof pos == "number"
+        pos
+    else if pos?.Reverse?.Ratio?
         @_reverseToIndex(@_ratioToIndex(pos.Reverse.Ratio))
     else if pos?.Reverse?
         @_reverseToIndex(pos.Reverse)
     else if pos?.Ratio?
         @_ratioToIndex(pos.Ratio)
     else
-        pos
+        fail()
 Array::_amountToLength = (amount) ->
-    if amount?.Ratio?
+    if typeof amount == "number"
+        if 0 < amount < 1
+            amount = {Ratio: amount}
+    if typeof amount == "number"
+        amount
+    else if amount?.Ratio?
         @_ratioToLength(amount.Ratio)
     else
-        amount
+        fail()
 Array::clone = -> @[..]
 Array::isEmpty = -> @length == 0
 Array::lazy = -> ArrayLazyWrapper(@)
