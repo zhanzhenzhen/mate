@@ -111,8 +111,8 @@ Array::isEmpty = -> @length == 0
 Array::lazy = -> ArrayLazyWrapper(@)
 Array::portion = (startIndex, length, endIndex) ->
     startIndex = @_positionToIndex(startIndex)
-    length = @_amountToLength(length)
-    endIndex = @_positionToIndex(endIndex)
+    length = @_amountToLength(length) if length?
+    endIndex = @_positionToIndex(endIndex) if endIndex?
     @slice(startIndex, if length? then startIndex + length else endIndex + 1)
 Array::at = (index) ->
     index = @_positionToIndex(index)
