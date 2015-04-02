@@ -57,7 +57,13 @@ class ArrayLazyWrapper
 # to use the element itself without a selector.
 Array._elementOrUseSelector = (element, selector) -> if selector? then selector(element) else element
 Array::_ratioToIndex = (ratio) ->
-    Math.round(ratio * (@length - 1))
+    r = Math.round(ratio * @length - 0.5)
+    if r <= 0 # `<=` can correct -0
+        0
+    else if r > @length - 1
+        @length - 1
+    else
+        r
 Array::_reverseToIndex = (reverseIndex) ->
     @length - 1 - reverseIndex
 Array::_positionToIndex = (pos) ->
