@@ -64,6 +64,14 @@ Array::_ratioToIndex = (ratio) ->
         @length - 1
     else
         r
+Array::_ratioToLength = (ratio) ->
+    r = Math.round(ratio * (@length + 1) - 0.5)
+    if r <= 0 # `<=` can correct -0
+        0
+    else if r > @length
+        @length
+    else
+        r
 Array::_reverseToIndex = (reverseIndex) ->
     @length - 1 - reverseIndex
 Array::_positionToIndex = (pos) ->
@@ -75,13 +83,17 @@ Array::_positionToIndex = (pos) ->
         @_ratioToIndex(pos.Ratio)
     else
         pos
-Array::_numberToLength = (pos) -> if 0 < pos < 1 then pos = Math.round(pos * @length) else pos
+Array::_amountToLength = (amount) ->
+    if amount?.Ratio?
+        @_ratioToLength(amount.Ratio)
+    else
+        amount
 Array::clone = -> @[..]
 Array::isEmpty = -> @length == 0
 Array::lazy = -> ArrayLazyWrapper(@)
 Array::portion = (startIndex, length, endIndex) ->
     startIndex = @_positionToIndex(startIndex)
-    length = @_numberToLength(length)
+    length = @_amountToLength(length)
     endIndex = @_positionToIndex(endIndex)
     @slice(startIndex, if length? then startIndex + length else endIndex + 1)
 Array::at = (index) ->
@@ -238,7 +250,7 @@ Array::takeRandomOne = ->
     r
 Array::takeRandom = (count) ->
     count ?= @length
-    count = @_numberToLength(count)
+    count = @_amountToLength(count)
     repeat(count, => @takeRandomOne())
 Array::removeAt = (index) ->
     @splice(index, 1)
