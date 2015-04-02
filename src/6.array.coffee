@@ -83,9 +83,9 @@ Array::_positionToIndex = (pos) ->
         if 0 < pos < 1
             pos = {Ratio: pos}
         else if -1 < pos < 0
-            pos = {Reverse: Ratio: pos}
+            pos = {Reverse: Ratio: -pos}
         else if pos < 0
-            pos = {Reverse: pos}
+            pos = {Reverse: -pos - 1}
     if typeof pos == "number"
         pos
     else if pos?.Reverse?.Ratio?
