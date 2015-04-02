@@ -124,8 +124,11 @@ Array::single = (predicate) ->
     queryResult = if predicate? then @filter(predicate) else @
     assert(queryResult.length == 1)
     queryResult.at(0)
+# In Microsoft LINQ it still throws if matched elements > 1, because I think
+# it shouldn't throw. I want it more consistent. ----------[
 Array::singleOrNull = (predicate) -> try @single(predicate) catch then null
 Array::singleOrVoid = (predicate) -> try @single(predicate) catch then undefined
+# ]--------------------
 # If array length is 1, then `reduce` will return the single element. That's exactly what
 # `withMax` and `withMin` are for, so we don't need to copy what we did in `sum` method. [
 Array::withMax = (selector) -> @reduce((a, b, index) =>
