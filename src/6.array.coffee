@@ -56,25 +56,30 @@ class ArrayLazyWrapper
 # If the element is a number or string, it will be more convenient
 # to use the element itself without a selector.
 Array._elementOrUseSelector = (element, selector) -> if selector? then selector(element) else element
-Array::_numberToIndex = (pos) -> if 0 < pos < 1 then pos = Math.round(pos * (@length - 1)) else pos
+Array::_ratioToIndex = (ratio) ->
+    Math.round(ratio * (@length - 1))
+Array::_reverseToIndex = (reverseIndex) ->
+    @length - 1 - reverseIndex
+Array::_positionToIndex = (pos) ->
+    if pos?.Reverse?.Ratio?
+        @_reverseToIndex(@_ratioToIndex(pos.Reverse.Ratio))
+    else if pos?.Reverse?
+        @_reverseToIndex(pos.Reverse)
+    else if pos?.Ratio?
+        @_ratioToIndex(pos.Ratio)
+    else
+        pos
 Array::_numberToLength = (pos) -> if 0 < pos < 1 then pos = Math.round(pos * @length) else pos
 Array::clone = -> @[..]
 Array::isEmpty = -> @length == 0
 Array::lazy = -> ArrayLazyWrapper(@)
 Array::portion = (startIndex, length, endIndex) ->
-    if Number.isFraction(startIndex) or Number.isFraction(length) or Number.isFraction(endIndex)
-        if startIndex == 0 then startIndex = 0 + Number.EPSILON
-        if startIndex == 1 then startIndex = 1 - Number.EPSILON
-        if length == 0 then length = 0 + Number.EPSILON
-        if length == 1 then length = 1 - Number.EPSILON
-        if endIndex == 0 then endIndex = 0 + Number.EPSILON
-        if endIndex == 1 then endIndex = 1 - Number.EPSILON
-    startIndex = @_numberToIndex(startIndex)
+    startIndex = @_positionToIndex(startIndex)
     length = @_numberToLength(length)
-    endIndex = @_numberToIndex(endIndex)
+    endIndex = @_positionToIndex(endIndex)
     @slice(startIndex, if length? then startIndex + length else endIndex + 1)
 Array::at = (index) ->
-    index = @_numberToIndex(index)
+    index = @_positionToIndex(index)
     assert(0 <= index < @length)
     @[index]
 Array::atOrNull = (index) -> try @at(index) catch then null
