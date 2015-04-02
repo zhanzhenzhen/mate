@@ -21,6 +21,13 @@ new Test("root"
     I.wish(' [3,-12,23].funSort()=[-12,3,23] ')
     I.wish(' [3,-12,23].funSortDescending()=[23,3,-12] ')
     I.wish(' [3,-12,23].funReverse()=[23,-12,3] ')
+    I.wish(' [3,-12,23].at({Ratio:0})=3 ')
+    I.wish(' [3,-12,23].at({Ratio:1})=23 ')
+    I.wish(' [3,-12,23].at({Ratio:0.5})=-12 ')
+    I.wish(' [3,-12,23].at({Ratio:1/3})=-12 ')
+    I.wish(' [3,-12,23].at({Ratio:1/3-Number.EPSILON})=3 ')
+    I.wish(' [3,-12,23,6].at({Ratio:0.5})=23 ')
+    I.wish(' [3,-12,23,6].at({Ratio:0.5-Number.EPSILON})=-12 ')
 ).add("cmath", (my, I) ->
     I.wish(' cmath.add("2+i","3+6i")=Point.from("5+7i") ')
     I.wish(' cmath.subtract("2+i","3+6i")=Point.from("-1-5i") ')
