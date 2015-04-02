@@ -116,7 +116,8 @@ Array::portion = (startIndex, length, endIndex) ->
     @slice(startIndex, if length? then startIndex + length else endIndex + 1)
 Array::at = (index) ->
     index = @_positionToIndex(index)
-    assert(0 <= index < @length) # useful for validating element operations like `first`, `last`
+    # useful for validating element operations like `first`, `last`
+    assert(Number.isInteger(index) and 0 <= index < @length)
     @[index]
 Array::atOrNull = (index) -> try @at(index) catch then null
 Array::atOrVoid = (index) -> try @at(index) catch then undefined
