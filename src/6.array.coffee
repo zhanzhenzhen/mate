@@ -32,13 +32,17 @@ class ArrayLazyWrapper
     isEmpty: -> @_unwrapAndDo(Array::isEmpty, arguments)
     at: -> @_unwrapAndDo(Array::at, arguments)
     atOrNull: -> @_unwrapAndDo(Array::atOrNull, arguments)
+    atOrVoid: -> @_unwrapAndDo(Array::atOrVoid, arguments)
     contains: -> @_unwrapAndDo(Array::contains, arguments)
     first: -> @_unwrapAndDo(Array::first, arguments)
     firstOrNull: -> @_unwrapAndDo(Array::firstOrNull, arguments)
+    firstOrVoid: -> @_unwrapAndDo(Array::firstOrVoid, arguments)
     last: -> @_unwrapAndDo(Array::last, arguments)
     lastOrNull: -> @_unwrapAndDo(Array::lastOrNull, arguments)
+    lastOrVoid: -> @_unwrapAndDo(Array::lastOrVoid, arguments)
     single: -> @_unwrapAndDo(Array::single, arguments)
     singleOrNull: -> @_unwrapAndDo(Array::singleOrNull, arguments)
+    singleOrVoid: -> @_unwrapAndDo(Array::singleOrVoid, arguments)
     withMax: -> @_unwrapAndDo(Array::withMax, arguments)
     withMin: -> @_unwrapAndDo(Array::withMin, arguments)
     max: -> @_unwrapAndDo(Array::max, arguments)
@@ -98,9 +102,10 @@ Array::portion = (startIndex, length, endIndex) ->
     @slice(startIndex, if length? then startIndex + length else endIndex + 1)
 Array::at = (index) ->
     index = @_positionToIndex(index)
-    assert(0 <= index < @length)
+    assert(0 <= index < @length) # useful for validating element operations like `first`, `last`
     @[index]
 Array::atOrNull = (index) -> try @at(index) catch then null
+Array::atOrVoid = (index) -> try @at(index) catch then undefined
 # TODO: In TC39, there's no `contains` but `includes`.
 Array::contains = (value) -> value in @
 # TODO: performance
@@ -108,16 +113,19 @@ Array::first = (predicate) ->
     queryResult = if predicate? then @filter(predicate) else @
     queryResult.at(0)
 Array::firstOrNull = (predicate) -> try @first(predicate) catch then null
+Array::firstOrVoid = (predicate) -> try @first(predicate) catch then undefined
 # TODO: performance
 Array::last = (predicate) ->
     queryResult = if predicate? then @filter(predicate) else @
     queryResult.at(queryResult.length - 1)
 Array::lastOrNull = (predicate) -> try @last(predicate) catch then null
+Array::lastOrVoid = (predicate) -> try @last(predicate) catch then undefined
 Array::single = (predicate) ->
     queryResult = if predicate? then @filter(predicate) else @
     assert(queryResult.length == 1)
     queryResult.at(0)
 Array::singleOrNull = (predicate) -> try @single(predicate) catch then null
+Array::singleOrVoid = (predicate) -> try @single(predicate) catch then undefined
 # If array length is 1, then `reduce` will return the single element. That's exactly what
 # `withMax` and `withMin` are for, so we don't need to copy what we did in `sum` method. [
 Array::withMax = (selector) -> @reduce((a, b, index) =>
