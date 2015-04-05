@@ -2,6 +2,7 @@
 # instead of status text or status message.
 
 mate.web = web = {}
+
 web.request = (options) -> new Promise((resolve, reject) ->
     try
         method = options.method
@@ -105,12 +106,14 @@ web.request = (options) -> new Promise((resolve, reject) ->
     catch ex
         reject(ex)
 )
+
 web.get = (uri, options) ->
     actualOptions =
         method: "GET"
         uri: uri
     Object.assign(actualOptions, options)
     web.request(actualOptions)
+
 web.jsonGet = (uri, options) ->
     actualOptions =
         method: "GET"
@@ -118,6 +121,7 @@ web.jsonGet = (uri, options) ->
         responseBodyType: "json"
     Object.assign(actualOptions, options)
     web.request(actualOptions)
+
 web.binaryGet = (uri, options) ->
     actualOptions =
         method: "GET"
@@ -125,6 +129,7 @@ web.binaryGet = (uri, options) ->
         responseBodyType: "binary"
     Object.assign(actualOptions, options)
     web.request(actualOptions)
+
 web.post = (uri, body, options) ->
     actualOptions =
         method: "POST"
@@ -132,6 +137,7 @@ web.post = (uri, body, options) ->
         body: body
     Object.assign(actualOptions, options)
     web.request(actualOptions)
+
 web.jsonPost = (uri, body, options) ->
     actualOptions =
         method: "POST"

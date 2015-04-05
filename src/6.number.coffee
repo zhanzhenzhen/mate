@@ -1,13 +1,17 @@
 Number.isFraction = (x) -> typeof x == "number" and isFinite(x) and Math.floor(x) != x
+
 Number.parseFloatExt = (s) -> parseFloat(s) * (if s.endsWith("%") then 0.01 else 1)
+
 Number::approxEquals = (x) -> Math.approxEquals(@valueOf(), x)
 Number::approxGreaterThan = (x) -> Math.approxGreaterThan(@valueOf(), x)
 Number::approxLessThan = (x) -> Math.approxLessThan(@valueOf(), x)
+
 Number::pad = (integerSize, fractionalSize) ->
     @valueOf().format(
         integerSize: integerSize
         fractionalSize: fractionalSize
     )
+
 Number::format = (options) ->
     integerSize = options?.integerSize ? 1
     fractionalSize = options?.fractionalSize ? 0
@@ -51,17 +55,19 @@ Number::format = (options) ->
         integerMissing = Math.max(integerSize - rawIntegerSize, 0)
         rawFractionalSize = if pos == -1 then 0 else s.length - 1 - pos
         fractionalMissing = fractionalSize - rawFractionalSize
+
         # For truncating. If `fractionalMissing` is negative then truncate, otherwise it
-        # will remain unchanged. ==========[
+        # will remain unchanged.
         s = s.substr(0, s.length + fractionalMissing)
         if s[s.length - 1] == "." then s = s.substr(0, s.length - 1)
-        # ]====================
+
         if pos == -1 and fractionalSize > 0 then s += "."
         s = "0".repeat(integerMissing) + s + "0".repeat(Math.max(fractionalMissing, 0))
     if integerGroupEnabled or fractionalGroupEnabled then do =>
         pos = s.indexOf(".")
+
         # All these inserts must be from bottom to top, otherwise it will be harder
-        # to locate the position to insert to. ==========[
+        # to locate the position to insert to.
         if fractionalGroupEnabled
             fractionalStart = (if pos == -1 then s.length else pos) + 1 + fractionalGroupSize
             (i for i in [fractionalStart..s.length - 1] by fractionalGroupSize)
@@ -71,7 +77,6 @@ Number::format = (options) ->
             integerStart = (if pos == -1 then s.length else pos) - integerGroupSize
             (i for i in [integerStart..1] by -integerGroupSize)
             .forEach((i) => s = s.insert(i, integerGroupSeparator))
-        # ]====================
     if forcesSign
         if isNegative
             s = "-" + s

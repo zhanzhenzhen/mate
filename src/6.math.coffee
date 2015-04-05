@@ -6,12 +6,16 @@ Math.approxEquals = (a, b) ->
     # if they are equal in single-precision, they can be considered as
     # approximately equal in double-precision.
     threshold = 1 + 1 / 8388608
+
     1 / threshold < a / b < threshold
+
 Math.approxGreaterThan = (a, b) -> a > b or Math.approxEquals(a, b)
 Math.approxLessThan = (a, b) -> a < b or Math.approxEquals(a, b)
 # ]========================================
+
 Math.radiansToDegrees = (radians) -> radians / Math.PI * 180
 Math.degreesToRadians = (degrees) -> degrees / 180 * Math.PI
+
 Math.principalRadians = (radians) ->
     t = radians % (2 * Math.PI)
     if t <= -Math.PI
@@ -28,21 +32,26 @@ Math.principalDegrees = (degrees) ->
         t - 360
     else
         t
+
 Math.roundDecimal = (x, digitCount = 0) ->
     factor = Math.pow(10, digitCount)
     Math.round(x * factor) / factor
+
 # Returns a random number x where m<=x<n.
 Math.randomNumber = (m, n) -> if m < n then m + Math.random() * (n - m) else fail()
+
 # If n is omitted, returns a random integer x where 0<=x<m.
 # If n is not omitted, Returns a random integer x where m<=x<n.
 Math.randomInt = (m, n) ->
     min = if n == undefined then 0 else m
     max = if n == undefined then m else n
     Math.floor(Math.randomNumber(min, max))
+
 # This class is a combination of 3 things: complex number, 2d point, and 2d vector.
 # It can even be used for all "ordered pair" things such as size (width and height).
 class global.Point
     constructor: (@x, @y) ->
+
     @from: (value, second) ->
         if typeof value == "number"
             if typeof second == "number"
@@ -57,7 +66,9 @@ class global.Point
             Point.fromArray(value)
         else
             fail()
+
     @fromArray: (array) -> new Point(array[0], array[1])
+
     @fromString: (s) ->
         adjustedString = s.replace(/// [ \x20 ( ) ] ///g, "")
         normalMatch = adjustedString.match(///^ ([^,]*) , (.*) $///)
@@ -110,22 +121,28 @@ class global.Point
                 )
             else
                 fail()
+
     @fromPolar: (r, angle) -> new Point(r * Math.cos(angle), r * Math.sin(angle))
+
     @fromPolarInDegrees: (r, angle) -> switch Math.principalDegrees(angle)
-        # avoid approximation [
+        # avoid approximation
         when 0 then new Point(r, 0)
         when 90 then new Point(0, r)
         when -90 then new Point(0, -r)
         when 180 then new Point(-r, 0)
-        # ]
+
         else Point.fromPolar(r, Math.degreesToRadians(angle))
+
     real: -> @x
     imaginary: -> @y
+
     toString: -> "(#{@x},#{@y})"
     toComplexString: ->
         sign = if @y >= 0 then "+" else "-"
         "#{@x}#{sign}#{Math.abs(@y)}i"
+
     clone: -> new Point(@x, @y)
+
     equals: (p) -> cmath.equals(@, p)
     approxEquals: (p) -> cmath.approxEquals(@, p)
     opposite: -> cmath.opposite(@)
@@ -137,15 +154,19 @@ class global.Point
     multiply: (p) -> cmath.multiply(@, p)
     divide: (p) -> cmath.divide(@, p)
     distance: (p) -> cmath.distance(@, p)
+
     dotProduct: (p) ->
         p = Point.from(p)
         @x * p.x + @y * p.y
+
     # There's no need to return the direction, because the direction is certain
     # and not in x-y plane.
     crossProduct: (p) ->
         p = Point.from(p)
         @x * p.y - @y * p.x
+
     isOppositeTo: (p) -> @opposite().equals(p)
+
     phase: -> cmath.phase(@)
     phaseTo: (p) ->
         p = Point.from(p)
@@ -154,12 +175,15 @@ class global.Point
     phaseInDegreesTo: (p) ->
         p = Point.from(p)
         Math.principalDegrees(p.phaseInDegrees() - @phaseInDegrees())
+
     scale: (size) ->
         size = Point.from(size)
         new Point(@x * size.x, @y * size.y)
+
     rotate: (angle) -> @multiply(Point.fromPolar(1, angle))
     rotateDegrees: (angle) -> @multiply(Point.fromPolarInDegrees(1, angle))
-# There are not any `Point`'s non-static methods here. This is to
+
+# `Point`'s non-static methods are not allowed to be written here. This is to
 # avoid circular calling.
 # Also, 2d vector related things are not written here. They may be in `Point`.
 global.cmath =
@@ -167,22 +191,28 @@ global.cmath =
         a = Point.from(a)
         b = Point.from(b)
         a.x == b.x and a.y == b.y
+
     approxEquals: (a, b) ->
         a = Point.from(a)
         b = Point.from(b)
         a.x.approxEquals(b.x) and a.y.approxEquals(b.y)
+
     opposite: (p) ->
         p = Point.from(p)
         new Point(-p.x, -p.y)
+
     reciprocal: (p) ->
         p = Point.from(p)
         n = p.x * p.x + p.y * p.y
         new Point(p.x / n, -p.y / n)
+
     conjugate: (p) ->
         p = Point.from(p)
         new Point(p.x, -p.y)
+
     abs: (p) ->
         p = Point.from(p)
+
         # If on x-axis or y-axis, then it doesn't calculate square root.
         # This is not for performance, but for preventing approximation.
         # Though all modern browsers already don't generate approximations,
@@ -193,12 +223,15 @@ global.cmath =
             Math.abs(p.x)
         else
             Math.sqrt(p.x * p.x + p.y * p.y)
+
     phase: (p) -> # We use `phase` instead of `argument` to avoid ambiguity.
         p = Point.from(p)
         Math.atan2(p.y, p.x)
+
     phaseInDegrees: (p) ->
         p = Point.from(p)
-        # avoid approximation [
+
+        # avoid approximation
         if p.x == 0 and p.y == 0
             0
         else if p.x == 0 and p.y > 0
@@ -209,33 +242,43 @@ global.cmath =
             0
         else if p.x < 0 and p.y == 0
             180
-        # ]
+
         else
             d = Math.radiansToDegrees(cmath.phase(p))
             if d <= -180
                 180
             else
                 d
+
     add: (a, b) ->
         a = Point.from(a)
         b = Point.from(b)
         new Point(a.x + b.x, a.y + b.y)
+
     subtract: (a, b) -> cmath.add(a, cmath.opposite(b))
+
     multiply: (a, b) ->
         a = Point.from(a)
         b = Point.from(b)
         new Point(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x)
+
     divide: (a, b) -> cmath.multiply(a, cmath.reciprocal(b))
+
     distance: (a, b) -> cmath.abs(cmath.subtract(a, b))
+
     exp: (p) ->
         p = Point.from(p)
         Point.fromPolar(Math.exp(p.x), p.y)
+
     log: (p) -> new Point(Math.log(cmath.abs(p)), cmath.phase(p))
+
     pow: (a, b) -> cmath.exp(cmath.multiply(cmath.log(a), b))
+
     sqrt: (p) ->
         p = Point.from(p)
         r = cmath.abs(p)
         new Point(Math.sqrt((r + p.x) / 2), Math.sign(p.y) * Math.sqrt((r - p.x) / 2))
+
     cos: (p) ->
         cmath.divide(
             cmath.add(
@@ -250,6 +293,7 @@ global.cmath =
             ),
             2
         )
+
     sin: (p) ->
         cmath.divide(
             cmath.subtract(
@@ -264,7 +308,9 @@ global.cmath =
             ),
             new Point(0, 2)
         )
+
     tan: (p) -> cmath.divide(cmath.sin(p), cmath.cos(p))
+
     acos: (p) ->
         cmath.opposite(
             cmath.multiply(
@@ -287,6 +333,7 @@ global.cmath =
                 new Point(0, 1)
             )
         )
+
     asin: (p) ->
         cmath.opposite(
             cmath.multiply(
@@ -306,6 +353,7 @@ global.cmath =
                 new Point(0, 1)
             )
         )
+
     atan: (p) ->
         cmath.multiply(
             cmath.subtract(

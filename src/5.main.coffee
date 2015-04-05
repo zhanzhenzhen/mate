@@ -5,22 +5,27 @@ global.compose = (functions) ->
         for m in functions
             args = [m.apply(@, args)]
         args[0]
+
 global.fail = (errorMessage) -> throw new Error(errorMessage)
+
 global.assert = (condition, message) -> if not condition then fail(message)
+
 # Can `spread` and `repeat` be combined into one function? No, because:
-# If we do so, then it cannot spread a function. ==========[
+# If we do so, then it cannot spread a function.
 global.repeat = (iterator, times) ->
     if typeof iterator == "number" then [times, iterator] = [iterator, times]
     iterator() for i in [0...times]
 global.spread = (value, count) ->
     value for i in [0...count]
-# ]==========
+
 getter = (obj, prop, fun) -> Object.defineProperty(obj, prop, {get: fun, configurable: true})
 setter = (obj, prop, fun) -> Object.defineProperty(obj, prop, {set: fun, configurable: true})
+
 # I think `eventField` can do all that `EventedObject` can do, plus support for static events.
 # And it can avoid using strings so `eventField` is better. But maybe others like `EventedObject`
 # so I keep both.
-# ====================[
+# ========================================[
+
 # This function `f` is weird and hard to understand, but we must use this mechanism
 # (function+object hybrid) to support cascade (chaining).
 # For chaining, I mean not `obj.onAbc.bind(a).unbind(a)`, but `obj.onAbc(a).onDef(b).doSth()`.
@@ -50,6 +55,7 @@ global.eventField = ->
             listener(arg)
         f
     f
+
 class mate.EventedObject
     constructor: ->
         @_eventList = {} # Using object to simulate a "dictionary" here is simpler than using array.
@@ -65,4 +71,4 @@ class mate.EventedObject
         m(arg) for m in @_eventList[eventName]
         @
     listeners: (eventName) -> @_eventList[eventName]
-# ]====================
+# ]========================================

@@ -14,6 +14,7 @@
 class Date.Timer
     @_endOfTime: new Date("9999-12-30T00:00:00Z")
     @_precision: 30
+
     @_enable: ->
         @_internalTimer ?= setInterval(=>
             @_onCheck.fire()
@@ -22,6 +23,7 @@ class Date.Timer
         if @_internalTimer?
             clearInterval(@_internalTimer)
         @_internalTimer = null
+
     @setPrecision: (precision) ->
         if @_internalTimer?
             @_disable()
@@ -32,7 +34,9 @@ class Date.Timer
         undefined
     @getPrecision: ->
         @_precision
+
     @_onCheck: eventField()
+
     constructor: (options) ->
         @targetTime = options?.targetTime ? Date.Timer._endOfTime
         @allowsEqual = options?.allowsEqual ? true
@@ -40,6 +44,7 @@ class Date.Timer
         @_running = false
         @onArrive = eventField()
         @run()
+
     run: ->
         if @_running then return @
         @_running = true
@@ -69,6 +74,7 @@ class Date.Timer
         @_counter = 0
         @
     getCounter: -> @_counter
+
 class Date.IntervalTimer extends Date.Timer
     constructor: (options) ->
         super(options)
@@ -105,6 +111,7 @@ class Date.IntervalTimer extends Date.Timer
             )
                 @stop()
         )
+
 class Date.Observer extends Date.IntervalTimer
     @_error: new Error()
     constructor: ->
@@ -127,6 +134,7 @@ class Date.Observer extends Date.IntervalTimer
                 catch
                     Date.Observer._error
             if newValue == undefined then newValue = Date.Observer._error
+
             # Must use `Object.is`, otherwise if NaN then the events will be fired endlessly.
             if @_oldValue == undefined or not Object.is(newValue, @_oldValue)
                 @onUpdate.fire(value: newValue)

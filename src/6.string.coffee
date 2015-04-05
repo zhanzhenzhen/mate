@@ -27,12 +27,15 @@ String::format = ->
             m.push(cur)
         i++
     m.join("")
+
 String::insert = (index, value) ->
     s = @valueOf()
     s.substr(0, index) + value + s.substr(index)
+
 String::remove = (start, length = 1) ->
     s = @valueOf()
     s.substr(0, start) + s.substr(start + length)
+
 # Better than the built-in regular expression method when global mode
 # and submatches are both required.
 # It always uses global mode and returns an array of arrays if any matches are found.
@@ -47,9 +50,11 @@ String::matches = (regex) ->
         else
             break
     result
+
 String::capitalize = ->
     # Use `charAt[0]` instead of `[0]` because `[0]` will return undefined if string is empty.
     @charAt(0).toUpperCase() + @substr(1)
+
 String::deepSplit = (args...) ->
     arr = @split(args[0])
     if args.length == 2 and typeof args[1] == "number"
@@ -63,6 +68,7 @@ String::deepSplit = (args...) ->
         arr
     else
         arr.map((s) => s.deepSplit(args[1..]...))
+
 String::stripTrailingNewline = ->
     if @[@length - 2] == "\r" and @[@length - 1] == "\n"
         @substr(0, @length - 2)
