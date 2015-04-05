@@ -1,6 +1,6 @@
 {
     "name": "mate",
-    "version": "0.20.1",
+    "version": "0.20.2",
     "description": "HTTP request, array extension, ES6 shim, event, observer, test, timer, etc. It extends the native JavaScript / CoffeeScript.",
     "keywords": [
         "event", "coffeescript", "timer", "observer", "observe", "binding",
