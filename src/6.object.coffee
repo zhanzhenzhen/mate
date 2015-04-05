@@ -23,13 +23,11 @@ Object.deepAssign = (target, sources...) ->
     sources.forEach((source) ->
         deepAssign = (target, source) ->
             Object.forEach(source, (key, value) ->
-                if Object.isObject(value) and not Array.isArray(value)
-                    if Object.isObject(target[key]) and not Array.isArray(target[key])
-                        deepAssign(target[key], value)
-                    else
-                        target[key] = Object.deepClone(value)
+                if Object.isObject(value) and not Array.isArray(value) and
+                Object.isObject(target[key]) and not Array.isArray(target[key])
+                    deepAssign(target[key], value)
                 else
-                    target[key] = value
+                    target[key] = Object.deepClone(value)
             )
         deepAssign(target, source)
     )
@@ -43,13 +41,11 @@ Object.deepAbsorb = (subject, objects...) ->
     objects.forEach((object) ->
         deepAbsorb = (subject, object) ->
             Object.forEach(object, (key, value) ->
-                if Object.isObject(value) and not Array.isArray(value)
-                    if Object.isObject(subject[key]) and not Array.isArray(subject[key])
-                        deepAbsorb(subject[key], value)
-                    else
-                        subject[key] = Object.deepClone(value) if subject[key] == undefined
+                if Object.isObject(value) and not Array.isArray(value) and
+                Object.isObject(subject[key]) and not Array.isArray(subject[key])
+                    deepAbsorb(subject[key], value)
                 else
-                    subject[key] = value if subject[key] == undefined
+                    subject[key] = Object.deepClone(value) if subject[key] == undefined
             )
         deepAbsorb(subject, object)
     )
