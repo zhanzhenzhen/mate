@@ -1,8 +1,10 @@
-# `deepAssign` and `deepAbsorb` must use deep clone when traverse isn't needed. If otherwise
-# using direct assignment, then it will have severe side-effects: when sources are more than 1,
-# the first or middle source's value may have been changed after the whole thing finishes.
-# `deepAssign` and `deepAbsorb` should only traverse non-array objects. If they also traverse
-# arrays, then it will look very unnatural. It's weird to merge arrays.
+# `deepAssign` and `deepAbsorb` should use "merge" only when both source and target
+# are non-array objects. It will look unnatural and weird to merge arrays.
+#
+# `deepAssign` and `deepAbsorb` must use deep clone when the source is a non-array object but
+# can't be merged. If otherwise using direct assignment, then it will have severe
+# side-effects: when sources are more than 1, the first or middle source's data
+# may have been changed after the whole thing finishes.
 
 Object.isObject = (x) -> typeof x in ["object", "function"] and x != null
 Object.isNormalObject = (x) -> Object.isObject(x) and typeof x != "function" and not Array.isArray(x)
@@ -53,14 +55,17 @@ Object.deepAbsorb = (subject, objects...) ->
     )
     subject
 Object.deepClone = (x) ->
-    target = if Array.isArray(x) then [] else {}
-    deepCopyFrom = (target, source) ->
-        Object.forEach(source, (key, value) ->
-            if Object.isObject(value)
-                target[key] = if Array.isArray(value) then [] else {}
-                deepCopyFrom(target[key], value)
-            else
-                target[key] = value
-        )
-    deepCopyFrom(target, x)
-    target
+    if Object.isObject(x)
+        target = if Array.isArray(x) then [] else {}
+        deepCopyFrom = (target, source) ->
+            Object.forEach(source, (key, value) ->
+                if Object.isObject(value)
+                    target[key] = if Array.isArray(value) then [] else {}
+                    deepCopyFrom(target[key], value)
+                else
+                    target[key] = value
+            )
+        deepCopyFrom(target, x)
+        target
+    else
+        x
