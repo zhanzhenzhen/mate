@@ -1,7 +1,7 @@
 # `deepAssign` and `deepAbsorb` must use deep clone when traverse isn't needed. If otherwise
 # using direct assignment, then it will have severe side-effects: when sources are more than 1,
 # the first or middle source's value may have been changed after the whole thing finishes.
-# `deepAssign` and `deepAbsorb` should only traverse normal objects. If they also traverse
+# `deepAssign` and `deepAbsorb` should only traverse non-array objects. If they also traverse
 # arrays, then it will look very unnatural. It's weird to merge arrays.
 
 Object.isObject = (x) -> typeof x in ["object", "function"] and x != null
@@ -21,8 +21,8 @@ Object.deepAssign = (target, sources...) ->
     sources.forEach((source) ->
         deepAssign = (target, source) ->
             Object.forEach(source, (key, value) ->
-                if Object.isNormalObject(value)
-                    if Object.isNormalObject(target[key])
+                if Object.isObject(value) and not Array.isArray(value)
+                    if Object.isObject(target[key]) and not Array.isArray(target[key])
                         deepAssign(target[key], value)
                     else
                         target[key] = Object.deepClone(value)
@@ -41,8 +41,8 @@ Object.deepAbsorb = (subject, objects...) ->
     objects.forEach((object) ->
         deepAbsorb = (subject, object) ->
             Object.forEach(object, (key, value) ->
-                if Object.isNormalObject(value)
-                    if Object.isNormalObject(subject[key])
+                if Object.isObject(value) and not Array.isArray(value)
+                    if Object.isObject(subject[key]) and not Array.isArray(subject[key])
                         deepAbsorb(subject[key], value)
                     else
                         subject[key] = Object.deepClone(value) if subject[key] == undefined
