@@ -1,4 +1,3 @@
-require("es6-shim")
 mate = {}
 mate.packageInfo = require("./package.json")
 mate.environmentType =

@@ -9,7 +9,6 @@ On both browser and node.js, Mate brings these features:
 - Observer: useful for data binding
 - Functional functions
 - 2D point, complex number, complex math
-- ECMAScript 6th features
 - Super natural testing
 
 It extends the native JavaScript/CoffeeScript, and works consistently in every modern web browser and node.js.

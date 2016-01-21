@@ -1,12 +1,11 @@
 {
     "name": "mate",
-    "version": "0.20.2",
-    "description": "HTTP request, array extension, ES6 shim, event, observer, test, timer, etc. It extends the native JavaScript / CoffeeScript.",
+    "version": "0.21.0",
+    "description": "HTTP request, array extension, event, observer, test, timer, etc. It extends the native JavaScript / CoffeeScript.",
     "keywords": [
         "event", "coffeescript", "timer", "observer", "observe", "binding",
         "array", "math", "complex", "javascript", "js", "coffee",
-        "es6", "shim", "test", "testing", "request", "http", "promise",
-        "es6 shims", "es6 shim",
+        "test", "testing", "request", "http", "promise",
         "array extensions", "array extension",
         "complex math", "complex number",
         "http request", "web request",
@@ -20,13 +19,12 @@
         "url": "https://github.com/zhanzhenzhen/mate.git"
     },
     "dependencies": {
-        "es6-shim": "0.27.1",
         "wishlist": "0.3.4"
     },
     "devDependencies": {
         "coffee-script": "1.9.1",
         "uglify-js": "2.4.19",
-        "js-bundler": "0.6.0"
+        "js-bundler": "1.1.1"
     },
     "main": "mate"
 }
