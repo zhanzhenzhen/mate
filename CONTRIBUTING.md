@@ -20,7 +20,7 @@ First, make sure all changes are recorded in master branch. Then, compile. Then:
 git checkout -b release && git add -f mate.js mate.b.js mate.b.min.js test/compiled.js
 ```
 
-Then commit it and tag it and push it and push tags. Then:
+Then commit it and tag it and push it (using `git push origin master`) and push tags. Then:
 
 ```bash
 npm publish . && git checkout master && git branch -D release
